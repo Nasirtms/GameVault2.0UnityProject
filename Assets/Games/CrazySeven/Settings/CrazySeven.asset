@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44d9efdb66145ba42b1db3648419893c, type: 3}
+  m_Name: CrazySeven
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    background: {fileID: -774057643, guid: 7ecc7998ab1dac945b705eb480b809d1, type: 3}
+  - type: 1
+    background: {fileID: 1727104144, guid: 7ecc7998ab1dac945b705eb480b809d1, type: 3}
+  - type: 2
+    background: {fileID: -279115052, guid: 7ecc7998ab1dac945b705eb480b809d1, type: 3}
+  - type: 3
+    background: {fileID: 1019485417, guid: 7ecc7998ab1dac945b705eb480b809d1, type: 3}
+  - type: 4
+    background: {fileID: -2076469201, guid: 7ecc7998ab1dac945b705eb480b809d1, type: 3}
+  - type: 5
+    background: {fileID: -763450662, guid: 7ecc7998ab1dac945b705eb480b809d1, type: 3}
+  - type: 6
+    background: {fileID: 711091061, guid: 7ecc7998ab1dac945b705eb480b809d1, type: 3}
+  - type: 7
+    background: {fileID: 2088857984, guid: 7ecc7998ab1dac945b705eb480b809d1, type: 3}
+  - type: 8
+    background: {fileID: 1463755424, guid: 7ecc7998ab1dac945b705eb480b809d1, type: 3}
+  - type: 9
+    background: {fileID: 585381920, guid: 7ecc7998ab1dac945b705eb480b809d1, type: 3}
+  soundItems:
+  - soundName: Crazy_7_Button
+    audioClip: {fileID: 8300000, guid: af90aa06d3f5a1f4eb28065ded5e2fc9, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Crazy_7_Decrease_Button
+    audioClip: {fileID: 8300000, guid: 55ad491d4a12f1a4f866531794a24693, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Crazy_7_Increase_Button
+    audioClip: {fileID: 8300000, guid: a1cae1d8a673cf44b8596bc262dbad7c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Crazy_7_Slot_Machine
+    audioClip: {fileID: 8300000, guid: 50f5e869a2055644db4fe8ea04a17ff6, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Crazy_7_Spin
+    audioClip: {fileID: 8300000, guid: 95ba59e06fb0fb2499bde361f63d88b3, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Crazy_7_Win
+    audioClip: {fileID: 8300000, guid: 931b2ef5b8ee9124eaf5fc7737cfd722, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Crazy_7_WinEnd
+    audioClip: {fileID: 8300000, guid: 541f00ab369a94d40b0e9d38996ea614, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.3, y: 0.3}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -312
+    bottomBoundary: -547
+    startSpeed: {x: 30, y: 35}
+    acceleration: {x: 0.25, y: 0.5}
+    speedRange: {x: 45, y: 50}
+  horizontalLayout: 137
+  verticalLayout: -5
+  paddingTop: -493
+  slotScale: 0.8

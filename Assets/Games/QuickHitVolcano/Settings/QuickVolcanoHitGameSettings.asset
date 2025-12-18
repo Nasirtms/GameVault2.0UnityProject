@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4010dc5f588ba0f4d947a22f7d97cfbe, type: 3}
+  m_Name: QuickVolcanoHitGameSettings
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    background: {fileID: 1631321779, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  - type: 1
+    background: {fileID: 1048399659, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  - type: 2
+    background: {fileID: -202488405, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  - type: 3
+    background: {fileID: -1939245996, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  - type: 4
+    background: {fileID: -1196122929, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  - type: 5
+    background: {fileID: -96028745, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  - type: 6
+    background: {fileID: 248296476, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  - type: 7
+    background: {fileID: -352894530, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  - type: 8
+    background: {fileID: -493084717, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  - type: 9
+    background: {fileID: 1273165782, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  - type: 10
+    background: {fileID: -278423811, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  - type: 9
+    background: {fileID: 1273165782, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
+  soundItems:
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: 1c9afbf373d8c8548a7d7e3dd78ccd2c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: 5ac2852e7a153004cb78708ab80557b6, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Bet
+    audioClip: {fileID: 8300000, guid: 80e7e96f7355fe54b87f0531e5f1ba68, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: dd7c52cd7d1b6af4382e8924fc0c0732, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: WinEnd
+    audioClip: {fileID: 8300000, guid: 7b9c26cb943832843a8d9207ced9040f, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: f21cfb89f4570c447b0c2860aa19def9, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.3, y: 0.3}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -325
+    bottomBoundary: -532.5
+    startSpeed: {x: 30, y: 35}
+    acceleration: {x: 0.25, y: 0.5}
+    speedRange: {x: 45, y: 50}
+  horizontalLayout: 120
+  verticalLayout: 17.5
+  paddingTop: -465
+  slotScale: 1

@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd5bc4a29f18ad74fac44e13247d2b46, type: 3}
+  m_Name: MonkeyMadness
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    normalImage: {fileID: 1359914346, guid: 75e32fb56fbc1a645b1e04bef993bf0a, type: 3}
+    glowImage: {fileID: 1359914346, guid: 75e32fb56fbc1a645b1e04bef993bf0a, type: 3}
+    blurredImage: {fileID: 1359914346, guid: 75e32fb56fbc1a645b1e04bef993bf0a, type: 3}
+  - type: 1
+    normalImage: {fileID: -10633296, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    glowImage: {fileID: -2071235607, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    blurredImage: {fileID: -10633296, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+  - type: 2
+    normalImage: {fileID: -1231505527, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    glowImage: {fileID: 1429494065, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    blurredImage: {fileID: -1231505527, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+  - type: 3
+    normalImage: {fileID: 1781524433, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    glowImage: {fileID: -1352045251, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    blurredImage: {fileID: 1781524433, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+  - type: 4
+    normalImage: {fileID: -1448665871, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    glowImage: {fileID: 1356051173, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    blurredImage: {fileID: -1448665871, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+  - type: 5
+    normalImage: {fileID: 1108703873, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    glowImage: {fileID: -689337481, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    blurredImage: {fileID: 1108703873, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+  - type: 6
+    normalImage: {fileID: 125307435, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    glowImage: {fileID: 1236128981, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+    blurredImage: {fileID: 125307435, guid: 9535b363b29139a45a14a2df065f5e9d, type: 3}
+  sounds:
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: 0ffc3e3f2f474124e96ec31570e55e6f, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: c06711e010d9bd344a1574c0878d580c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: 026c33f07ef8762479226328b0df2242, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 95b8e87c1e0103a448c191c78c381380, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 6f393c202c77bc64fbc50a66817c4d19, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.4, y: 0.4}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -360
+    bottomBoundary: -587
+    startSpeed: {x: 60, y: 65}
+    acceleration: {x: 0.1, y: 0.2}
+    speedRange: {x: 70, y: 72}
+  horizontalLayout: 235
+  verticalLayout: -33
+  paddingTop: -540
+  slotScale: 1

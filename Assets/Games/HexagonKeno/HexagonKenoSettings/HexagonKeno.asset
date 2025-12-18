@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54a65f83f89ef4e4e8575350da9affb3, type: 3}
+  m_Name: HexagonKeno
+  m_EditorClassIdentifier: 
+  sounds:
+  - soundName: Bet_Increase
+    audioClip: {fileID: 8300000, guid: b4e9f19b7bb707944ae48096b608fd30, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Invalid_Pick
+    audioClip: {fileID: 8300000, guid: 7c234357624547d42b161a664e9f99d9, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Draw
+    audioClip: {fileID: 8300000, guid: d8e3f121f5ba4a0409cbe9cbea99849a, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Max_Bet
+    audioClip: {fileID: 8300000, guid: 0fbe543213ecf394e97f88b09752503e, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: OctagonKeno_Music
+    audioClip: {fileID: 8300000, guid: f8d6b134e3548fb499083ddb843505f5, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Pick
+    audioClip: {fileID: 8300000, guid: 18d832f126e39524c974131c0a258f7d, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: UnPick
+    audioClip: {fileID: 8300000, guid: e8e70413689389345889fce59c215c39, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: 14e98119c3a87c0408c8d8a09a1fe2c5, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Clear_Table
+    audioClip: {fileID: 8300000, guid: 21c95f8fe4a8af84588d4203bca26ec4, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Each_Hit
+    audioClip: {fileID: 8300000, guid: 9b511e6437fe0d9408c24a29f494bdea, type: 3}
+    volume: 1
+    pitch: 1

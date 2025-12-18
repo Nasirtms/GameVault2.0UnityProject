@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67afa4d5b08cd9a4ea9a25687d61eae2, type: 3}
+  m_Name: Head and Tail
+  m_EditorClassIdentifier: 
+  soundItems:
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: 864a4210b63213f478dfd279692f448c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 74cb7202350c93541bd36f25e57e0010, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Lose
+    audioClip: {fileID: 8300000, guid: 3ed9028e86ac94c4da682c79d10149bd, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: f3e373f9cd31f944baef8075033917bc, type: 3}
+    volume: 1
+    pitch: 1
+  betOptions:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 20
+  startIndex: 1

@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5f0b0038663f614b8ac72dcdf950ace, type: 3}
+  m_Name: DoubleJackpotBullseye
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    icon: {fileID: 1928270544, guid: 903f683ccde9c244e978ed29018d37dd, type: 3}
+  - type: 1
+    icon: {fileID: 2124851686, guid: f799ece8fde848947b5986d7fbd3ed9c, type: 3}
+  - type: 2
+    icon: {fileID: -1097078728, guid: 903f683ccde9c244e978ed29018d37dd, type: 3}
+  - type: 3
+    icon: {fileID: 1137518884, guid: 903f683ccde9c244e978ed29018d37dd, type: 3}
+  - type: 4
+    icon: {fileID: 1600808116, guid: 903f683ccde9c244e978ed29018d37dd, type: 3}
+  - type: 5
+    icon: {fileID: -1420833614, guid: 903f683ccde9c244e978ed29018d37dd, type: 3}
+  - type: 6
+    icon: {fileID: -159968590, guid: 903f683ccde9c244e978ed29018d37dd, type: 3}
+  soundItems:
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: 024dc09241dd4a1489217e7f62053e62, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Increase
+    audioClip: {fileID: 8300000, guid: 692cc233b859845498a13076d302dc66, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Decrease
+    audioClip: {fileID: 8300000, guid: 1d45529f60df14040875e36b5581cc92, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 33390e1acf89bbb438aeb2097ccf269e, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 3194088ab6df8b2419d7e8dd9e88091d, type: 3}
+    volume: 0.7
+    pitch: 1
+  - soundName: Stop
+    audioClip: {fileID: 8300000, guid: a8b5776cecdb27349917d9e3d67a00fa, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Play
+    audioClip: {fileID: 8300000, guid: ad8332f9bf96eac4c86d8f882e8b2c1c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: 82f4c6e0384ccad47a9015cc632929cd, type: 3}
+    volume: 0.5
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: 949011f8542479c4d93314b0bd04183f, type: 3}
+    volume: 0.6
+    pitch: 1
+  - soundName: FreeSpinPopup
+    audioClip: {fileID: 8300000, guid: 4637326e138a4d9469d3b95421534cae, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinBackground
+    audioClip: {fileID: 8300000, guid: e1b20d71e1a43354293e8950161d79a0, type: 3}
+    volume: 0.4
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.3, y: 0.3}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -347.5
+    bottomBoundary: -552.5
+    startSpeed: {x: 24, y: 28}
+    acceleration: {x: 1, y: 2}
+    speedRange: {x: 45, y: 50}
+  horizontalLayout: 370
+  verticalLayout: -95
+  paddingTop: -515
+  slotScale: 0.9

@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 869f25bfd96929142822398fa9a32b25, type: 3}
+  m_Name: ZombieParadise
+  m_EditorClassIdentifier: 
+  slotResources:
+  - slotType: 0
+    slotAnimationBool: Scatter
+    slotTypeIndex: 0
+  - slotType: 1
+    slotAnimationBool: Wild
+    slotTypeIndex: 1
+  - slotType: 2
+    slotAnimationBool: Zombie
+    slotTypeIndex: 2
+  - slotType: 3
+    slotAnimationBool: Skull
+    slotTypeIndex: 3
+  - slotType: 4
+    slotAnimationBool: Spider
+    slotTypeIndex: 4
+  - slotType: 5
+    slotAnimationBool: Brain
+    slotTypeIndex: 5
+  - slotType: 6
+    slotAnimationBool: Candle
+    slotTypeIndex: 6
+  - slotType: 7
+    slotAnimationBool: Ace
+    slotTypeIndex: 7
+  - slotType: 8
+    slotAnimationBool: King
+    slotTypeIndex: 8
+  - slotType: 9
+    slotAnimationBool: Queen
+    slotTypeIndex: 9
+  - slotType: 10
+    slotAnimationBool: Jack
+    slotTypeIndex: 10
+  - slotType: 11
+    slotAnimationBool: Ten
+    slotTypeIndex: 11
+  - slotType: 12
+    slotAnimationBool: Nine
+    slotTypeIndex: 12
+  soundItems:
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: 4ea41197070b68141a37895c4c07b008, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: c5fbffb2b4d2d3147865610637c8530b, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 7677895cbb46d7640a4b80b1422a8682, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 77d952ce2dc37b84689c4959c408f4d0, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: 4dff407943cff5644aedc742d4c4ffae, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 0
+    endSpin: 1
+    spinDirection: 0
+    SpinSpeed: 30
+    ReelStopDelay: 0.5
+    ReelStartDelay: 0.75
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    spinClampFrequency: 0.05
+    SpinClampStrength: 0.2
+    WindUpAmount: 0.15
+    WindUpDuration: 0.4
+    ClampDuration: 0.5
+  slotSettings:
+    MoveSpeed: 5
+    TopYPosition: 0
+    BottomYPosition: -0.087
+    MinSpinDuration: 2.5
+    MaxSpinDuration: 3.5
+    SymbolScaleX: 0.5342999
+    SymbolScaleY: 0.1623257

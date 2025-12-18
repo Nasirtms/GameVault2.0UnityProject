@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67c214533226ff24ba4f3d3df119a040, type: 3}
+  m_Name: SoundData
+  m_EditorClassIdentifier: 
+  sounds:
+  - soundName: Crazy_7_Slot_Machine
+    audioClip: {fileID: 8300000, guid: 50f5e869a2055644db4fe8ea04a17ff6, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Crazy_7_Spin
+    audioClip: {fileID: 8300000, guid: 95ba59e06fb0fb2499bde361f63d88b3, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Crazy_7_Button
+    audioClip: {fileID: 8300000, guid: af90aa06d3f5a1f4eb28065ded5e2fc9, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Crazy_7_Increase_Button
+    audioClip: {fileID: 8300000, guid: a1cae1d8a673cf44b8596bc262dbad7c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Crazy_7_Decrease_Button
+    audioClip: {fileID: 8300000, guid: 55ad491d4a12f1a4f866531794a24693, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Crazy_7_Win
+    audioClip: {fileID: 8300000, guid: 55ad491d4a12f1a4f866531794a24693, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: MainMenuMusic
+    audioClip: {fileID: 8300000, guid: c49edebe90aaa33469f914362fb889eb, type: 3}
+    volume: 0.5
+    pitch: 1
+  - soundName: Click
+    audioClip: {fileID: 8300000, guid: 738b3c37e2cadf444924d71186be1a8f, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ProfileClick
+    audioClip: {fileID: 8300000, guid: d4e890f05c681144ba37e0f24fd9eabd, type: 3}
+    volume: 1
+    pitch: 1

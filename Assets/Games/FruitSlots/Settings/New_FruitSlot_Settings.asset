@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fd66408a680a9a49ac74428a7d4d074, type: 3}
+  m_Name: New_FruitSlot_Settings
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 6
+    background: {fileID: -858130344, guid: 76d5cf7cf92317b4cbcaa00fb65fdf6d, type: 3}
+  - type: 7
+    background: {fileID: -1774448299, guid: 76d5cf7cf92317b4cbcaa00fb65fdf6d, type: 3}
+  - type: 8
+    background: {fileID: 2124566644, guid: 76d5cf7cf92317b4cbcaa00fb65fdf6d, type: 3}
+  - type: 4
+    background: {fileID: 2065463807, guid: 76d5cf7cf92317b4cbcaa00fb65fdf6d, type: 3}
+  - type: 3
+    background: {fileID: 1999543754, guid: 76d5cf7cf92317b4cbcaa00fb65fdf6d, type: 3}
+  - type: 5
+    background: {fileID: 1248138571, guid: 76d5cf7cf92317b4cbcaa00fb65fdf6d, type: 3}
+  - type: 1
+    background: {fileID: 465964444, guid: 76d5cf7cf92317b4cbcaa00fb65fdf6d, type: 3}
+  - type: 9
+    background: {fileID: -482260623, guid: 76d5cf7cf92317b4cbcaa00fb65fdf6d, type: 3}
+  - type: 10
+    background: {fileID: 1097194833, guid: 76d5cf7cf92317b4cbcaa00fb65fdf6d, type: 3}
+  - type: 0
+    background: {fileID: 1570577530, guid: 76d5cf7cf92317b4cbcaa00fb65fdf6d, type: 3}
+  - type: 2
+    background: {fileID: 777991668, guid: 76d5cf7cf92317b4cbcaa00fb65fdf6d, type: 3}
+  soundItems:
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: 120adab77c217e34991f7ec18a4a5408, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FruitSlot_Button
+    audioClip: {fileID: 8300000, guid: edce3761f81abc44cb2127a270ed28cb, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FruitSlot_Spin
+    audioClip: {fileID: 8300000, guid: 9840712dc76be0345bad25bf41db6b42, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FruitSlot_ReelStop
+    audioClip: {fileID: 8300000, guid: d688e89140c7d424095b4311d549958f, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: be27388eec97bfa4487f55d7d6f53ae7, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: WinEnd
+    audioClip: {fileID: 8300000, guid: 3460cb6b6470ac140b6271719d3d9614, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.3, y: 0.3}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -316.9
+    bottomBoundary: -526.9
+    startSpeed: {x: 20, y: 22}
+    acceleration: {x: 0.5, y: 1}
+    speedRange: {x: 28, y: 30}
+  horizontalLayout: 143.5
+  verticalLayout: 10
+  paddingTop: -472
+  slotScale: 0.9

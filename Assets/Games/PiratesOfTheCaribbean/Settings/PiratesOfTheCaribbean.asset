@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15684b55ea012d04b8557bc5574ad4ab, type: 3}
+  m_Name: PiratesOfTheCaribbean
+  m_EditorClassIdentifier: 
+  slotResources:
+  - slotType: 0
+    slotAnimationBool: Scatter
+    slotTypeIndex: 0
+  - slotType: 1
+    slotAnimationBool: Wild
+    slotTypeIndex: 1
+  - slotType: 2
+    slotAnimationBool: Pirate_3
+    slotTypeIndex: 2
+  - slotType: 3
+    slotAnimationBool: Pirate_1
+    slotTypeIndex: 3
+  - slotType: 4
+    slotAnimationBool: Pirate_2
+    slotTypeIndex: 4
+  - slotType: 5
+    slotAnimationBool: Parrot
+    slotTypeIndex: 5
+  - slotType: 6
+    slotAnimationBool: Compass
+    slotTypeIndex: 6
+  - slotType: 7
+    slotAnimationBool: Telescope
+    slotTypeIndex: 7
+  - slotType: 8
+    slotAnimationBool: Ace
+    slotTypeIndex: 8
+  - slotType: 9
+    slotAnimationBool: King
+    slotTypeIndex: 9
+  - slotType: 10
+    slotAnimationBool: Queen
+    slotTypeIndex: 10
+  - slotType: 11
+    slotAnimationBool: Jack
+    slotTypeIndex: 11
+  - slotType: 12
+    slotAnimationBool: Ten
+    slotTypeIndex: 12
+  soundItems:
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: 2e3cdf0df90c45b4f8df35ce9ae93a72, type: 3}
+    volume: 0.25
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: 5c520c7664e156648ae8b1f221d5f878, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: 4c532243128597a448499084fa5cefd7, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: WinEnd
+    audioClip: {fileID: 8300000, guid: 47e0fe67f86c3df4da9ca123cf3e259c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Cannon
+    audioClip: {fileID: 8300000, guid: 68a1124a98c155f42bbbe2e4acfaaf8c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpin
+    audioClip: {fileID: 8300000, guid: fd5616b0d2b92134db6360a410847be6, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinPop
+    audioClip: {fileID: 8300000, guid: 1dd8d40a706c03f46b5e5e224f5e040e, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Payline
+    audioClip: {fileID: 8300000, guid: 0254c909dc5d0e8459ae23f4e6dbff0c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 59cf9c04afd11ef4e89f2b951c5cf00c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Stop
+    audioClip: {fileID: 8300000, guid: 2828f8f236bfdd340822d35326836ffe, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 0
+    endSpin: 1
+    spinDirection: 0
+    SpinSpeed: 30
+    ReelStopDelay: 0.4
+    ReelStartDelay: 0.4
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    spinClampFrequency: 0.05
+    SpinClampStrength: 0.2
+    WindUpAmount: 0.15
+    WindUpDuration: 0.4
+    ClampDuration: 0.5
+  slotSettings:
+    MoveSpeed: 5
+    TopYPosition: 0
+    BottomYPosition: -0.087
+    MinSpinDuration: 2
+    MaxSpinDuration: 3
+    SymbolScaleX: 0.4770681
+    SymbolScaleY: 0.1592474

@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 513b777dc64bf064091c873dfcacf31a, type: 3}
+  m_Name: ZombieParadise_Setting
+  m_EditorClassIdentifier: 
+  symbolSprites:
+  - type: 0
+    symbol: {fileID: -636067037, guid: bb2134bad5446fb4c9019069109640a4, type: 3}
+  - type: 0
+    symbol: {fileID: -1322060737, guid: bb2134bad5446fb4c9019069109640a4, type: 3}
+  - type: 0
+    symbol: {fileID: -1308186445, guid: bb2134bad5446fb4c9019069109640a4, type: 3}
+  - type: 0
+    symbol: {fileID: 2104517396, guid: bb2134bad5446fb4c9019069109640a4, type: 3}
+  - type: 0
+    symbol: {fileID: 83517643, guid: bb2134bad5446fb4c9019069109640a4, type: 3}
+  - type: 0
+    symbol: {fileID: -1602504413, guid: bb2134bad5446fb4c9019069109640a4, type: 3}
+  - type: 11
+    symbol: {fileID: -732220246, guid: bb2134bad5446fb4c9019069109640a4, type: 3}
+  - type: 0
+    symbol: {fileID: -1317365408, guid: bb2134bad5446fb4c9019069109640a4, type: 3}
+  - type: 0
+    symbol: {fileID: 572859171, guid: bb2134bad5446fb4c9019069109640a4, type: 3}
+  - type: 0
+    symbol: {fileID: -960183732, guid: bb2134bad5446fb4c9019069109640a4, type: 3}
+  - type: 0
+    symbol: {fileID: -727102058, guid: bb2134bad5446fb4c9019069109640a4, type: 3}
+  spinSettings:
+    startSpin: 0
+    endSpin: 0
+    reelDirection: 0
+    SpinSpeed: 30
+    ReelStopDelay: 1
+    ReelStartDelay: 1
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    spinClampFrequency: 0.05
+    SpinClampStrength: 0.2
+    WindUpAmount: 0.1
+    WindUpDuration: 0.3
+    ClampDuration: 0.5
+    EnableDebugLogging: 0
+  slotSettings:
+    MoveSpeed: 5
+    TopYPosition: 0
+    BottomYPosition: -0.06
+    MinSpinDuration: 5
+    MaxSpinDuration: 9
+    SymbolScaleX: 0.31
+    SymbolScaleY: 0.1

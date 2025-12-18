@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfa2586ef2f2d564784fab6ca8eea129, type: 3}
+  m_Name: StarBurstSlots
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    index: 0
+    winAnimationBoolName: Red-Gem-Win
+    IdleAnimationBoolName: Red-Gem-Idle
+  - type: 1
+    index: 1
+    winAnimationBoolName: Yellow-Gem-Win
+    IdleAnimationBoolName: Yellow-Gem-Idle
+  - type: 2
+    index: 2
+    winAnimationBoolName: Purple-Gem-Win
+    IdleAnimationBoolName: Purple-Gem-Idle
+  - type: 3
+    index: 3
+    winAnimationBoolName: Blue-Slot-Win
+    IdleAnimationBoolName: Blue-Gem-Idle
+  - type: 5
+    index: 4
+    winAnimationBoolName: Green-Gem-Win
+    IdleAnimationBoolName: Green-Gem-Idle
+  - type: 4
+    index: 5
+    winAnimationBoolName: Seven-Slot
+    IdleAnimationBoolName: Seven-Slot
+  - type: 6
+    index: 6
+    winAnimationBoolName: Bar-Slot
+    IdleAnimationBoolName: Bar-Slot
+  - type: 7
+    index: 7
+    winAnimationBoolName: Wild_Appeared
+    IdleAnimationBoolName: Wild_Appeared
+  soundItems:
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: 4fbdf82a2a83b144897c89596633fbce, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: VolumeIncrease
+    audioClip: {fileID: 8300000, guid: 49f35705b659b084c9326f961d7c2462, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: VolumeDecrease
+    audioClip: {fileID: 8300000, guid: 5f6c8c46b2ced14469361555c403320a, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelSpin
+    audioClip: {fileID: 8300000, guid: 718492ac745afae41b541c5c9f3bfcf3, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: f3213ca55ec860b4ab64d91954ab9af9, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: SlotCash
+    audioClip: {fileID: 8300000, guid: 0d229faf2589c754b9f08f70551fa0ea, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: SlotFreeSpin
+    audioClip: {fileID: 8300000, guid: 8c4f2a746f009f2479ff521ac7cb0224, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: SlotJackpot
+    audioClip: {fileID: 8300000, guid: c916b6115d09fab4aa856b7d32286694, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: WinText
+    audioClip: {fileID: 8300000, guid: b9c232be88518a3488ee9e4e8197b376, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: WinTextEnd
+    audioClip: {fileID: 8300000, guid: a44d2e8ec6663e6498ba614180b0d5a3, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: GameTransition
+    audioClip: {fileID: 8300000, guid: 0e5aaa2a89ccf7a4489975daf12c463c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinWin
+    audioClip: {fileID: 8300000, guid: c74c59450f84f3a40bb7dc67fc2b61e0, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpin
+    audioClip: {fileID: 8300000, guid: adda3dc9207cb834b917982875ef58b4, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Bg
+    audioClip: {fileID: 8300000, guid: 71ee59ad60039804ebb0c7e725ddd939, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: wild
+    audioClip: {fileID: 8300000, guid: 6c552695e00a66f4faaa4eb5c131be4f, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: combo
+    audioClip: {fileID: 8300000, guid: c1b00dfe59c469844afbdc34177eaa9e, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.4, y: 0.4}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -383.165
+    bottomBoundary: -613.165
+    startSpeed: {x: 15, y: 20}
+    acceleration: {x: 0.3, y: 0.6}
+    speedRange: {x: 35, y: 40}
+  horizontalLayout: 161.5
+  verticalLayout: 0
+  paddingTop: -558
+  slotScale: 1

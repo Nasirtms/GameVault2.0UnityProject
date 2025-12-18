@@ -1,0 +1,29 @@
+
+@echo off
+setlocal
+
+echo Starting .NET backend...
+start cmd /k "cd /d D:\GameBackend\Cursor\CasinoBackend\CasinoBackend && dotnet build && dotnet run"
+
+timeout /t 5
+
+echo Starting Node/Vite Dashboard...
+start cmd /k "cd /d D:\GameBackend\CashierDashboard\cashier-dashboard && npx vite --host"
+
+timeout /t 5
+
+echo Starting ngrok on port 5036...
+start cmd /k "cd /d D:\GameBackend\ngrok && ngrok http 5036"
+
+timeout /t 5
+
+echo Opening local dashboard and API URL...
+start https://localhost:5173
+start https://supabase.com/dashboard/project/kggzubvrtaicqajiysix/editor/66820
+start https://docs.google.com/spreadsheets/d/1Iv5aMSbieD7C343IV5Bg-fsNeNMyZh-UH5uZxNDF1z0/edit?gid=0#gid=0
+start https://docs.google.com/spreadsheets/d/1OyFMeaBdAq1sqNP7qZy42CrGEdvxpxoMcGFMM-bTZyk/edit?gid=0#gid=0
+start https://docs.google.com/spreadsheets/d/1qGIrB234DwCmyzF6DnOnw6415LRl1T2x-Sx8rC6NTf0/edit?gid=0#gid=0
+start https://docs.google.com/spreadsheets/d/1iXsoZ6winJUxcEPxcLAKD8f1Sa47D9u5zl32ORcnsh0/edit?gid=0#gid=0
+
+echo All done. Check the opened tabs and terminal windows.
+endlocal

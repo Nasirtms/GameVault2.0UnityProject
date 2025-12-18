@@ -1,0 +1,623 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+[RequireComponent(typeof(WheelOfFortuneBetController))]
+[RequireComponent(typeof(WheelOfFortuneRulesPopupController))]
+[RequireComponent(typeof(WheelOfFortuneAutoSpinController))]
+public class WheelOfFortuneUIManager : GameBetServices
+{
+    #region Variables
+
+    public static WheelOfFortuneUIManager Instance;
+
+    [Space(10)]
+    [Header("User Details")]
+    [SerializeField] private TMP_Text coins;
+
+    [Header("Win")]
+    [SerializeField] private TMP_Text winAmount;
+
+    [Header("Bet Buttons")]
+    [SerializeField] private Button decreaseBetButton;
+    [SerializeField] private Button increaseBetButton;
+
+    [Header("Spin Buttons")]
+    [SerializeField] private WheelOfFortuneUIButtonController spinButton;
+    [SerializeField] private WheelOfFortuneUIButtonController stopButton;
+
+    [Header("Menu Buttons")]
+    [SerializeField] private Button exitGameButton;
+    [SerializeField] private Button openRulesButton;
+    [SerializeField] private Button soundButton;
+    [SerializeField] private Button musicButton;
+
+    [Header("Sound and Music")]
+    [SerializeField] private Sprite soundOffSprite;
+    [SerializeField] private Sprite soundOnSprite;
+    [SerializeField] private Sprite musicOffSprite;
+    [SerializeField] private Sprite musicOnSprite;
+    private bool soundOn;
+    private bool musicOn;
+
+    [Header("Title Image")]
+    [SerializeField] public List<GameObject> titleImages;
+    [SerializeField] float delay= 5f;
+    private int index = 0;
+    //public Coroutine titleImagesLoop;
+
+    [Header("Win Animations")]
+    [SerializeField] private List<Animator> winAnimators;
+    [SerializeField] private GameObject winAnimations;
+    [SerializeField] private GameObject niceWin;
+    [SerializeField] private GameObject bigWin;
+    [SerializeField] private GameObject megaWin;
+    [SerializeField] private GameObject superWin;
+    [SerializeField] private GameObject jackpotWin;
+    [SerializeField] private TMP_Text niceWinText;
+    [SerializeField] private TMP_Text bigWinText;
+    [SerializeField] private TMP_Text megaWinText;
+    [SerializeField] private TMP_Text superWinText;
+    [SerializeField] private TMP_Text jackpotWinText;
+    [SerializeField] private string niceWinTrigger;
+    [SerializeField] private string bigWinTrigger;
+    [SerializeField] private string megaWinTrigger;
+    [SerializeField] private string superWinTrigger;
+    [SerializeField] private string jackpotWinTrigger;
+    [HideInInspector] public bool winAnimationCompleted = false;
+    public Coroutine winCoroutine;
+
+    public Coroutine textAnimationCoroutine;
+    private float currentSpinWin;
+
+    // Scripts
+    private WheelOfFortuneBetController betController;
+    private WheelOfFortuneRulesPopupController rulesPopupController;
+    private WheelOfFortuneAutoSpinController autoSpinController;
+
+    private string currentButtonSet;
+
+    #endregion
+
+    #region Unity Methods
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
+    private void Start()
+    {
+        winAmount.text = "0.00";
+        betController = GetComponent<WheelOfFortuneBetController>();
+        rulesPopupController = GetComponent<WheelOfFortuneRulesPopupController>();
+        autoSpinController = GetComponent<WheelOfFortuneAutoSpinController>();
+
+        soundOn = true;
+        musicOn = true;
+        SoundActive(soundOn);
+        MusicActive(musicOn);
+
+        StartTitleLoop();
+
+        UpdateCoins();
+        SetupInputButtons();
+        UserManager.Instance.UpdateGameCoins += UpdateCoins;
+
+        PlayMusic("Background");
+        GameBetServices.Instance.SetActiveUI(this, coins, UpdateCoins);
+    }
+
+    private void OnDestroy()
+    {
+        RemoveListeners(spinButton.GetButtonComponent());
+        RemoveListeners(stopButton.GetButtonComponent());
+
+        RemoveListeners(increaseBetButton);
+        RemoveListeners(decreaseBetButton);
+
+        RemoveListeners(exitGameButton);
+        RemoveListeners(openRulesButton);
+        RemoveListeners(soundButton);
+        RemoveListeners(musicButton);
+        UserManager.Instance.UpdateGameCoins -= UpdateCoins;
+    }
+    #endregion
+
+    #region Button Setup
+
+    private void RemoveListeners(Button button)
+    {
+        if (button != null)
+            button.onClick.RemoveAllListeners();
+    }
+
+    private void SetupInputButtons()
+    {
+        stopButton.GetButtonComponent().onClick.AddListener(OnClickStop);
+
+        increaseBetButton.onClick.AddListener(IncreaseBetAmount);
+        decreaseBetButton.onClick.AddListener(DecreaseBetAmount);
+
+        exitGameButton.onClick.AddListener(ExitGame);
+        openRulesButton.onClick.AddListener(OpenRulesPopup);
+        soundButton.onClick.AddListener(() => SoundActive(soundOn));
+        musicButton.onClick.AddListener(() => MusicActive(musicOn));
+    }
+    #endregion
+
+    #region Input Buttons
+
+    #region Sound
+
+    public void PlaySound(string soundName)
+    {
+        if (soundName == null || WheelOfFortuneSoundManager.Instance == null) return;
+        if (!WheelOfFortuneSoundManager.Instance.IsSoundMute())
+            WheelOfFortuneSoundManager.Instance.PlaySFX(soundName);
+    }
+
+    public void PlayMusic(string soundName)
+    {
+        if (soundName == null || WheelOfFortuneSoundManager.Instance == null) return;
+        if (!WheelOfFortuneSoundManager.Instance.IsMusicMute())
+            WheelOfFortuneSoundManager.Instance.PlayMusic(soundName);
+    }
+    public void StopMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!WheelOfFortuneSoundManager.Instance.IsMusicMute())
+            WheelOfFortuneSoundManager.Instance.StopMusic(soundName);
+    }
+    public void PlaySpinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!WheelOfFortuneSoundManager.Instance.IsSoundMute())
+            WheelOfFortuneSoundManager.Instance.PlaySpinMusic(soundName);
+    }
+    public void StopSpinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!WheelOfFortuneSoundManager.Instance.IsSoundMute())
+            WheelOfFortuneSoundManager.Instance.StopSpinMusic(soundName);
+    }
+    private void PlayWinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!WheelOfFortuneSoundManager.Instance.IsSoundMute())
+            WheelOfFortuneSoundManager.Instance.PlayWinMusic(soundName);
+    }
+
+    private void StopWinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!WheelOfFortuneSoundManager.Instance.IsSoundMute())
+            WheelOfFortuneSoundManager.Instance.StopWinMusic(soundName);
+    }
+    public void SoundActive(bool soundActive)
+    {
+        WheelOfFortuneSoundManager.Instance.MuteSFX(!soundActive);
+
+        Image soundButtonImage = soundButton.GetComponent<Image>();
+
+        if (soundActive)
+        {
+            soundButtonImage.sprite = soundOnSprite;
+        }
+        else
+        {
+            soundButtonImage.sprite = soundOffSprite;
+        }
+
+        soundOn = !soundOn;
+    }
+
+    public void MusicActive(bool musicActive)
+    {
+        WheelOfFortuneSoundManager.Instance.MuteMusic(!musicActive);
+
+        Image musicButtonImage = musicButton.GetComponent<Image>();
+
+        if (musicActive)
+        {
+            musicButtonImage.sprite = musicOnSprite;
+        }
+        else
+        {
+            musicButtonImage.sprite = musicOffSprite;
+        }
+
+        musicOn = !musicOn;
+    }
+
+    #endregion
+
+    #region Bet Control
+
+    private void IncreaseBetAmount()
+    {
+        if (betController == null) return;
+        PlaySound("Button");
+        betController.IncreaseChipValue();
+    }
+
+    private void DecreaseBetAmount()
+    {
+        if (betController == null) return;
+        PlaySound("Button");
+        betController.DecreaseChipValue();
+    }
+
+    #endregion
+
+    private void ExitGame()
+    {
+        PlaySound("Button");
+        if (UserManager.Instance != null)
+        {
+            UserManager.Instance.StartUpdateCanAddCoin(true);
+        }
+        SceneManager.LoadScene("Main");
+    }
+
+    private void OpenRulesPopup()
+    {
+        if (rulesPopupController == null) return;
+        PlaySound("Button");
+        rulesPopupController.OpenPopup();
+    }
+
+    #endregion
+
+    #region Spin Buttons
+
+    public void OnClickSpin()
+    {
+        UpdateButtons("Spin");
+        PlaySpinMusic("Spin");
+
+        float betAmount = betController.GetCurrentBet();
+        if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
+
+        if (textAnimationCoroutine != null)
+        {
+            StopCoroutine(textAnimationCoroutine);
+        }
+        if (winCoroutine != null)
+        {
+            StopCoroutine(winCoroutine);
+        }
+        SlotSpinService.Instance.Spin(betAmount);
+    }
+
+    private void OnClickStop()
+    {
+        UpdateButtons("Default");
+        StopSpinMusic("Spin");
+
+        WheelOfFortuneSlotMachine.Instance.isStopBtnPressed = true;
+
+        if (WheelOfFortuneAutoSpinController.isAutoSpinning)
+        {
+            autoSpinController.CancelAutoSpin();
+        }
+
+        WheelOfFortuneSlotMachine.Instance.StopWithResult();
+    }
+
+    public void OnHoldSpin()
+    {
+        if (autoSpinController == null) return;
+
+        UpdateButtons("Spin");
+        PlaySpinMusic("Spin");
+
+        float betAmount = betController.GetCurrentBet();
+
+        if (textAnimationCoroutine != null)
+        {
+            StopCoroutine(textAnimationCoroutine);
+        }
+            
+        if (winCoroutine != null)
+        {
+            StopCoroutine(winCoroutine);
+        }
+        autoSpinController.StartAutoSpin(betAmount);
+    }
+    #endregion
+
+    #region UI Update
+
+    #region Title Images
+    public void StartTitleLoop()
+    {
+        if (titleImages == null || titleImages.Count == 0)
+            return;
+
+        CancelInvoke(nameof(SwapTitleImage));
+
+        index = 0;
+        ShowOnly(index); 
+
+        InvokeRepeating(nameof(SwapTitleImage), delay, delay);
+    }
+    public void StopTitleLoop()
+    {
+        CancelInvoke(nameof(SwapTitleImage));
+        HideAll();
+    }
+
+    private void SwapTitleImage()
+    {
+        if (titleImages == null || titleImages.Count == 0)
+            return;
+
+        index = (index + 1) % titleImages.Count;
+        ShowOnly(index);
+    }
+
+    private void ShowOnly(int i)
+    {
+        for (int a = 0; a < titleImages.Count; a++)
+            titleImages[a].SetActive(a == i);
+    }
+
+    private void HideAll()
+    {
+        foreach (var img in titleImages)
+            img.SetActive(false);
+    }
+    #endregion
+
+    public void UpdateCoins()
+    {
+        if (UserManager.Instance != null)
+        {
+            coins.text = UserManager.Instance.FormatCoins(UserManager.Instance.Coins);
+        }
+    }
+
+    public void UpdateButtons(string type)
+    {
+        bool interactable = false;
+
+        switch (type)
+        {
+            case "Default":
+                interactable = true;
+                spinButton.ShowButton(true);
+                stopButton.ShowButton(false);
+                break;
+
+            case "Spin":
+                interactable = false;
+                spinButton.ShowButton(false);
+                stopButton.ShowButton(true);
+                break;
+
+            case "Transition":
+                interactable = false;
+                spinButton.ShowButton(true);
+                stopButton.ShowButton(false);
+                break;
+
+            case "FreeSpin":
+                interactable = false;
+                spinButton.ShowButton(false);
+                stopButton.ShowButton(true);
+                break;
+
+            case "WinAnimation":
+                interactable = false;
+                spinButton.ShowButton(true);
+                stopButton.ShowButton(false);
+                break;
+
+            case "AutoWinAnimation":
+                interactable = false;
+                SetStopInteractable(interactable);
+                break;
+
+            default:
+                return;
+        }
+
+        spinButton.GetButtonComponent().interactable = interactable;
+
+        exitGameButton.interactable = interactable;
+        increaseBetButton.interactable = interactable;
+        decreaseBetButton.interactable = interactable;
+
+        currentButtonSet = type;
+    }
+    #endregion
+
+    #region Text Animation
+
+    public void UpdateWinAmount(float winAmount, bool compound)
+    {
+        if (winAmount > 0)
+        {
+            if (compound)
+            {
+                currentSpinWin += winAmount;
+            }
+            else
+            {
+                currentSpinWin = winAmount;
+            }
+
+            PlayTextAnimation(currentSpinWin);
+        }
+        else
+        {
+            currentSpinWin = 0;
+            this.winAmount.text = "0.00";
+        }
+    }
+
+    private void PlayTextAnimation(float winAmount)
+    {
+        if (textAnimationCoroutine != null)
+            StopCoroutine(textAnimationCoroutine);
+
+        PlaySound("Win");
+        textAnimationCoroutine = StartCoroutine(AnimateToValue(winAmount, 1f, this.winAmount));
+    }
+
+    private IEnumerator AnimateToValue(float target, float duration, TMP_Text textToAnimate)
+    {
+        float startValue = 0f;
+
+        if (!string.IsNullOrEmpty(textToAnimate.text) && float.TryParse(textToAnimate.text, out float current))
+        {
+            startValue = current;
+        }
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            float t = timer / duration;
+            float displayed = Mathf.Lerp(startValue, target, t);
+            textToAnimate.text = displayed.ToString("0.00");
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        textToAnimate.text = target.ToString("0.00");
+    }
+
+    private IEnumerator AnimateToValue(float target, float duration, TMP_Text textToAnimateOne, TMP_Text textToAnimateTwo)
+    {
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            float t = timer / duration;
+            float displayed = Mathf.Lerp(0f, target, t);
+            textToAnimateOne.text = displayed.ToString("0.00");
+            textToAnimateTwo.text = displayed.ToString("0.00");
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure final value is exact
+        textToAnimateOne.text = target.ToString("0.00");
+        textToAnimateTwo.text = target.ToString("0.00");
+
+        StopCoroutine(textAnimationCoroutine);
+    }
+
+    #endregion
+
+    #region Win Animations
+    public void PlayNiceWinAnimation(float winAmount)
+    {
+        winCoroutine = StartCoroutine(WinAnimation(niceWin, niceWinText, winAmount, 0, niceWinTrigger));
+    }
+
+    public void PlayBigWinAnimation(float winAmount)
+    {
+        winCoroutine = StartCoroutine(WinAnimation(bigWin, bigWinText, winAmount, 1, bigWinTrigger));
+    }
+
+    public void PlayMegaWinAnimation(float winAmount)
+    {
+        winCoroutine = StartCoroutine(WinAnimation(megaWin, megaWinText, winAmount, 2, megaWinTrigger));
+    }
+
+    public void PlaySuperWinAnimation(float winAmount)
+    {
+        winCoroutine = StartCoroutine(WinAnimation(superWin, superWinText, winAmount, 3, superWinTrigger));
+    }
+
+    public void PlayJackpotWinAnimation(float winAmount)
+    {
+        winCoroutine = StartCoroutine(WinAnimation(jackpotWin, jackpotWinText, winAmount, 4, jackpotWinTrigger));
+    }
+
+    private IEnumerator WinAnimation(GameObject winType, TMP_Text winText, float targetAmount, int animatorIndex, string animationTrigger)
+    {
+        if (WheelOfFortuneAutoSpinController.isAutoSpinning)
+        {
+            UpdateButtons("AutoWinAnimation");
+        }
+        else
+        {
+            UpdateButtons("WinAnimation");
+        }
+
+        winAnimationCompleted = false;
+
+        yield return new WaitForSeconds(1.5f);
+
+        winAnimations.SetActive(true);
+        winType.SetActive(true);
+
+        Animator animator = winAnimators[animatorIndex];
+
+        animator.enabled = true;
+        animator.SetTrigger(animationTrigger);
+
+        winText.text = "0.00";
+
+        yield return new WaitForSeconds(1.5f);
+
+        textAnimationCoroutine = StartCoroutine(AnimateToValue(targetAmount, 2f, this.winAmount, winText));
+
+        yield return new WaitForSeconds(3.5f);
+
+        animator.enabled = false;
+
+        winType.SetActive(false);
+        winAnimations.SetActive(false);
+
+        winAnimationCompleted = true;
+
+        if (WheelOfFortuneSlotMachine.Instance.isFreeGameReady)
+        {
+            UpdateButtons("Transition");
+        }
+        else if (WheelOfFortuneAutoSpinController.isAutoSpinning)
+        {
+            UpdateButtons("Spin");
+        }
+        else
+        {
+            UpdateButtons("Default");
+        }
+
+        StopCoroutine(winCoroutine);
+    }
+
+    #endregion
+
+    #region Helper Functions
+
+    public float CurrentBet()
+    {
+        return betController.GetCurrentBet();
+    }
+
+    public string CurrentButtonSet()
+    {
+        return currentButtonSet;
+    }
+
+    public void SetStopInteractable(bool state)
+    {
+        stopButton.GetButtonComponent().interactable = state;
+    }
+
+    #endregion
+}

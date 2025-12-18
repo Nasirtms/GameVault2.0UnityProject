@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bd8f5013909a024282af025b44d2049, type: 3}
+  m_Name: CleopatraGameSettings
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    background: {fileID: -182227089, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 1
+    background: {fileID: 779424800, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 2
+    background: {fileID: 1298513825, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 3
+    background: {fileID: -1770284661, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 4
+    background: {fileID: 251254158, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 5
+    background: {fileID: 1972241865, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 6
+    background: {fileID: -1644403112, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 7
+    background: {fileID: 103382805, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 8
+    background: {fileID: 468707450, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 9
+    background: {fileID: -1914652320, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 10
+    background: {fileID: -715727278, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 11
+    background: {fileID: -702085296, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  - type: 12
+    background: {fileID: -548745051, guid: 6763d9be158cde747956abc8776dddbd, type: 3}
+  sounds:
+  - soundName: Auto_Button
+    audioClip: {fileID: 8300000, guid: a72ac4731b88ad34dbb7e9e1be1855a5, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Decrease
+    audioClip: {fileID: 8300000, guid: 60ecf98aac9020f42817e2ef9e9f4792, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Increase
+    audioClip: {fileID: 8300000, guid: 13f9fed9e6b1d54458c6df0f635cc286, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Max
+    audioClip: {fileID: 8300000, guid: d27be515f124184459d29d132d8665d9, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Reel_Stop
+    audioClip: {fileID: 8300000, guid: e6c9c960d9ad7ce4cb82ad14f7fd095b, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Rules_Close
+    audioClip: {fileID: 8300000, guid: 405310d9555d7e24f8eb4c8c3e561669, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Rules_Popup
+    audioClip: {fileID: 8300000, guid: 8b58c3ea069a17f4d84d923790701da3, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin_Button
+    audioClip: {fileID: 8300000, guid: dd49dacdca888d844863890c6ac122fc, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: AutoButton_Stop
+    audioClip: {fileID: 8300000, guid: d946a2f0a0787004ab17b58307d379e4, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: 501fe9d1c747ecf46a4a1c98baa8bcfc, type: 3}
+    volume: 0.209
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 0d431bdd55883684ca295c2c1147ba92, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Bonus
+    audioClip: {fileID: 8300000, guid: 2d180b95d3d243141b0817ed1e57a3b5, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinStart
+    audioClip: {fileID: 8300000, guid: 7bd70c2d43f6abc4fabbe99de1aec971, type: 3}
+    volume: 0.7
+    pitch: 1
+  - soundName: FreeSpin
+    audioClip: {fileID: 8300000, guid: a0fc4a4316687404ea6caa7230f0adf9, type: 3}
+    volume: 0.3
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: a74e58a27aec64d41ab0e32a3e08e87d, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: WinEnd
+    audioClip: {fileID: 8300000, guid: 51d3a430806bd0748bdb1e2e94a1fc45, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    spinDirection: 0
+    delayAmongReels: {x: 0.4, y: 0.4}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -104
+    middleBoundary: -325
+    bottomBoundary: -546
+    startSpeed: {x: 18, y: 22}
+    acceleration: {x: 0.4, y: 0.5}
+    speedRange: {x: 25, y: 28}
+  horizontalLayout: 130
+  verticalLayout: -25
+  paddingTop: -513
+  slotScale: 0.9

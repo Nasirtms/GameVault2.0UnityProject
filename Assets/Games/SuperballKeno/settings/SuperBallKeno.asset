@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84df22369455cad48921c4f8ef2ae6fa, type: 3}
+  m_Name: SuperBallKeno
+  m_EditorClassIdentifier: 
+  sounds:
+  - soundName: Bet_Increase
+    audioClip: {fileID: 8300000, guid: a1ab9016883b0c14b94caf7e1a451bb3, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Draw_Animation
+    audioClip: {fileID: 8300000, guid: cfbcc0b165547474c9ddc1d077868799, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Drawing_Balls
+    audioClip: {fileID: 8300000, guid: a30eec19054497e4eb5202c007c44b47, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Each_Draw
+    audioClip: {fileID: 8300000, guid: 3124c629d8d784a448951103837731ff, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Each_Hit
+    audioClip: {fileID: 8300000, guid: 08a320306beb7ab4eadc2c4f83411030, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Help_Exit
+    audioClip: {fileID: 8300000, guid: 9ed315d189b6d9146b0a40c1615c2435, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Help_PanelButton
+    audioClip: {fileID: 8300000, guid: bc9d80a7717d74c44aad8d3d0efc5196, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Invalid_Pick
+    audioClip: {fileID: 8300000, guid: 9bfa4fceb5a8840448127a119875d343, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Max_Bet
+    audioClip: {fileID: 8300000, guid: 6a2b22c20368eb649afbdaeaa419b47e, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Round_Completion
+    audioClip: {fileID: 8300000, guid: 1e5243f678208be4bb931223d72527f4, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Pick_Number
+    audioClip: {fileID: 8300000, guid: 2b491bc17e3ff7b408b235722a8a917e, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Super_Hit
+    audioClip: {fileID: 8300000, guid: ecc4ee6c5b05d574aa758a474815658a, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Wipe
+    audioClip: {fileID: 8300000, guid: 7be0bd469f0d92a40b06dd069f38f0d8, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: LastBall_Draw
+    audioClip: {fileID: 8300000, guid: 04f683e9c2453b84099e6e55e4c400dc, type: 3}
+    volume: 1
+    pitch: 1

@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 513b777dc64bf064091c873dfcacf31a, type: 3}
+  m_Name: ZombieParadise_Setting 1
+  m_EditorClassIdentifier: 
+  symbolSprites:
+  - type: 0
+    symbol: {fileID: -1254861950, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  - type: 1
+    symbol: {fileID: -573175847, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  - type: 2
+    symbol: {fileID: 440656318, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  - type: 3
+    symbol: {fileID: -1157584545, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  - type: 4
+    symbol: {fileID: 314581067, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  - type: 5
+    symbol: {fileID: 1135347337, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  - type: 6
+    symbol: {fileID: 688043357, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  - type: 7
+    symbol: {fileID: -471992139, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  - type: 8
+    symbol: {fileID: 1638735517, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  - type: 9
+    symbol: {fileID: -1720769485, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  - type: 10
+    symbol: {fileID: -203484286, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  - type: 11
+    symbol: {fileID: 1603395533, guid: 5a969b97151573c4ab0487e83de1c1d5, type: 3}
+  spinSettings:
+    startSpin: 1
+    endSpin: 1
+    reelDirection: 2
+    SpinSpeed: 30
+    ReelStopDelay: 1
+    ReelStartDelay: 1
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    spinClampFrequency: 0.05
+    SpinClampStrength: 0.2
+    WindUpAmount: 0.1
+    WindUpDuration: 0.3
+    ClampDuration: 0.5
+    EnableDebugLogging: 0
+  slotSettings:
+    MoveSpeed: 5
+    TopYPosition: 0
+    BottomYPosition: -0.06
+    MinSpinDuration: 5
+    MaxSpinDuration: 9
+    SymbolScaleX: 0.4808699
+    SymbolScaleY: 0.1460931

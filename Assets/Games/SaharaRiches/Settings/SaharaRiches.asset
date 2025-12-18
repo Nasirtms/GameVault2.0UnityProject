@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf950b0e25a466346b1720bee6d02213, type: 3}
+  m_Name: SaharaRiches
+  m_EditorClassIdentifier: 
+  slotResources:
+  - slotType: 0
+    slotAnimationBool: +3
+    slotTypeIndex: 0
+  - slotType: 1
+    slotAnimationBool: +4
+    slotTypeIndex: 1
+  - slotType: 2
+    slotAnimationBool: +5
+    slotTypeIndex: 2
+  - slotType: 3
+    slotAnimationBool: +10
+    slotTypeIndex: 3
+  - slotType: 4
+    slotAnimationBool: Cash-Collect
+    slotTypeIndex: 4
+  - slotType: 5
+    slotAnimationBool: CC
+    slotTypeIndex: 5
+  - slotType: 6
+    slotAnimationBool: Cash-Collect-Diamond
+    slotTypeIndex: 6
+  - slotType: 7
+    slotAnimationBool: ChestBox
+    slotTypeIndex: 7
+  - slotType: 8
+    slotAnimationBool: Camel
+    slotTypeIndex: 8
+  - slotType: 9
+    slotAnimationBool: Pot
+    slotTypeIndex: 9
+  - slotType: 10
+    slotAnimationBool: Sword
+    slotTypeIndex: 10
+  - slotType: 11
+    slotAnimationBool: SandTimer
+    slotTypeIndex: 11
+  - slotType: 12
+    slotAnimationBool: A
+    slotTypeIndex: 12
+  - slotType: 13
+    slotAnimationBool: K
+    slotTypeIndex: 13
+  - slotType: 14
+    slotAnimationBool: Q
+    slotTypeIndex: 14
+  - slotType: 15
+    slotAnimationBool: J
+    slotTypeIndex: 15
+  - slotType: 16
+    slotAnimationBool: Wild
+    slotTypeIndex: 16
+  soundItems:
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: 6ab5d84487c79444c9db9e25eed2d02c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinPopup
+    audioClip: {fileID: 8300000, guid: bf0ebb86c20354e4d972e70247d9835d, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: a539d9f21128ecb45ac9db6f693dfa78, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 31da0ed0f9988e34da6e56a70004727e, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: bee8dd3cd1da7a7459c576ea08acf09b, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: 4128a4207a19e2a499e5196cfb7a4c6a, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpin_Background
+    audioClip: {fileID: 8300000, guid: abc861dabb77dc946a1f4c4e49649e35, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 0
+    endSpin: 1
+    spinDirection: 0
+    SpinSpeed: 30
+    ReelStopDelay: 0.3
+    ReelStartDelay: 0.4
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    spinClampFrequency: 0.05
+    SpinClampStrength: 5
+    WindUpAmount: 0.15
+    WindUpDuration: 0.4
+    ClampDuration: 2
+  slotSettings:
+    MoveSpeed: 5
+    TopYPosition: 0
+    BottomYPosition: -0.087
+    MinSpinDuration: 2
+    MaxSpinDuration: 3
+    SymbolScaleX: 0.4770681
+    SymbolScaleY: 0.1592474

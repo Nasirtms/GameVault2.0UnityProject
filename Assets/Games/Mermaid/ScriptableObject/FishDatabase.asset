@@ -1,0 +1,652 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cebdb5586eb92ba45b1bcc74ba5f2c47, type: 3}
+  m_Name: FishDatabase
+  m_EditorClassIdentifier: 
+  fishList:
+  - fishName: fish-1
+    sprite: {fileID: 198738730717614354, guid: 5f1931268630a064ebd35d683e78b33e, type: 3}
+    maxHealth: 2
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 2
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 0
+    rarityWeight: 10
+    spawnPattern: 0
+  - fishName: fish-2
+    sprite: {fileID: 5871017991904681773, guid: 382f2e46df2f8c04981ea499d2ca4f10, type: 3}
+    maxHealth: 3
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 2
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 0
+    rarityWeight: 10
+    spawnPattern: 2
+  - fishName: fish-3
+    sprite: {fileID: 1671681185357561888, guid: 70de7a74b889dd440955bcd1deab62c6, type: 3}
+    maxHealth: 3
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 3
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 0
+    rarityWeight: 10
+    spawnPattern: 2
+  - fishName: fish-4
+    sprite: {fileID: 1767885799870292252, guid: 730b27c1b454a3e4c90aba6ed9038dae, type: 3}
+    maxHealth: 4
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 4
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 0
+    rarityWeight: 10
+    spawnPattern: 0
+  - fishName: fish-5
+    sprite: {fileID: 3108597066102634222, guid: 7541b2eb917fd514fb2d9eef956c63f4, type: 3}
+    maxHealth: 5
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 5
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 0
+    rarityWeight: 10
+    spawnPattern: 0
+  - fishName: fish-6
+    sprite: {fileID: 83087534243271701, guid: 4d18f18a07ae21c45a4e6bd3b204a23f, type: 3}
+    maxHealth: 5
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 6
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 0
+    rarityWeight: 10
+    spawnPattern: 0
+  - fishName: fish-7
+    sprite: {fileID: 4563378838624385291, guid: b81a712e6ea7dec4ea9aedbc292c7df7, type: 3}
+    maxHealth: 6
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 7
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 0
+    rarityWeight: 10
+    spawnPattern: 0
+  - fishName: fish-8
+    sprite: {fileID: 694544864787715453, guid: c14a608bef8a1ba4ba1ed9ee3eb7646d, type: 3}
+    maxHealth: 7
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 8
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 0
+    rarityWeight: 10
+    spawnPattern: 0
+  - fishName: fish-9
+    sprite: {fileID: 1728643633780746302, guid: f53a93b85b0cced4aab742395b5edb8f, type: 3}
+    maxHealth: 9
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 9
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 0
+    rarityWeight: 10
+    spawnPattern: 0
+  - fishName: turtle
+    sprite: {fileID: 4305401398393253045, guid: d59e7c62b3bf7d14aa0c3f5d138b2f28, type: 3}
+    maxHealth: 8
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 10
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 50
+    spawnPattern: 0
+  - fishName: fish-12
+    sprite: {fileID: 859967198663435201, guid: 7df51ea90cf3eb5419bbf9fc08e0c489, type: 3}
+    maxHealth: 10
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 2
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 12
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 0
+    rarityWeight: 50
+    spawnPattern: 0
+  - fishName: fish-15
+    sprite: {fileID: 1924020300076154139, guid: 02432105e6a6aef418ab992bc636e4c7, type: 3}
+    maxHealth: 10
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 15
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 50
+    spawnPattern: 0
+  - fishName: swordFish
+    sprite: {fileID: 8263812481316119144, guid: 9ec4d03300f2d3247843e05a5e20a7f4, type: 3}
+    maxHealth: 8
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 18
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 50
+    spawnPattern: 0
+  - fishName: stingray
+    sprite: {fileID: 2839790139270233563, guid: 8b1cd464cea00f1498a7f1e545f2efa2, type: 3}
+    maxHealth: 12
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 0
+    rotationSpeed: 0.5
+    fishMultiplyer: 25
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 50
+    spawnPattern: 0
+  - fishName: dolphin
+    sprite: {fileID: 5217469496441726354, guid: 2ffce85582aceda44b2b23e3a69baff9, type: 3}
+    maxHealth: 9
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.3
+    fishMultiplyer: 18
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 50
+    spawnPattern: 0
+  - fishName: hammerheadshark
+    sprite: {fileID: 6370930112917099111, guid: ece736aa7277b644c90ee12796394f07, type: 3}
+    maxHealth: 30
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.3
+    fishMultiplyer: 30
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 50
+    spawnPattern: 0
+  - fishName: hammerheadsharksilver
+    sprite: {fileID: 5454793286172753041, guid: 7cd640ca58ddbdc4fb9bfb4fcbd36b43, type: 3}
+    maxHealth: 50
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.3
+    fishMultiplyer: 30
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 50
+    spawnPattern: 0
+  - fishName: hammerheadsharkgold
+    sprite: {fileID: 7396860341578737381, guid: 5ce4e60c071d5dd4e8888a0b6253c020, type: 3}
+    maxHealth: 18
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.3
+    fishMultiplyer: 40
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 50
+    spawnPattern: 0
+  - fishName: mermaidA
+    sprite: {fileID: 9015383662435003828, guid: 4b401ba520c92ee46b5b0aca1ced40d4, type: 3}
+    maxHealth: 45
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 0
+    rotationSpeed: 0.5
+    fishMultiplyer: 150
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 2
+    spawnPattern: 0
+  - fishName: penguin
+    sprite: {fileID: 515206095348466204, guid: 19df88dd41f517247a80f02cd26748e6, type: 3}
+    maxHealth: 30
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 200
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 50
+    spawnPattern: 0
+  - fishName: shark
+    sprite: {fileID: 4214515472013066739, guid: 6c6052ffbe85f9f42baff087c9b3030e, type: 3}
+    maxHealth: 45
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 1
+    rotationSpeed: 0.5
+    fishMultiplyer: 240
+    isBomb: 0
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 95
+    spawnPattern: 0
+  - fishName: mermaidB
+    sprite: {fileID: 8139101282566160346, guid: 5ae854d6955e3564b8229c4368b39452, type: 3}
+    maxHealth: 45
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 0
+    rotationSpeed: 0.5
+    fishMultiplyer: 150
+    isBomb: 1
+    isPowerUp: 0
+    allowOnlyOne: 1
+    rarityWeight: 10
+    spawnPattern: 0
+  - fishName: coralreef
+    sprite: {fileID: 7951546456298023047, guid: a1225c6ea47bc164b9d2f2ad100e1162, type: 3}
+    maxHealth: 0
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 0
+    rotationSpeed: 0.5
+    fishMultiplyer: 0
+    isBomb: 0
+    isPowerUp: 1
+    allowOnlyOne: 1
+    rarityWeight: 10
+    spawnPattern: 0
+  - fishName: cardnergyannon
+    sprite: {fileID: 2484535353270420938, guid: 38976a6b3024a66429b5f2570bbbc20e, type: 3}
+    maxHealth: 0
+    prizeAmount: 5
+    minSpeed: 1
+    maxSpeed: 3
+    spawnOffset: 0.5
+    batchSize: 1
+    batchSpacing: 0.5
+    isRotatable: 0
+    rotationSpeed: 0.5
+    fishMultiplyer: 0
+    isBomb: 0
+    isPowerUp: 1
+    allowOnlyOne: 1
+    rarityWeight: 10
+    spawnPattern: 0
+  bonusFishes:
+  - bonusFishSpeed: 1.3
+    movementType: 1
+    spawnOffset: {x: -5, y: 0}
+    bigFishes:
+    - fishName: mermaidA
+      sprite: {fileID: 9015383662435003828, guid: 4b401ba520c92ee46b5b0aca1ced40d4, type: 3}
+      maxHealth: 45
+      prizeAmount: 300
+      minSpeed: 1
+      maxSpeed: 3
+      spawnOffset: 0.5
+      batchSize: 1
+      batchSpacing: 0.5
+      isRotatable: 0
+      rotationSpeed: 0.5
+      fishMultiplyer: 150
+      isBomb: 0
+      isPowerUp: 0
+      allowOnlyOne: 0
+      rarityWeight: 50
+      spawnPattern: 0
+    patternFishGroups:
+    - fishData:
+        fishName: fish-6
+        sprite: {fileID: 859967198663435201, guid: 7df51ea90cf3eb5419bbf9fc08e0c489, type: 3}
+        maxHealth: 5
+        prizeAmount: 16
+        minSpeed: 1
+        maxSpeed: 3
+        spawnOffset: 0.5
+        batchSize: 1
+        batchSpacing: 0.5
+        isRotatable: 0
+        rotationSpeed: 0.5
+        fishMultiplyer: 6
+        isBomb: 0
+        isPowerUp: 0
+        allowOnlyOne: 0
+        rarityWeight: 50
+        spawnPattern: 0
+    - fishData:
+        fishName: fish-6
+        sprite: {fileID: 198738730717614354, guid: 5f1931268630a064ebd35d683e78b33e, type: 3}
+        maxHealth: 5
+        prizeAmount: 16
+        minSpeed: 1
+        maxSpeed: 3
+        spawnOffset: 0.5
+        batchSize: 1
+        batchSpacing: 0.5
+        isRotatable: 0
+        rotationSpeed: 0.5
+        fishMultiplyer: 6
+        isBomb: 0
+        isPowerUp: 0
+        allowOnlyOne: 0
+        rarityWeight: 50
+        spawnPattern: 0
+    - fishData:
+        fishName: fish-6
+        sprite: {fileID: 1767885799870292252, guid: 730b27c1b454a3e4c90aba6ed9038dae, type: 3}
+        maxHealth: 16
+        prizeAmount: 16
+        minSpeed: 1
+        maxSpeed: 3
+        spawnOffset: 0.5
+        batchSize: 1
+        batchSpacing: 0.5
+        isRotatable: 0
+        rotationSpeed: 0.5
+        fishMultiplyer: 6
+        isBomb: 0
+        isPowerUp: 0
+        allowOnlyOne: 0
+        rarityWeight: 50
+        spawnPattern: 0
+  - bonusFishSpeed: 1.3
+    movementType: 2
+    spawnOffset: {x: 5, y: 0}
+    bigFishes:
+    - fishName: mermaidB
+      sprite: {fileID: 8139101282566160346, guid: 5ae854d6955e3564b8229c4368b39452, type: 3}
+      maxHealth: 45
+      prizeAmount: 300
+      minSpeed: 1
+      maxSpeed: 3
+      spawnOffset: 0.5
+      batchSize: 1
+      batchSpacing: 0.5
+      isRotatable: 0
+      rotationSpeed: 0.5
+      fishMultiplyer: 150
+      isBomb: 0
+      isPowerUp: 0
+      allowOnlyOne: 0
+      rarityWeight: 50
+      spawnPattern: 0
+    patternFishGroups:
+    - fishData:
+        fishName: fish-6
+        sprite: {fileID: 5871017991904681773, guid: 382f2e46df2f8c04981ea499d2ca4f10, type: 3}
+        maxHealth: 5
+        prizeAmount: 16
+        minSpeed: 1
+        maxSpeed: 3
+        spawnOffset: 0.5
+        batchSize: 1
+        batchSpacing: 0.5
+        isRotatable: 0
+        rotationSpeed: 0.5
+        fishMultiplyer: 6
+        isBomb: 0
+        isPowerUp: 0
+        allowOnlyOne: 0
+        rarityWeight: 50
+        spawnPattern: 0
+    - fishData:
+        fishName: fish-6
+        sprite: {fileID: 1671681185357561888, guid: 70de7a74b889dd440955bcd1deab62c6, type: 3}
+        maxHealth: 5
+        prizeAmount: 16
+        minSpeed: 1
+        maxSpeed: 3
+        spawnOffset: 0.5
+        batchSize: 1
+        batchSpacing: 0.5
+        isRotatable: 0
+        rotationSpeed: 0.5
+        fishMultiplyer: 6
+        isBomb: 0
+        isPowerUp: 0
+        allowOnlyOne: 0
+        rarityWeight: 50
+        spawnPattern: 0
+    - fishData:
+        fishName: fish-6
+        sprite: {fileID: 83087534243271701, guid: 4d18f18a07ae21c45a4e6bd3b204a23f, type: 3}
+        maxHealth: 16
+        prizeAmount: 16
+        minSpeed: 1
+        maxSpeed: 3
+        spawnOffset: 0.5
+        batchSize: 1
+        batchSpacing: 0.5
+        isRotatable: 0
+        rotationSpeed: 0.5
+        fishMultiplyer: 6
+        isBomb: 0
+        isPowerUp: 0
+        allowOnlyOne: 0
+        rarityWeight: 50
+        spawnPattern: 0
+  - bonusFishSpeed: 2
+    movementType: 0
+    spawnOffset: {x: 0, y: 0}
+    bigFishes:
+    - fishName: mermaidA
+      sprite: {fileID: 7396860341578737381, guid: 5ce4e60c071d5dd4e8888a0b6253c020, type: 3}
+      maxHealth: 45
+      prizeAmount: 300
+      minSpeed: 1
+      maxSpeed: 3
+      spawnOffset: 0.5
+      batchSize: 1
+      batchSpacing: 0.5
+      isRotatable: 0
+      rotationSpeed: 0.5
+      fishMultiplyer: 150
+      isBomb: 0
+      isPowerUp: 0
+      allowOnlyOne: 0
+      rarityWeight: 50
+      spawnPattern: 0
+    patternFishGroups:
+    - fishData:
+        fishName: fish-1
+        sprite: {fileID: 694544864787715453, guid: c14a608bef8a1ba4ba1ed9ee3eb7646d, type: 3}
+        maxHealth: 7
+        prizeAmount: 16
+        minSpeed: 1
+        maxSpeed: 3
+        spawnOffset: 0.5
+        batchSize: 1
+        batchSpacing: 0.5
+        isRotatable: 0
+        rotationSpeed: 0.5
+        fishMultiplyer: 8
+        isBomb: 0
+        isPowerUp: 0
+        allowOnlyOne: 0
+        rarityWeight: 50
+        spawnPattern: 0
+    - fishData:
+        fishName: fish-3
+        sprite: {fileID: 859967198663435201, guid: 7df51ea90cf3eb5419bbf9fc08e0c489, type: 3}
+        maxHealth: 10
+        prizeAmount: 16
+        minSpeed: 1
+        maxSpeed: 3
+        spawnOffset: 0.5
+        batchSize: 1
+        batchSpacing: 0.5
+        isRotatable: 0
+        rotationSpeed: 0.5
+        fishMultiplyer: 12
+        isBomb: 0
+        isPowerUp: 0
+        allowOnlyOne: 0
+        rarityWeight: 50
+        spawnPattern: 0
+    - fishData:
+        fishName: fish-1
+        sprite: {fileID: 1728643633780746302, guid: f53a93b85b0cced4aab742395b5edb8f, type: 3}
+        maxHealth: 9
+        prizeAmount: 16
+        minSpeed: 1
+        maxSpeed: 3
+        spawnOffset: 0.5
+        batchSize: 1
+        batchSpacing: 0.5
+        isRotatable: 0
+        rotationSpeed: 0.5
+        fishMultiplyer: 9
+        isBomb: 0
+        isPowerUp: 0
+        allowOnlyOne: 0
+        rarityWeight: 50
+        spawnPattern: 0

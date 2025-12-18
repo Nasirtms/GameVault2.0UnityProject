@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 425c843b5fb83414ab13b754f1152766, type: 3}
+  m_Name: FruitMary
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    background: {fileID: -936539031, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - type: 6
+    background: {fileID: 724424976, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - type: 8
+    background: {fileID: 1140051305, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - type: 1
+    background: {fileID: -1495408131, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - type: 4
+    background: {fileID: 2121536420, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - type: 3
+    background: {fileID: -1069538113, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - type: 7
+    background: {fileID: 1106825591, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - type: 2
+    background: {fileID: 1528584993, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - type: 5
+    background: {fileID: 1773555405, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - type: 9
+    background: {fileID: -1459231254, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - type: 10
+    background: {fileID: -1070776957, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  soundItems:
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 945d0261aa3aa0e44816ec818d3570bf, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FruitMary_Button
+    audioClip: {fileID: 8300000, guid: 4e0e36f380d8c4947936ce318dd7e6bc, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FruitMary_ReelStop
+    audioClip: {fileID: 8300000, guid: 916353fe353e97549b0ae3ed626ebc26, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Music
+    audioClip: {fileID: 8300000, guid: cb5f10bbf60a4254cb8869616ed312bc, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: e934a7ea81c7a234892c2c30888986d7, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: WinEnd
+    audioClip: {fileID: 8300000, guid: 908551872bb561b41ba5a9600cc47bfe, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.3, y: 0.3}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -305
+    bottomBoundary: -510
+    startSpeed: {x: 25, y: 30}
+    acceleration: {x: 0.5, y: 1}
+    speedRange: {x: 25, y: 30}
+  horizontalLayout: 166
+  verticalLayout: -20
+  paddingTop: -460
+  slotScale: 1

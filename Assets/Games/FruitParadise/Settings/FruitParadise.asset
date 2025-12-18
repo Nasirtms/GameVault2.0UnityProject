@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2bc11e0307e9ae4681f32beb8fa7423, type: 3}
+  m_Name: FruitParadise
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    background: {fileID: -712883160, guid: d6fd9cc766b4d654d99629f65937b94c, type: 3}
+  - type: 6
+    background: {fileID: -1031850853, guid: d6fd9cc766b4d654d99629f65937b94c, type: 3}
+  - type: 1
+    background: {fileID: 649438993, guid: d6fd9cc766b4d654d99629f65937b94c, type: 3}
+  - type: 4
+    background: {fileID: 2093691023, guid: d6fd9cc766b4d654d99629f65937b94c, type: 3}
+  - type: 3
+    background: {fileID: -1640339011, guid: d6fd9cc766b4d654d99629f65937b94c, type: 3}
+  - type: 7
+    background: {fileID: -316046321, guid: d6fd9cc766b4d654d99629f65937b94c, type: 3}
+  - type: 2
+    background: {fileID: 1846920518, guid: d6fd9cc766b4d654d99629f65937b94c, type: 3}
+  - type: 5
+    background: {fileID: -1162501748, guid: d6fd9cc766b4d654d99629f65937b94c, type: 3}
+  - type: 8
+    background: {fileID: -508939338, guid: d6fd9cc766b4d654d99629f65937b94c, type: 3}
+  - type: 9
+    background: {fileID: 1943774081, guid: d6fd9cc766b4d654d99629f65937b94c, type: 3}
+  soundItems:
+  - soundName: FruitParadise_Spin
+    audioClip: {fileID: 8300000, guid: 47850c209114a62498a2af26bc62f2a7, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FruitParadise_Button
+    audioClip: {fileID: 8300000, guid: bfa25d019b73ee745b2c34d6cf85b4b8, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FruitParadise_Increase_Button
+    audioClip: {fileID: 8300000, guid: 677a1c99970e0c74990a58b12930cb7c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FruitParadise_ReelStop
+    audioClip: {fileID: 8300000, guid: da5e69aac9bd0ba42ab0177e2d5084d2, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: a525afb7f28551645a13152c431bd867, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: WinEnd
+    audioClip: {fileID: 8300000, guid: c5e4e91a51046264797a7b07db9aee4a, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FruitParadise_Decrease_Button
+    audioClip: {fileID: 8300000, guid: 7572feacc2ff4914cb2da5e23f872896, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.3, y: 0.3}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -398.15
+    bottomBoundary: -648.15
+    startSpeed: {x: 20, y: 22}
+    acceleration: {x: 0.5, y: 1}
+    speedRange: {x: 28, y: 30}
+  horizontalLayout: 165
+  verticalLayout: 30
+  paddingTop: -558
+  slotScale: 0.95

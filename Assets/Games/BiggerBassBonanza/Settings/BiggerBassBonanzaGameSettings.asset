@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ba9a4933d1c6554489b8219006d8997, type: 3}
+  m_Name: BiggerBassBonanzaGameSettings
+  m_EditorClassIdentifier: 
+  slotResources:
+  - slotType: 0
+    slotAnimationBool: Wild
+    slotTypeIndex: 0
+  - slotType: 1
+    slotAnimationBool: Scatter
+    slotTypeIndex: 1
+  - slotType: 2
+    slotAnimationBool: Boat
+    slotTypeIndex: 2
+  - slotType: 3
+    slotAnimationBool: FishingRod
+    slotTypeIndex: 3
+  - slotType: 4
+    slotAnimationBool: Hook
+    slotTypeIndex: 4
+  - slotType: 5
+    slotAnimationBool: FishingBaitBox
+    slotTypeIndex: 5
+  - slotType: 6
+    slotAnimationBool: GoldenFish
+    slotTypeIndex: 6
+  - slotType: 7
+    slotAnimationBool: BigFish
+    slotTypeIndex: 7
+  - slotType: 8
+    slotAnimationBool: MediumFish
+    slotTypeIndex: 8
+  - slotType: 9
+    slotAnimationBool: SmallFish
+    slotTypeIndex: 9
+  - slotType: 10
+    slotAnimationBool: VerySmallFish
+    slotTypeIndex: 10
+  - slotType: 11
+    slotAnimationBool: Ace
+    slotTypeIndex: 11
+  - slotType: 12
+    slotAnimationBool: King
+    slotTypeIndex: 12
+  - slotType: 13
+    slotAnimationBool: Queen
+    slotTypeIndex: 13
+  - slotType: 14
+    slotAnimationBool: Jack
+    slotTypeIndex: 14
+  - slotType: 15
+    slotAnimationBool: Ten
+    slotTypeIndex: 15
+  soundItems:
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: f47183c8597e6d34599cb7f91279ebb7, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: f073d68a47e89fe4a9467cee48bcf81d, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: SpinButton
+    audioClip: {fileID: 8300000, guid: a0367b7694dbb6040a88e7fc8acd5cde, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 9e4500bc02b9736489f252bfe5007cfd, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: e0db199755cdba145b3c64ca6b68c23f, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: WinEnd
+    audioClip: {fileID: 8300000, guid: a419285bac76fd04a86376514ef22073, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 0
+    endSpin: 1
+    spinDirection: 0
+    SpinSpeed: 30
+    ReelStopDelay: 0.5
+    ReelStartDelay: 0.5
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    spinClampFrequency: 0.05
+    SpinClampStrength: 0.2
+    WindUpAmount: 0.15
+    WindUpDuration: 0.4
+    ClampDuration: 0.5
+  slotSettings:
+    MoveSpeed: 5
+    TopYPosition: 0
+    BottomYPosition: -0.087
+    MinSpinDuration: 2.5
+    MaxSpinDuration: 3.5
+    SymbolScaleX: 0.76
+    SymbolScaleY: 0.19

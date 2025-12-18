@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3b10ecf931603044b47e8a7515bff5f, type: 3}
+  m_Name: TenTimesWins
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    background: {fileID: -2096006570, guid: a807a82066ed8c14881fb9a8ba8eb59a, type: 3}
+  - type: 1
+    background: {fileID: 15263671, guid: a807a82066ed8c14881fb9a8ba8eb59a, type: 3}
+  - type: 2
+    background: {fileID: -1956315957, guid: a807a82066ed8c14881fb9a8ba8eb59a, type: 3}
+  - type: 3
+    background: {fileID: -46543905, guid: a807a82066ed8c14881fb9a8ba8eb59a, type: 3}
+  - type: 4
+    background: {fileID: -809886434, guid: a807a82066ed8c14881fb9a8ba8eb59a, type: 3}
+  - type: 5
+    background: {fileID: -1206616628, guid: a807a82066ed8c14881fb9a8ba8eb59a, type: 3}
+  - type: 6
+    background: {fileID: 624636641, guid: a807a82066ed8c14881fb9a8ba8eb59a, type: 3}
+  - type: 7
+    background: {fileID: 1469373587, guid: a807a82066ed8c14881fb9a8ba8eb59a, type: 3}
+  sounds:
+  - soundName: Auto_Button
+    audioClip: {fileID: 8300000, guid: f71ff164712feaa4d9af20fa0d153449, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Decrease
+    audioClip: {fileID: 8300000, guid: f71ff164712feaa4d9af20fa0d153449, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Increase
+    audioClip: {fileID: 8300000, guid: f71ff164712feaa4d9af20fa0d153449, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Max
+    audioClip: {fileID: 8300000, guid: f71ff164712feaa4d9af20fa0d153449, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Reel_Stop
+    audioClip: {fileID: 8300000, guid: c644c7039707d064b9fee0d974f91c48, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Rules_Close
+    audioClip: {fileID: 8300000, guid: f71ff164712feaa4d9af20fa0d153449, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Rules_Popup
+    audioClip: {fileID: 8300000, guid: f71ff164712feaa4d9af20fa0d153449, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin_Button
+    audioClip: {fileID: 8300000, guid: f71ff164712feaa4d9af20fa0d153449, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin1
+    audioClip: {fileID: 8300000, guid: cb5f1252e183a9f40961a770314b2a6e, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: AutoButton_Stop
+    audioClip: {fileID: 8300000, guid: f71ff164712feaa4d9af20fa0d153449, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: 9cec11260a42bc64bbc518e177f32ccf, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: cb5f1252e183a9f40961a770314b2a6e, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: e2c32c00ec3cde04cb4522a47d9d57d5, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: c644c7039707d064b9fee0d974f91c48, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: f71ff164712feaa4d9af20fa0d153449, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.4, y: 0.4}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -346.32
+    bottomBoundary: -574.75
+    startSpeed: {x: 18, y: 22}
+    acceleration: {x: 0.1, y: 0.2}
+    speedRange: {x: 35, y: 40}
+  horizontalLayout: 166
+  verticalLayout: -17.5
+  paddingTop: -530
+  slotScale: 0.8

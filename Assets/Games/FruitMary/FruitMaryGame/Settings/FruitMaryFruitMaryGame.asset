@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d5e983b22941447aea9285e0ff5249, type: 3}
+  m_Name: FruitMaryFruitMaryGame
+  m_EditorClassIdentifier: 
+  slotResources:
+  - slotType: 0
+    slotSprite: {fileID: -936539031, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - slotType: 1
+    slotSprite: {fileID: 502645497, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - slotType: 2
+    slotSprite: {fileID: -1459231254, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - slotType: 3
+    slotSprite: {fileID: 1140051305, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - slotType: 4
+    slotSprite: {fileID: -1069538113, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - slotType: 5
+    slotSprite: {fileID: -1495408131, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  - slotType: 6
+    slotSprite: {fileID: 1528584993, guid: 7738d8d05f75cd4488b440969f1965ca, type: 3}
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.3, y: 0.3}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -80
+    bottomBoundary: -245
+    startSpeed: {x: 20, y: 22}
+    acceleration: {x: 0.5, y: 1}
+    speedRange: {x: 32, y: 32}
