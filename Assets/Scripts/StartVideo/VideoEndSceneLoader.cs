@@ -99,7 +99,6 @@ public class VideoEndSceneLoader : MonoBehaviour
 
 #if UNITY_EDITOR
         url = "http://localhost:5036";
-        Debug.Log($"UNITY_EDITOR Base Url : {url}");
 #endif
         ApiEndpoints.UpdataBaseUrl(url);
     }

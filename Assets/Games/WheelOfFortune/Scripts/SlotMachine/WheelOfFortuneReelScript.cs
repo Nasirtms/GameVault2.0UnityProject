@@ -463,32 +463,5 @@ public class WheelOfFortuneReelScript : MonoBehaviour
             }
         }
     }
-
-    //private void ApplyReelOffset()
-    //{
-    //    // For reel index 1 → move 0,1,2 right
-    //    if (_index == 1)
-    //    {
-    //        for (int i = 0; i < 3; i++)
-    //        {
-    //            var rt = slots[i].GetComponent<RectTransform>();
-    //            Debug.Log("Reel 1 Slot " + i + " Pos before offset: " + rt.anchoredPosition);
-    //            rt.anchoredPosition = new Vector2(6, rt.anchoredPosition.y);
-    //            Debug.Log("Reel 1 Slot " + i + " Pos after offset: " + rt.anchoredPosition);
-    //        }
-    //    }
-
-    //    // For reel index 3 → move 0,1,2 left
-    //    if (_index == 3)
-    //    {
-    //        for (int i = 0; i < 3; i++)
-    //        {
-    //            var rt = slots[i].GetComponent<RectTransform>();
-    //            Debug.Log("Reel 3 Slot " + i + " Pos before offset: " + rt.anchoredPosition);
-    //            rt.anchoredPosition = new Vector2(-6, rt.anchoredPosition.y);
-    //            Debug.Log("Reel 3 Slot " + i + " Pos after offset: " + rt.anchoredPosition);
-    //        }
-    //    }
-    //}
     #endregion
 }

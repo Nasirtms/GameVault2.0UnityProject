@@ -30,24 +30,6 @@ public class DayOfDeadSlotScript : MonoBehaviour
     public GameObject wildParticle;
     #endregion
 
-
-   /* void Awake()
-    {
-        ApplyMaskToAllChildren(transform);
-    }
-
-    void ApplyMaskToAllChildren(Transform root)
-    {
-        SpriteRenderer sr = root.GetComponent<SpriteRenderer>();
-        if (sr != null)
-            sr.maskInteraction = interaction;
-
-        // Recursively apply to children
-        foreach (Transform child in root)
-            ApplyMaskToAllChildren(child);
-    }
-*/
-
     #region Slot Initialization
 
     public void Initialize()
@@ -100,29 +82,6 @@ public class DayOfDeadSlotScript : MonoBehaviour
             slotAnimator.SetBool(slotAnimationBool, false);
         }
     }
-    #endregion
-
-    #region Slot Layering
-
-    public void SetSpriteToPayline()
-    {
-        slotRenderers = slots[currentResource.slotTypeIndex].gameObject.GetComponentsInChildren<SpriteRenderer>();
-
-        foreach (var slot in slotRenderers)
-        {
-            slot.sortingLayerName = "Payline Slot";
-        }
-    }
-
-    public void SetSpriteToDefault()
-    {
-        slotRenderers = slots[currentResource.slotTypeIndex].gameObject.GetComponentsInChildren<SpriteRenderer>();
-        foreach (var slot in slotRenderers)
-        {
-            slot.sortingLayerName = "Default";
-        }
-    }
-
     #endregion
 
     #region Wild particles

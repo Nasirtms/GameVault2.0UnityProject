@@ -171,7 +171,6 @@ public class PandaFortunePaylineController : MonoBehaviour
                     foreach (var entry in activePaylines)
                     {
                         i++;
-                        ResetAllSlotsToDefault();
                         yield return null;
                         yield return PlaySinglePayline(entry);
                     }

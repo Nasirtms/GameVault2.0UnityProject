@@ -404,7 +404,7 @@ public class LoginManager : MonoBehaviour
     void LoadMainScene()
     {
         CasinoUIManager.Instance.ShowErrorCanvas(2, "");
-        Invoke(nameof(LoadScene), 1f);
+        Invoke(nameof(LoadScene), 0.5f);
     }
 
     private void LoadScene()

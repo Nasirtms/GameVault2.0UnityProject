@@ -251,16 +251,30 @@ public class SlotSpinService : MonoBehaviour
 
                 Debug.Log("Cash Collect Request Body: " + JsonUtility.ToJson(requestData, true));
                 break;
-            case "pandafortune":
+                case "pandafortune":
+                int fs;
+                if (PandaFortuneSlotMachine.Instance.isFreeGame && !PandaFortuneSlotMachine.Instance.firstFreeSpin)
+                {
+                    fs = PandaFortuneSlotMachine.Instance.frozenIndexThisSpin;
+                }
+                else if (PandaFortuneSlotMachine.Instance.isFreeGame && PandaFortuneSlotMachine.Instance.firstFreeSpin)
+                {
+                    fs = 5;
+                }
+                else
+                {
+                    fs = -1;
+                }
                 requestData = new
                 {
                     gameId = SceneManagement.currentGameID,
                     requestId = currentRequestId,
                     betAmount = betAmount,
                     IsFreeSpin = PandaFortuneSlotMachine.Instance.isFreeGame,
-                    freeSpinCurrentSpin = PandaFortuneSlotMachine.Instance.frozenIndexThisSpin,
+                    freeSpinCurrentSpin = fs,
                     freeSpinType = "first",
-                    frozenColumns = PandaFortuneSlotMachine.Instance.frozenColumns.ToArray()
+                    frozenColumns = PandaFortuneSlotMachine.Instance.frozenColumns.ToArray(),
+                    isfreespintwo = PandaFortuneSlotMachine.Instance.isFreeGameTwo
                 };
                 break;
             case "flamecombo":
@@ -275,10 +289,22 @@ public class SlotSpinService : MonoBehaviour
             case "superbomb":
                 requestData = new
                 {
+                    userId = UserManager.Instance.UserId,
+                    betAmount = betAmount,
+                    requestId = currentRequestId,
+                    gameId = SceneManagement.currentGameID,
+                    IsFreeSpin = SuperBombSlotMachine.Instance.isFreeGame,
+                    isReelTwoStopped = SuperBombSlotMachine.Instance.lockedReels[1],
+                    isReelThreeStopped = SuperBombSlotMachine.Instance.lockedReels[2],
+                    isReelFourStopped = SuperBombSlotMachine.Instance.lockedReels[3],
+                };
+                break;
+            case "imperialdiamond":
+                requestData = new
+                {
                     gameId = SceneManagement.currentGameID,
                     requestId = currentRequestId,
                     betAmount = betAmount,
-                    IsFreeSpin = SuperBombSlotMachine.Instance.isFreeGame,
                 };
                 break;
             case "cashmachine":

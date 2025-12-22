@@ -31,6 +31,16 @@ public class WheelOfFortuneFreeSpinController : MonoBehaviour
     [SerializeField] private Animator lightsAnimator;
     #endregion
 
+
+
+    private void Start()
+    {
+        for (int i = 0; i < prizeValues.Count; i++)
+        {
+            Debug.Log($"wheel index = {i} and multiplier value = {prizeValues[i]}");
+        }
+    }
+
     #region Public References
     public void StartFreeSpins()
     {

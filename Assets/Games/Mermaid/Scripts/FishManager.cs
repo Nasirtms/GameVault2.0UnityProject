@@ -48,6 +48,9 @@ public class FishManager : MonoBehaviour
     [SerializeField] private FishDatabase fishDatabase;
     [SerializeField] private Transform fishContainer;
     [SerializeField] private int fishPoolSize = 120;
+    [SerializeField] private float stepCountSpeed = 1;
+    [SerializeField] private float stepCountSpeed_normal = 1;
+    [SerializeField] private float stepCountSpeed_bonusTriggered = 3;
 
 
     [Serializable]
@@ -156,6 +159,7 @@ public float timer;     }
             return;
         }
 
+        stepCountSpeed = stepCountSpeed_normal;
         IsFirstBonusRound = true;
 
         bonusTriggered = false;
@@ -454,7 +458,7 @@ public float timer;     }
     // Update is called once per frame
     void Update()
     {
-        MoveFishes();
+        MoveFishes(stepCountSpeed);
 
         totalGameTimer += Time.deltaTime;
         gameTimer += Time.deltaTime;
@@ -757,20 +761,44 @@ public float timer;     }
 
         SpwanBonusFishesFromAPI();
         isBonus = true;
-        const float speedMultiplier = 3f;
 
-        foreach (var info in activeFishes)
-        {
-            info.speed *= speedMultiplier;
-        }
+        float scsTemp = stepCountSpeed;
+        Tweener tw = DOVirtual.Float(scsTemp, stepCountSpeed_bonusTriggered, .4f, (x) => stepCountSpeed = x).SetEase(Ease.OutSine);
+        //stepCountSpeed = stepCountSpeed_bonusTriggered;
+        //const float speedMultiplier = 3f;
+
+        //foreach (var info in activeFishes)
+        //{
+        //    info.speed *= speedMultiplier;
+        //}
+
+        float waitingTime = totalGameTimer + 15;
 
         //if (activeFishes.Count != 0)
         //{
         //    yield return new WaitForSeconds(10); // jugar ager fish nah bund hoti sometimes manhoos disable nah hoti pata nah q??
         //    activeFishes.Clear();
         //}
-        yield return new WaitUntil(() => activeFishes.Count == 0);
 
+        //List<FishInfo> activeFishesLeftTemp = new List<FishInfo>();
+
+        yield return new WaitUntil(() => (activeFishes.Count == 0 || totalGameTimer >= waitingTime));
+
+        for (int i = activeFishes.Count - 1; i >= 0; i--)
+        {
+            activeFishes[i].fish.ForceReachDestination();
+        }
+
+        tw.Kill();
+
+        yield return new WaitForEndOfFrame();
+
+        if (activeFishes.Count > 0)
+            activeFishes.Clear();
+
+        stepCountSpeed = stepCountSpeed_normal;
+
+        yield return new WaitForEndOfFrame();
 
         while (activeFishes.Count > 0)
             yield return null;
@@ -785,6 +813,10 @@ public float timer;     }
         StartCoroutine(EndBonusAfterDelay());
     }
 
+    //bool CheckIfActiveFishesInCamera(out List<FishInfo> activeFishesLeft) {
+
+    //}
+
     private IEnumerator EndBonusAfterDelay()
     {
         yield return new WaitForSeconds(bonusDuration);
@@ -793,6 +825,7 @@ public float timer;     }
     private void EndBonusRound()
     {
         isBonus = false;
+        stepCountSpeed = stepCountSpeed_normal;
 
         // Destroy all normal fishes
         for (int i = activeFishes.Count - 1; i >= 0; i--)
@@ -984,7 +1017,7 @@ public float timer;     }
     }
 
 
-    private void MoveFishes(int stepCount = 1)
+    private void MoveFishes(float stepCount = 1)
     {
         for (int i = activeFishes.Count - 1; i >= 0; i--)
         {

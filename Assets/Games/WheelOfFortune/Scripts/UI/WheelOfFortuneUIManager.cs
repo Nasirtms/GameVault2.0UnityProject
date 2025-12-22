@@ -111,8 +111,8 @@ public class WheelOfFortuneUIManager : GameBetServices
         UpdateCoins();
         SetupInputButtons();
         UserManager.Instance.UpdateGameCoins += UpdateCoins;
-
-        PlayMusic("Background");
+        PlaySound("Start");
+        PlayMusic("BG");
         GameBetServices.Instance.SetActiveUI(this, coins, UpdateCoins);
     }
 
@@ -245,14 +245,13 @@ public class WheelOfFortuneUIManager : GameBetServices
     private void IncreaseBetAmount()
     {
         if (betController == null) return;
-        PlaySound("Button");
+        PlaySound("Increase");
         betController.IncreaseChipValue();
     }
-
     private void DecreaseBetAmount()
     {
         if (betController == null) return;
-        PlaySound("Button");
+        PlaySound("Decrease");
         betController.DecreaseChipValue();
     }
 
@@ -274,11 +273,9 @@ public class WheelOfFortuneUIManager : GameBetServices
         PlaySound("Button");
         rulesPopupController.OpenPopup();
     }
-
     #endregion
 
     #region Spin Buttons
-
     public void OnClickSpin()
     {
         UpdateButtons("Spin");

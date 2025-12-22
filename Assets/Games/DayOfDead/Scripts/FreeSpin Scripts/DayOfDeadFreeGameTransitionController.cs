@@ -15,6 +15,7 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
 
     [SerializeField] private GameObject freeSpinBackground;
     private SpriteRenderer background_Sprite;
+    [SerializeField] public SpriteRenderer background_Sprite1;
     [SerializeField] private GameObject freeSpinWinFrame;
     [SerializeField] private GameObject freeSpinStartFrame;
     [SerializeField] private TMP_Text freeSpinWinText;
@@ -76,6 +77,7 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
         //PiratesOfTheCaribbeanUIManager.Instance.PlaySound("FreeSpinPop");
         PopupAnimation(freeSpinStartFrame, 1f, 1f, true);
         freeSpinController.topbar.topbarArea.SetActive(true);
+        ShowBackground();
         yield return new WaitForSeconds(1.5f);
 
         yield return new WaitUntil(UserPressedConfirm);
@@ -83,7 +85,6 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        ShowBackground();
         freeSpinController.InitialFreeSpinText();
 
         yield return new WaitForSeconds(1.5f);
@@ -107,7 +108,7 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        DayOfDeadUIManager.Instance.UpdateButtons("Transition End");
+        DayOfDeadUIManager.Instance.UpdateButtons("Free Spin End");
         //PiratesOfTheCaribbeanUIManager.Instance.PlaySound("FreeSpinWin");
         PopupAnimation(freeSpinWinFrame, 1f, 1f, true);
 
@@ -150,7 +151,7 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
 
     private void PopupAnimation(GameObject obj, float scale, float duration, bool state)
     {
-        obj.transform.parent.gameObject.SetActive(state);
+        obj.transform.parent.parent.gameObject.SetActive(state);
 
         obj.transform.localScale = Vector3.one * 0.05f;
 
@@ -172,12 +173,18 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
     private void ShowBackground()
     {
         freeSpinBackground.SetActive(true);
-        background_Sprite.DOFade(1f, 2f);
+        background_Sprite.DOFade(1f, 2.8f)
+            .SetEase(Ease.OutQuad);
+        background_Sprite1.DOFade(1f, 2.8f)
+            .SetEase(Ease.OutQuad);
     }
 
     private void HideBackground()
     {
-        background_Sprite.DOFade(0f, 2f);
+        background_Sprite.DOFade(0f, 2.8f)
+            .SetEase(Ease.OutQuad);
+        background_Sprite1.DOFade(0f, 2.8f)
+            .SetEase(Ease.OutQuad);
         freeSpinBackground.SetActive(false);
     }
     #endregion

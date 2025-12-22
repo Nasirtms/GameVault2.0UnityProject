@@ -400,7 +400,7 @@ public class FlameComboUIManager : GameBetServices
                 break;
 
             case "Transition End":
-                inSpin = true;
+                inSpin = false;
                 spinButton.ShowButton(true);
                 stopButton.ShowButton(false);
                 break;

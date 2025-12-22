@@ -45,10 +45,17 @@ public class DayOfDeadAnimationController : MonoBehaviour
 
     private IEnumerator PlayBoolOnce(string paramName)
     {
+        yield return null;
         animator.SetBool(paramName, true);
-        yield return new WaitForSeconds(0.3f);
-
-        if (animator != null)
+        if(paramName == slotShiftParam)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+        else
+        {
+            yield return new WaitForSeconds(1f);
+        }
+        if(animator != null)
             animator.SetBool(paramName, false);
     }
     public void ResetAll()

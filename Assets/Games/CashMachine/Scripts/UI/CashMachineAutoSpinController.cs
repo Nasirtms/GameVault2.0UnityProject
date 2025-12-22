@@ -109,11 +109,11 @@ public class CashMachineAutoSpinController : MonoBehaviour
                 break;
             }
 
-            //if (CashMachineSlotMachine.Instance.isFreeGameReady || CashMachineSlotMachine.Instance.isFreeGame)
-            //{
-            //    StopAutoSpin();
-            //    break;
-            //}
+            if (CashMachineSlotMachine.Instance.isFreeGameReady || CashMachineSlotMachine.Instance.isFreeGame)
+            {
+                StopAutoSpin();
+                break;
+            }
         }
 
         StopAutoSpin();

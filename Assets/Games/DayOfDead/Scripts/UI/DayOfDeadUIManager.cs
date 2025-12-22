@@ -97,7 +97,7 @@ public class DayOfDeadUIManager : GameBetServices
 
         UpdateCoins();
         SetupInputButtons();
-
+        PlayMusic("BG");
         UserManager.Instance.UpdateGameCoins += UpdateCoins;
         GameBetServices.Instance.SetActiveUI(this, coins, UpdateCoins);
     }
@@ -229,21 +229,21 @@ public class DayOfDeadUIManager : GameBetServices
     private void IncreaseBetAmount()
     {
         if (betController == null) return;
-        //PlaySound("Button");
+        PlaySound("Button");
         betController.IncreaseChipValue();
     }
 
     private void DecreaseBetAmount()
     {
         if (betController == null) return;
-        //PlaySound("Button");
+        PlaySound("Button");
         betController.DecreaseChipValue();
     }
 
     #endregion
     private void ExitGame()
     {
-        //PlaySound("Button");
+        PlaySound("Button");
         if (UserManager.Instance != null)
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
@@ -254,7 +254,7 @@ public class DayOfDeadUIManager : GameBetServices
     private void OpenRulesPopup()
     {
         if (rulesPopupController == null) return;
-        //PlaySound("Button");
+        PlaySound("Button");
         rulesPopupController.OpenPopup();
     }
 
@@ -301,6 +301,7 @@ public class DayOfDeadUIManager : GameBetServices
     {
         //PlaySound("Button");
         float betAmount = betController.GetCurrentBet();
+        if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
         if (DayOfDeadSlotMachine.Instance.isRespinActive)
             return;
         autoSpinController.StartAutoSpin(betAmount);
@@ -412,15 +413,6 @@ public class DayOfDeadUIManager : GameBetServices
                 autoButton.ShowButton(false);
                 autoStopButton.ShowButton(true);
                 SetAutoInteractable(true);
-                break;
-            case "Transition End":
-                inSpin = false;
-                spinButton.ShowButton(true);
-                stopButton.ShowButton(false);
-                autoButton.ShowButton(true);
-                autoStopButton.ShowButton(false);
-                SetAutoInteractable(true);
-                spinButton.GetButtonComponent().interactable = true;
                 break;
 
             case "Free Spin":

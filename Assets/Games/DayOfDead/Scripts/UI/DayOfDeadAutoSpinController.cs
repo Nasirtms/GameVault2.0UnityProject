@@ -89,7 +89,6 @@ public class DayOfDeadAutoSpinController : MonoBehaviour
             if (DayOfDeadUIManager.Instance.CurrentButtonSet() != "Auto Start")
                 DayOfDeadUIManager.Instance.UpdateButtons("Auto Start");
 
-
             yield return new WaitUntil(() => DayOfDeadSlotMachine.Instance.isSpinAgain);
 
             if (DayOfDeadSlotMachine.Instance.isFreeGameReady)

@@ -50,6 +50,7 @@ public class EventAndNotification_Controller : MonoBehaviour
 
     private IEnumerator ShowPopupsSequence()
     {
+        yield return new WaitForSeconds(0.2f);
         if (SceneManagement.isShowNotificationAfterLogin)
         {
             if (SceneManagement.LatestNotifications.Count > 0)

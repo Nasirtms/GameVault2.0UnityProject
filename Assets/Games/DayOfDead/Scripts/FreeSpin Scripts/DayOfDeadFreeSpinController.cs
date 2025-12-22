@@ -120,13 +120,13 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
                     DG.Tweening.DOVirtual.DelayedCall(1.5f, () =>
                     {
                         if (wild.instance != null)
-                            Destroy(wild.instance);
+                            DayOfDeadSlotMachine.Instance.DestroyWildWithExit(wild.instance);
                     });
                 }
                 else
                 {
                     if (wild.instance != null)
-                        Destroy(wild.instance);
+                        DayOfDeadSlotMachine.Instance.DestroyWildWithExit(wild.instance);
                 }
 
                 toRemove.Add(wild);
@@ -171,7 +171,11 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
         });
 
         newSlot = Instantiate(walkingWildPrefab);
-        GameObject newSlotPrefab = newSlot.transform.GetChild(11).gameObject;
+        //GameObject newSlotPrefab = newSlot.transform.GetChild(11).gameObject;
+        var child11 = newSlot.transform.GetChild(11).gameObject;
+        var child14 = newSlot.transform.GetChild(14).gameObject;
+        child11.SetActive(false);
+        child14.SetActive(false);
 
         DayOfDeadAnimationController animCtrl = newSlot.GetComponent<DayOfDeadAnimationController>();
         FreeSpinWalkingWild instance = new FreeSpinWalkingWild
@@ -183,31 +187,24 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
             animController = animCtrl
         };
 
-
         wildSeq.AppendInterval(0.5f).AppendCallback(() =>
                {
-                   newSlotPrefab.SetActive(true);
+                   child11.SetActive(true);
                    newSlot.transform.parent = slot.transform.parent;
                    newSlot.transform.position = slot.transform.position;
                    newSlot.transform.localScale = slot.transform.localScale;
                    newSlot.transform.parent = null;
                })
-               .AppendInterval(0.5f).AppendCallback(() =>
+               .AppendInterval(0.5f).AppendCallback(() => 
                {
-                   instance.animController.PlaySmallToBigOnce();
+                   instance.animController.ResetAll();
+                   instance.animController?.PlaySmallToBigOnce(); 
                })
 
-               .AppendCallback(() =>
-               {
-                   DayOfDeadSlotMachine.Instance.MoveFreeSpinWildToRow3(instance);
-               })
+               .AppendInterval(0.2f).AppendCallback(() => DayOfDeadSlotMachine.Instance.MoveFreeSpinWildToRow3(instance))
 
-               .AppendInterval(1.5f)
-
-               .AppendCallback(() =>
+               .AppendInterval(1f).AppendCallback(() =>
                {
-                   var child11 = newSlot.transform.GetChild(11).gameObject;
-                   var child14 = newSlot.transform.GetChild(14).gameObject;
                    child11.SetActive(false);
                    child14.SetActive(true);
                });

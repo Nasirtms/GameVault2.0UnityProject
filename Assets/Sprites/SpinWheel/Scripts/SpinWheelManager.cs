@@ -14,7 +14,7 @@ public class SpinWheelManager : MonoBehaviour
     [SerializeField] private int forcedPrizeIndex = 0;
     [SerializeField] private int cooldownSeconds = 3600;
     [SerializeField] private TMP_Text cooldownText;
-    [SerializeField] public bool canFreeSpin = true;
+    [SerializeField] public bool canFreeSpin;
     private const string NextAvailableTicksKey = "FreeSpinNextUtcTicks";
     private Coroutine waitCo;
     private DateTime nextAvailableUtc;
@@ -175,22 +175,25 @@ public class SpinWheelManager : MonoBehaviour
     private void UpdateCooldownUI()
     {
         if (cooldownText == null) return;
-        if (canFreeSpin)
+        if (SceneManagement.isShowSpinWheel)
         {
-            cooldownText.gameObject.transform.parent.gameObject.SetActive(false);
-            SpinWheelButtonAnimator.Instance.SetActiveState(true);
-            if (SpinBtn) SpinBtn.interactable = true;
+            if (canFreeSpin)
+            {
+                cooldownText.gameObject.transform.parent.gameObject.SetActive(false);
+                SpinWheelButtonAnimator.Instance.SetActiveState(true);
+                if (SpinBtn) SpinBtn.interactable = true;
+            }
+            else
+            {
+                cooldownText.gameObject.transform.parent.gameObject.SetActive(true);
+                SpinWheelButtonAnimator.Instance.SetActiveState(false);
+                TimeSpan remain = nextAvailableUtc - DateTime.Now;
+                if (remain.TotalSeconds < 0) remain = TimeSpan.Zero;
+                cooldownText.text = string.Format("{0:D2}:{1:D2}:{2:D2}", (int)remain.TotalHours, remain.Minutes, remain.Seconds);
+                if (SpinBtn) SpinBtn.interactable = false;
+            }
+            //Debug.Log("Can Free Spin: " + canFreeSpin);
         }
-        else
-        {
-            cooldownText.gameObject.transform.parent.gameObject.SetActive(true);
-            SpinWheelButtonAnimator.Instance.SetActiveState(false);
-            TimeSpan remain = nextAvailableUtc - DateTime.Now;
-            if (remain.TotalSeconds < 0) remain = TimeSpan.Zero;
-            cooldownText.text = string.Format("{0:D2}:{1:D2}:{2:D2}", (int)remain.TotalHours, remain.Minutes, remain.Seconds);
-            if (SpinBtn) SpinBtn.interactable = false;
-        }
-        //Debug.Log("Can Free Spin: " + canFreeSpin);
     }
 
 }

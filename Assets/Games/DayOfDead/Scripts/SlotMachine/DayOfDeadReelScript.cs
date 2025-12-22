@@ -133,6 +133,8 @@ public class DayOfDeadReelScript : MonoBehaviour
         isSpinning = true;
         allowSymbolChanges = true;
         finalResultSymbols = null;
+        freeSpinWildMoved = false;
+        respinWildUpdated = false;
 
         spinSpeed = settings.spinSettings.SpinSpeed;
         slowDownDuration = settings.spinSettings.SlowDownDuration;
@@ -208,7 +210,8 @@ public class DayOfDeadReelScript : MonoBehaviour
 
         yield return new WaitForSeconds(0.1f);
     }
-
+    private bool freeSpinWildMoved;
+    private bool respinWildUpdated;
     private IEnumerator SpinCoroutine()
     {
         while (isSpinning && allowSymbolChanges && finalResultSymbols == null)
@@ -224,14 +227,29 @@ public class DayOfDeadReelScript : MonoBehaviour
             if (DayOfDeadSlotMachine.Instance.isFreeGame)
             {
                 DayOfDeadFreeGameTransitionController.Instance.MoveWildtoReel();
-                Invoke(nameof(GetFreeSpinUpdateVisual), 0.9f);
+                if (!freeSpinWildMoved)
+                {
+                    DOVirtual.DelayedCall(0.9f, GetFreeSpinUpdateVisual);
+                }
+                freeSpinWildMoved = true;
             }
-            if (DayOfDeadSlotMachine.Instance.isReSpin)
+            if (DayOfDeadSlotMachine.Instance.isReSpin && !respinWildUpdated)
             {
-                
-                Invoke(nameof(GetUpdateVisual), 0.9f);
+                respinWildUpdated = true;
+
+                DOVirtual.DelayedCall(0.9f, GetUpdateVisual);
             }
-            
+            //if (DayOfDeadSlotMachine.Instance.isFreeGame)
+            //{
+            //    DayOfDeadFreeGameTransitionController.Instance.MoveWildtoReel();
+            //    //Invoke(nameof(GetFreeSpinUpdateVisual), 0.9f);
+            //    DOVirtual.DelayedCall(0.9f, GetFreeSpinUpdateVisual);
+            //}
+            //if (DayOfDeadSlotMachine.Instance.isReSpin)
+            //{
+            //    DOVirtual.DelayedCall(0.9f, GetUpdateVisual);
+            //    //Invoke(nameof(GetUpdateVisual), 0.9f);
+            //}
             yield return new WaitForSeconds(1f / spinSpeed);
         }
     }

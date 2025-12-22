@@ -69,4 +69,23 @@ public static class JSInputHandler
     }
 #endif
     }
+
+
+
+    public static void CopyToClipboard(string text)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+    if (!string.IsNullOrEmpty(text))
+    {
+        Application.ExternalCall("copyTextToClipboard", text);
+    }
+    else
+    {
+        Debug.LogWarning("CopyToClipboard called with empty text");
+    }
+#else
+        GUIUtility.systemCopyBuffer = text;
+#endif
+    }
+
 }

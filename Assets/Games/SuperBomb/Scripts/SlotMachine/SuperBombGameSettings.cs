@@ -8,7 +8,7 @@ using Sirenix.Utilities;
 
 public enum SuperBombSlotType
 {
-    Redgem, Yellowgem, Purplegem, Bluegem, Seven, Greengem, Bar, Wild
+    Fire, Gold, Earth, water, Wood, Hulu, GoldenDragon, Wild
 }
 
 

@@ -45,7 +45,7 @@ public class DayOfDeadRulesPopupController : MonoBehaviour
 
     public void ClosePopup()
     {
-        //DayOfDeadUIManager.Instance.PlaySound("Button");
+        DayOfDeadUIManager.Instance.PlaySound("Button");
         rulesPopupPanel.SetActive(false);
     }
 
@@ -68,14 +68,14 @@ public class DayOfDeadRulesPopupController : MonoBehaviour
 
     private void PreviousPage()
     {
-        //DayOfDeadUIManager.Instance.PlaySound("Button");
+        DayOfDeadUIManager.Instance.PlaySound("Button");
         int newIndex = (currentPageIndex - 1 + pages.Count) % pages.Count;
         ShowPage(newIndex);
     }
 
     private void NextPage()
     {
-        //DayOfDeadUIManager.Instance.PlaySound("Button");
+        DayOfDeadUIManager.Instance.PlaySound("Button");
         int newIndex = (currentPageIndex + 1) % pages.Count;
         ShowPage(newIndex);
     }

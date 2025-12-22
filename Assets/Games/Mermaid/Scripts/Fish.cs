@@ -73,7 +73,7 @@ public class Fish : MonoBehaviour
     private GameObject explosionInstance;
     bool isFishKilled;
     public float currentBetamount;
-    public bool isInScreen = true;
+    public bool isInScreen = false;
 
     private void Awake()
     {
@@ -97,6 +97,7 @@ public class Fish : MonoBehaviour
 
     private void OnEnable()
     {
+        isInScreen = false;
         // cache the bomb child once per activation if needed
         if (bombVisual == null)
             bombVisual = FindDeepChild(transform, bombChildName);
@@ -109,6 +110,9 @@ public class Fish : MonoBehaviour
 
         isFishKilled = false;
         Manager.onHealthMultiplier += IncreaseHealthMultiplier;
+
+        //StopCoroutine(nameof(CheckIfOutOfScreen_Coroutine));
+        //StartCoroutine(nameof(CheckIfOutOfScreen_Coroutine));
     }
     void IncreaseHealthMultiplier()
     {
@@ -118,6 +122,8 @@ public class Fish : MonoBehaviour
 
     private void OnDisable()
     {
+        //StopCoroutine(nameof(CheckIfOutOfScreen_Coroutine));
+        isInScreen = false;
         bombArmed = false;                  // reset armed state
         if (bombVisual) bombVisual.SetActive(false); // hide on return to pool
 
@@ -367,6 +373,15 @@ public class Fish : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("InScreenTrigger"))
+        {
+            isInScreen = true;
+            Debug.Log($"Fish entered screen (InScreenTrigger): Fish: {fishData.fishName}");
+        }
+    }
+
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("InScreenTrigger"))
@@ -376,6 +391,38 @@ public class Fish : MonoBehaviour
             //FishManager.Instance.FishReachedDestination(this);
             transform.position = destination;
         }
+    }
+
+    public void ForceReachDestination()
+    {
+        isInScreen = false;
+        Debug.Log($"Fish forced to reach destination: Fish: {fishData.fishName}");
+        transform.position = destination;
+        try
+        {
+            FishManager.Instance.FishReachedDestination(this);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("FishReachedDestination error: " + gameObject.name + " ___ " + ex.Message);
+        }
+    }
+
+    IEnumerator CheckIfOutOfScreen_Coroutine()
+    {
+        yield return new WaitForSeconds(15);
+
+        yield return new WaitUntil(() => IsOutOfCamera());
+
+        //while (gameObject.activeInHierarchy)
+        //{
+            ForceReachDestination();
+        //}
+    }
+
+    public bool IsOutOfCamera()
+    {
+        return !sr.isVisible;
     }
 
     private void UpdateBotOneScore() { }

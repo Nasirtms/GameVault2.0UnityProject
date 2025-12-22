@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using System.Collections;
@@ -150,7 +150,7 @@ public class PandaFortuneSlotMachine : BaseSlotMachine
             scatterCount = fakeScatterCount;
 
 
-        if (currentSpinResult.isFreeSpin || scatterCount >= 3)
+        if (currentSpinResult.isFreeSpin && scatterCount >= 3)
         {
             if (!isFreeGame)
                 isFreeGameReady = true;
@@ -175,10 +175,14 @@ public class PandaFortuneSlotMachine : BaseSlotMachine
                 if (reelIndex == 0)
                 {
                     if(IsScatter(res.Value.slotType)) scatterOnReel1 = true;
+                }
+
+                if (reelIndex == 0 && !frozenReelsFreeGame2[0])
+                {
                     if(IsWild(res.Value.slotType)) wildOnReel1 = true;
                 }
 
-                if (reelIndex == 1)
+                if (reelIndex == 1 && !frozenReelsFreeGame2[1])
                 {
                     if (IsWild(res.Value.slotType)) wildOnReel2 = true;
                 }
@@ -186,10 +190,14 @@ public class PandaFortuneSlotMachine : BaseSlotMachine
                 if (reelIndex == 2)
                 {
                     if (IsScatter(res.Value.slotType)) scatterOnReel3 = true;
+                }
+
+                if (reelIndex == 2 && !frozenReelsFreeGame2[2])
+                {
                     if (IsWild(res.Value.slotType)) wildOnReel3 = true;
                 }
 
-                if (reelIndex == 3)
+                if (reelIndex == 3 && !frozenReelsFreeGame2[3])
                 {
                     if (IsWild(res.Value.slotType)) wildOnReel4 = true;
                 }

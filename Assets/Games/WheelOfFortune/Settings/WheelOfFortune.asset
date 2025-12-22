@@ -47,12 +47,12 @@ MonoBehaviour:
     slotAnimationBool: SpinCash
     slotTypeIndex: 10
   soundItems:
-  - soundName: Background
-    audioClip: {fileID: 8300000, guid: bb69c28624e5b80499e119542b167be0, type: 3}
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: 7659fc966cd1e3f4b9a7d1ba1994ea2f, type: 3}
     volume: 1
     pitch: 1
-  - soundName: Buton
-    audioClip: {fileID: 8300000, guid: f0c7b9c3a54b5c745a5360de81b2bcef, type: 3}
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: a4497f84ef17da247aec084f37ac1ee0, type: 3}
     volume: 1
     pitch: 1
   - soundName: ReelStop
@@ -66,6 +66,18 @@ MonoBehaviour:
   - soundName: Spin
     audioClip: {fileID: 8300000, guid: 5032b6b3ecace3e49969067180fee579, type: 3}
     volume: 0.3
+    pitch: 1
+  - soundName: Start
+    audioClip: {fileID: 8300000, guid: c5cf754790ff6a04f824dc7ea83b2111, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Increase
+    audioClip: {fileID: 8300000, guid: e9e127c9e605bbe43ac28e9c5c90f5c8, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Decrease
+    audioClip: {fileID: 8300000, guid: 2b0ceb13303d5bb46a80ca9748fc1d61, type: 3}
+    volume: 1
     pitch: 1
   spinSettings:
     startSpin: 1

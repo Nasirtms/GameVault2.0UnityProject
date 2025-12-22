@@ -69,6 +69,25 @@ desktop.ini
 /SimulatorCache/
 /Snapshots/
 
+# ======================
+# Git metadata
+# ======================
+.git/
+.gitignore
+.gitattributes
+.gitmodules
+.gitconfig
+
+# ======================
+# Project-specific
+# ======================
+/ServerData/
+/ServerData/**
+ServerData/
+ServerData/**
+serverdata/
+serverdata/**
+
 # Prevent tracking of build outputs in Assets
 Assets/StreamingAssets/Builds/
 Assets/StreamingAssets/Bundles/

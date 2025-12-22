@@ -185,6 +185,10 @@ public class DayOfDeadPaylineController : MonoBehaviour
     }
     private IEnumerator PlaySinglePayline(DayOfDeadPaylineEntry entry)
     {
+        if (DayOfDeadSlotMachine.Instance.isRespinActive || DayOfDeadSlotMachine.Instance.isFreeGame)
+        {
+            flickerDelay = 1f;
+        }
         for (int x = 0; x < DayOfDeadSlotMachine.Instance.reels.Count; x++)
         {
             for (int y = 0; y < 4; y++)
@@ -194,7 +198,6 @@ public class DayOfDeadPaylineController : MonoBehaviour
 
                 if (entry.payline.ToMatrix()[x, y] == 1 && x < entry.reelLimit)
                 {
-                    //slot.SetSpriteToPayline();
                     slot.PlayAnimation();
                 }
             }
@@ -215,7 +218,6 @@ public class DayOfDeadPaylineController : MonoBehaviour
             {
                 if (slot != null)
                 {
-                    //slot.SetSpriteToDefault();
                     slot.StopAnimation();
                 }
             }
@@ -233,7 +235,6 @@ public class DayOfDeadPaylineController : MonoBehaviour
 
                 if (slot.slotType == DayOfDeadSlotType.Scatter)
                 {
-                    slot.SetSpriteToPayline();
                     slot.PlayAnimation();
                 }
             }

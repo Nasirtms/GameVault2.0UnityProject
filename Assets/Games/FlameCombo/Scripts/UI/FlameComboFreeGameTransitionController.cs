@@ -26,12 +26,13 @@ public class FlameComboFreeGameTransitionController : MonoBehaviour
     private Coroutine shakeRoutine;
 
     [SerializeField] private GameObject freeSpinsCountText;
-    [SerializeField] private GameObject baseGameFrame;
     [SerializeField] private GameObject freeGameFrame;
     [SerializeField] private TMP_Text freeSpinWinText;
     public static FlameComboFreeGameTransitionController Instance;
     private FlameComboFreeSpinController freeSpinController;
 
+    [SerializeField] private Animator freeSpinStartAnimator;
+    [SerializeField] private Animator freeSpinEndAnimator;
     #endregion
 
     #region Unity Methods
@@ -76,52 +77,58 @@ public class FlameComboFreeGameTransitionController : MonoBehaviour
     {
         yield return new WaitUntil(() => FlameComboSlotMachine.Instance.isPaylineCompleted);
         yield return new WaitUntil(() => FlameComboUIManager.Instance.winAnimationCompleted);
-
+        freeSpinWinText.text = "0.00";
         yield return new WaitForSeconds(1f);
         FlameComboPaylineController.Instance.ClearPaylineData();
 
         yield return MoveDoors();
-
-        baseGameFrame.SetActive(false);
         freeGameFrame.SetActive(true);
 
         yield return new WaitForSeconds(1.5f);
+
         FlameComboUIManager.Instance.StopTitleLoop();
         freeSpinsCountText.SetActive(true);
         freeSpinController.InitialFreeSpinText();
+        freeSpinStartAnimator.enabled = true;
+        freeSpinStartAnimator.SetBool("freeSpin", true);
 
         yield return new WaitForSeconds(1f);
-
         FlameComboUIManager.Instance.UpdateButtons("Free Spin");
         freeSpinController.StartFreeSpins();
     }
 
     private IEnumerator EndFreeSpin()
     {
+        freeSpinEndAnimator.gameObject.SetActive(true);
         yield return new WaitForSeconds(2f);
 
         freeSpinsCountText.SetActive(false);
-        freeSpinWinText.gameObject.SetActive(true);
+        FlameComboUIManager.Instance.StartTitleLoop();
+
         FlameComboPaylineController.Instance.ClearPaylineData();
         FlameComboUIManager.Instance.UpdateButtons("Transition End");
-        FlameComboUIManager.Instance.TextAnimation(FlameComboSlotMachine.Instance.freeSpinWinAmount, 3f, freeSpinWinText);
-
         yield return new WaitForSeconds(2.5f);
         yield return MoveDoors();
-        baseGameFrame.SetActive(true);
+        freeSpinStartAnimator.enabled = false;
+        freeSpinStartAnimator.SetBool("freeSpin", false);
         freeGameFrame.SetActive(false);
 
         yield return new WaitForSeconds(1f);
-
-        freeSpinWinText.text = "0.00";
-        freeSpinWinText.gameObject.SetActive(false);
-        FlameComboUIManager.Instance.StartTitleLoop();
+        freeSpinEndAnimator.enabled = true;
+        freeSpinEndAnimator.SetBool("freeSpinEnd", true);
+        FlameComboUIManager.Instance.TextAnimation(FlameComboSlotMachine.Instance.freeSpinWinAmount, 3f, freeSpinWinText);
 
         if (FlameComboSlotMachine.Instance.freeSpinWinAmount > 0)
         {
             FlameComboUIManager.Instance.spinButton.GetComponent<Button>().interactable = false;
             WinAnimation();
         }
+        yield return new WaitUntil(() => UserPressedConfirm());
+        freeSpinEndAnimator.SetBool("freeSpinEnd", false);
+        freeSpinEndAnimator.gameObject.SetActive(false);
+        freeSpinEndAnimator.gameObject.transform.localScale = Vector3.zero;
+        freeSpinEndAnimator.enabled = false;
+
         FlameComboUIManager.Instance.spinButton.GetComponent<Button>().interactable = true;
     }
     private void WinAnimation()
@@ -137,6 +144,14 @@ public class FlameComboFreeGameTransitionController : MonoBehaviour
     #endregion
 
     #region Helper Functions
+    private bool UserPressedConfirm()
+    {
+        if (Input.GetMouseButtonDown(0)) return true;
+
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) return true;
+
+        return false;
+    }
     public IEnumerator MoveDoors()
     {
         leftDoor.anchoredPosition = leftStartPos;

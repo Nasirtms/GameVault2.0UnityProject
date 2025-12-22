@@ -470,7 +470,7 @@ private void OnSpinResultReceived(BaseSpinResult result)
         else if (winAmount > 0f)
         {
             float betAmount = WheelOfFortuneUIManager.Instance.CurrentBet();
-            Invoke(nameof(UpdateGameCoin), 1f);
+            UpdateGameCoin();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
         }
 

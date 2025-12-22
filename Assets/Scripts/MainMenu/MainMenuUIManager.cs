@@ -60,6 +60,9 @@ public class MainMenuUIManager : MonoBehaviour
     public RawImage AvaarChangeAvatar_RI;
     public RawImage AvaarChangeAvatarTrans_RI;
 
+    [Header("Spin Button")]
+    [SerializeField] private GameObject _spinBtnGO;
+
     [Header("Popups")]
     public Transform PopupParent;
     public GameObject profilePopup;
@@ -150,31 +153,31 @@ public class MainMenuUIManager : MonoBehaviour
         }
     }
 
-    
-
     public void SetSceneData()
     {
         SpinWheelButtonAnimator spinWheelAnimator;
-
-        spinWheelAnimator = transform.GetComponent<SpinWheelButtonAnimator>();
-
-        if (spinWheelAnimator != null)
+        if (_spinBtnGO != null)
         {
-            spinWheelAnimator.SetActiveState(true);
-            HideAllPopups();
-            SetupMenuButtons();
+            spinWheelAnimator = _spinBtnGO.transform.GetComponent<SpinWheelButtonAnimator>();
 
-            isShowNotification = SceneManagement.isShowNotificationAfterLogin;
-            isShowEvent = SceneManagement.isShowEventPopup;
-
-            if (SceneManagement.isShowNotificationAfterLogin || SceneManagement.isShowEventPopup)
+            if (spinWheelAnimator != null)
             {
-                SetActiveMidNightPartyBtn();
+                spinWheelAnimator.SetActiveState(SceneManagement.isShowSpinWheel);
+                HideAllPopups();
+                SetupMenuButtons();
+
+                isShowNotification = SceneManagement.isShowNotificationAfterLogin;
+                isShowEvent = SceneManagement.isShowEventPopup;
+
+                if (SceneManagement.isShowNotificationAfterLogin || SceneManagement.isShowEventPopup)
+                {
+                    SetActiveMidNightPartyBtn();
+                }
             }
-        }
-        else
-        {
-            Debug.LogWarning("nasir_warning spinWheelAnimator not found ");
+            else
+            {
+                Debug.LogWarning("nasir_warning spinWheelAnimator not found ");
+            }
         }
     }
 
@@ -287,12 +290,50 @@ public class MainMenuUIManager : MonoBehaviour
         }
 
 
-
         if (shouldShowForEvent || shouldShowForNotification)
         {
             var btn = Instantiate(MidNightPartBtn_Prefab, MidNightPartBtn_Parent);
+
+            RectTransform rt = btn.GetComponent<RectTransform>();
+            // Anchor to bottom-right
+            rt.anchorMin = new Vector2(1f, 0f);
+            rt.anchorMax = new Vector2(1f, 0f);
+            rt.pivot = new Vector2(1f, 0f);
+
+            if (SceneManagement.isShowSpinWheel)
+            {
+                // Position relative to bottom-right
+                rt.anchoredPosition = new Vector2(-265f, 38f);
+            }
+            else
+            {
+                rt.anchoredPosition = new Vector2(-20f, 10f);
+
+            }
+            Sequence heartbeat = DOTween.Sequence();
+            heartbeat
+                .Append(rt.DOScale(1.08f, 0.25f).SetEase(Ease.OutQuad))     // scale up
+                .Join(rt.DORotate(new Vector3(0, 0, 2f), 0.1f))            // rotate right
+                .Append(rt.DORotate(new Vector3(0, 0, -2f), 0.1f))          // rotate left
+                .Append(rt.DORotate(Vector3.zero, 0.1f))                   // back to center
+                .Append(rt.DOScale(1f, 0.2f).SetEase(Ease.InQuad))          // scale normal
+                .AppendInterval(2f)
+                .SetLoops(-1);
+
+
             midnightPartyButton = btn.GetComponent<Button>();
-            midnightPartyButton.GetComponent<EventAndNotification_Controller>()?.ShowPopup();
+            StartCoroutine(ShowPopupAfterDelay(midnightPartyButton));
+        }
+
+
+    }
+
+    IEnumerator ShowPopupAfterDelay(Button _midnightPartyButton)
+    {
+        if (_midnightPartyButton != null)
+        {
+            yield return new WaitForSeconds(3f);
+            _midnightPartyButton.GetComponent<EventAndNotification_Controller>()?.ShowPopup();
         }
     }
 
@@ -326,16 +367,19 @@ public class MainMenuUIManager : MonoBehaviour
     {
         //Debug.Log("UpdateUserDisplay");
         if (userIdText != null)
-            userIdText.text = UserID;
+        {
+            userIdText.richText = true;
+            userIdText.text = "<color=#006bff>ID:</color> <color=#11b300>" + UserID + "</color>";
+        }
 
         if (userCoinsText != null)
         {
-            userCoinsText.text = UserManager.Instance.FormatCoins(Coins);
+            string coin = UserManager.Instance.FormatCoins(Coins);
+            userCoinsText.text = $"<color=#ffc208>{coin}</color>";
         }
 
         if (userAvatar != null)
             userAvatar.sprite = AvatarImage;
-
     }
 
    

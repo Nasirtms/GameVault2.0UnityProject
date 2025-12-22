@@ -46,8 +46,6 @@ public class ProfilePanelManager : MonoBehaviour
         }
     }
 
-
-
     private void LoadUserData()
     {
         var manager = MainMenuUIManager.Instance;
@@ -69,12 +67,12 @@ public class ProfilePanelManager : MonoBehaviour
         profileImage.sprite = manager.AvatarImage;
     }
 
-
     public void OnCopyIdClicked()
     {
-        GUIUtility.systemCopyBuffer = MainMenuUIManager.Instance.UserID;
-        Debug.Log("User ID copied to clipboard!");
-        CasinoUIManager.Instance.ShowErrorCanvas(1, "COPIED");
+        JSInputHandler.CopyToClipboard(MainMenuUIManager.Instance.UserID);
 
+        Debug.Log("User ID copied!");
+        CasinoUIManager.Instance.ShowErrorCanvas(1, "COPIED");
     }
+
 }
