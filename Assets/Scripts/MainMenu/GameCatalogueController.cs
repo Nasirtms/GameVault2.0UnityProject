@@ -39,6 +39,7 @@ public class GameItem
 public class GameCatalogueController : MonoBehaviour
 {
     public static GameCatalogueController instance;
+    [SerializeField] private bool loadGameCardImageForCash = true;
 
     [Header("Game Data")]
     public List<GameItem> gameItems;
@@ -115,7 +116,7 @@ public class GameCatalogueController : MonoBehaviour
                 addressableLabel = game.name.Replace(" ", "_").ToLower()
             };
 
-            Debug.Log("Game Catalogue: Game Name = " + newItem.name + " Game Label = " + newItem.addressableLabel);
+            //Debug.Log("Game Catalogue: Game Name = " + newItem.name + " Game Label = " + newItem.addressableLabel);
             gameItems.Add(newItem);
             StartCoroutine(LoadImageFromUrlParallel(newItem.image_url, newItem, () => { imagesLoaded++; }));
         }
@@ -123,58 +124,67 @@ public class GameCatalogueController : MonoBehaviour
         while (imagesLoaded < totalImages)
             yield return null;
 
-        Debug.Log("✅ All images loaded. Instantiating game UI.");
+        //Debug.Log("✅ All images loaded. Instantiating game UI.");
         //MainMenuUIManager.Instance.SetSceneData();
     }
-
     public IEnumerator LoadImageFromUrlParallel(string url, GameItem gameItem, System.Action onComplete)
     {
-        string fileName = Path.GetFileName(new System.Uri(url).LocalPath);
-        string filePath = Path.Combine(Application.persistentDataPath, fileName);
-
-        if (File.Exists(filePath))
+        if (!string.IsNullOrEmpty(url))
         {
-            byte[] imageData = File.ReadAllBytes(filePath);
-            Texture2D texture = new Texture2D(2, 2);
-            if (texture.LoadImage(imageData))
+            string fileName = Path.GetFileName(new System.Uri(url).LocalPath);
+            string filePath = Path.Combine(Application.persistentDataPath, fileName);
+
+            if (loadGameCardImageForCash)
             {
+                if (File.Exists(filePath))
+                {
+                    byte[] imageData = File.ReadAllBytes(filePath);
+                    Texture2D texture = new Texture2D(2, 2);
+                    if (texture.LoadImage(imageData))
+                    {
+                        gameItem.gameImage = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                            new Vector2(0.5f, 0.5f));
+                    }
+                    else
+                    {
+                        Debug.LogWarning("❌ Failed to load texture from cached data.");
+                    }
+
+                    onComplete?.Invoke();
+                    yield break;
+                }
+            }
+
+            using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
+            {
+                yield return request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    Debug.LogError($"❌ Failed to load image from {url}: {request.error}");
+                    onComplete?.Invoke();
+                    yield break;
+                }
+
+                Texture2D texture = DownloadHandlerTexture.GetContent(request);
+                if (texture == null)
+                {
+                    Debug.LogError("❌ Texture is null.");
+                    onComplete?.Invoke();
+                    yield break;
+                }
+
+                byte[] pngData = texture.EncodeToPNG();
+                File.WriteAllBytes(filePath, pngData);
                 gameItem.gameImage = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
                     new Vector2(0.5f, 0.5f));
             }
-            else
-            {
-                Debug.LogWarning("❌ Failed to load texture from cached data.");
-            }
 
             onComplete?.Invoke();
-            yield break;
         }
-
-        using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
+        else
         {
-            yield return request.SendWebRequest();
-            if (request.result != UnityWebRequest.Result.Success)
-            {
-                Debug.LogError($"❌ Failed to load image from {url}: {request.error}");
-                onComplete?.Invoke();
-                yield break;
-            }
-
-            Texture2D texture = DownloadHandlerTexture.GetContent(request);
-            if (texture == null)
-            {
-                Debug.LogError("❌ Texture is null.");
-                onComplete?.Invoke();
-                yield break;
-            }
-
-            byte[] pngData = texture.EncodeToPNG();
-            File.WriteAllBytes(filePath, pngData);
-            gameItem.gameImage = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                new Vector2(0.5f, 0.5f));
+            Debug.Log($"<b><color=cyan>[GameCard]</color></b> <color=white>Image URL is empty →</color> <color=magenta>{gameItem.name}</color>");
         }
-
-        onComplete?.Invoke();
     }
 
     string selectedCategory;
@@ -191,7 +201,13 @@ public class GameCatalogueController : MonoBehaviour
         long bytesToDownload = 0;
         if (sizeHandle.Status == AsyncOperationStatus.Succeeded) bytesToDownload = sizeHandle.Result;
         Debug.Log($"[Addressables] bytesToDownload={bytesToDownload}");
-
+//#if UNITY_WEBGL && !UNITY_EDITOR
+//        if (bytesToDownload == 0)
+//        {
+//            CasinoUIManager.Instance.ShowErrorCanvas(3, "");
+//            yield break;
+//        }
+//#endif
         float uiProgress = 0f;
         if (bytesToDownload > 0)
         {
@@ -213,6 +229,7 @@ public class GameCatalogueController : MonoBehaviour
             if (downloadHandle.Status != AsyncOperationStatus.Succeeded)
             {
                 Debug.LogError("[Addressables] Download failed: " + downloadHandle.OperationException);
+                CasinoUIManager.Instance.ShowErrorCanvas(3, "");
                 yield break;
             }
 
@@ -236,19 +253,20 @@ public class GameCatalogueController : MonoBehaviour
 
     public void LoadGame(string scene, string sceneID)
     {
-        if (MainMenuUIManager.Instance.gamesNames.Contains(scene))
-        {
+        //if (MainMenuUIManager.Instance.gamesNames.Contains(scene))
+        //{
 
-            LoadingBridge.SceneToLoad = scene;
-            LoadingBridge.ShowExtraImage = true;
-            LoadingBridge.IsAddressableScene = true;
-            SceneManagement.currentGameID = sceneID;
-            SceneManager.LoadScene("SceneLoader");
-        }
-        else
-        {
-            CasinoUIManager.Instance.ShowErrorCanvas(1, "Game is currently unavailable.");
-        }
+        LoadingBridge.SceneToLoad = scene;
+        LoadingBridge.ShowExtraImage = true;
+        LoadingBridge.IsAddressableScene = true;
+        LoadingBridge.pauseProfileApiCall = true;
+        SceneManagement.currentGameID = sceneID;
+        Addressables.LoadSceneAsync(MainMenuAddressableHandler.sceneLoaderSceneKey, LoadSceneMode.Single, true);    //SceneManager.LoadScene("SceneLoader");
+        //}
+        //else
+        //{
+        //    CasinoUIManager.Instance.ShowErrorCanvas(1, "Game is currently unavailable.");
+        //}
     }
 
     public void UpdateGameItemList(string gameId, bool isfavorite, GameCardController gameCard)

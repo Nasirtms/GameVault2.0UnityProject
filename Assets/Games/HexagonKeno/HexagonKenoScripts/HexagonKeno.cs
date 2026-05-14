@@ -110,7 +110,7 @@ public class HexagonKeno : MonoBehaviour
         {7, new Dictionary<int,float>{{0,0},{1,0},{2,0},{3,2},{4,5},{5,24},{6,114},{7,750}}},
         {8, new Dictionary<int,float>{{0,0},{1,0},{2,0},{3,1},{4,3},{5,14},{6,70},{7,215},{8,1000}}},
         {9, new Dictionary<int,float>{{0,0},{1,0},{2,0},{3,0},{4,3},{5,8},{6,39},{7,130},{8,500},{9,1500}}},
-        {10,new Dictionary<int,float>{{0,0},{1,0},{2,0},{3,0},{4,2},{5,5},{6,15},{7,65},{8,300},{9,750},{10,2000}}}
+        {10,new Dictionary<int,float>{{0,1},{1,0},{2,0},{3,0},{4,2},{5,5},{6,15},{7,65},{8,300},{9,750},{10,2000}}}
     };
     #endregion
 
@@ -126,6 +126,9 @@ public class HexagonKeno : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+
+        ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
     }
     #endregion
 
@@ -241,7 +244,7 @@ public class HexagonKeno : MonoBehaviour
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
     void SetGameButtons()
     {
@@ -748,14 +751,15 @@ public class HexagonKeno : MonoBehaviour
         {
             currentSpinWin = winAmount;
             PlayTextAnimation(currentSpinWin);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            UpdateGameCoin();
+
         }
         else
         {
             currentSpinWin = 0;
             this.winAmount_Text.text = "0.00";
         }
-        Invoke(nameof(UpdateGameCoin), 1f);
+        UpdateGameCoin();
     }
 
 

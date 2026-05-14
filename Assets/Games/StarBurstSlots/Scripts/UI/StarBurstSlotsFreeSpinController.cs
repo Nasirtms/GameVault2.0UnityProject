@@ -16,6 +16,20 @@ public class StarBurstSlotsFreeSpinController : MonoBehaviour
     private bool firstSpin;
     private int paylinesToPlay;
 
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
+    #endregion
+
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
     #endregion
 
     #region Public References
@@ -24,11 +38,12 @@ public class StarBurstSlotsFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         freeSpinDone = 0;
 
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
 
     public void ResetFreeSpins()
@@ -51,7 +66,6 @@ public class StarBurstSlotsFreeSpinController : MonoBehaviour
 
     #region Free Spin
 
-
     private IEnumerator FreeSpinLoop()
     {
         yield return new WaitForSeconds(2.5f); // optional delay after transition in
@@ -70,6 +84,8 @@ public class StarBurstSlotsFreeSpinController : MonoBehaviour
                 yield return new WaitForSeconds(delayBetweenSpins); // optional delay between spins
             }
 
+            if (cancelRequested) yield break;
+
             float betAmount = StarBurstSlotsUIManager.Instance.CurrentBet();
             SlotSpinService.Instance.Spin(betAmount);
 
@@ -81,7 +97,7 @@ public class StarBurstSlotsFreeSpinController : MonoBehaviour
             //    yield return new WaitUntil(() => StarBurstSlotsSlotMachine.Instance.isSlotAnimationCompleted);
             //    yield return new WaitUntil(() => StarBurstSlotsSlotMachine.Instance.isPaylineCompleted);
             //}
-
+            if (cancelRequested) yield break;
             if (StarBurstSlotsPaylineController.Instance != null)
             {
                 paylinesToPlay = StarBurstSlotsPaylineController.Instance.activePaylines.Count;
@@ -107,6 +123,19 @@ public class StarBurstSlotsFreeSpinController : MonoBehaviour
         StarBurstSlotsUIManager.Instance.freeGameSpinCount = 0;
         Debug.Log("End free spins called");
         StarBurstSlotsFreeGameTransitionController.Instance.EndFreeSpinTransition();
+    }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
+
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        StarBurstSlotsUIManager.Instance.UpdateButtons("Base Game Transition");
     }
     #endregion
 }

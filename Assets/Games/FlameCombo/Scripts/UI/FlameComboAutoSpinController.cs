@@ -15,9 +15,20 @@ public class FlameComboAutoSpinController : MonoBehaviour
     public static bool isAutoSpinning = false;
     #endregion
 
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
+    #endregion
+
     #region Public References
     public bool IsAutoRunning => isAutoRunning;
-
     public void StartAutoSpin(float betAmount)
     {
         if (isAutoRunning || FlameComboSlotMachine.Instance.InSpin)
@@ -56,8 +67,8 @@ public class FlameComboAutoSpinController : MonoBehaviour
                 StopAutoSpin();
                 break;
             }
-            //GoldenDragonUIManager.Instance.PlaySound("FruitParadise_Spin");
-
+            if (FlameComboSlotMachine.Instance.isFreeGameReady)
+                break;
             float balance = UserManager.Instance.Coins;
 
             if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) break;
@@ -68,20 +79,19 @@ public class FlameComboAutoSpinController : MonoBehaviour
             if (FlameComboUIManager.Instance.winCoroutine != null)
                 StopCoroutine(FlameComboUIManager.Instance.winCoroutine);
 
-
             yield return new WaitUntil(() => FlameComboSlotMachine.Instance.isSpinAgain);
-
+            if (cancelRequested)
+            {
+                StopAutoSpin();
+                break;
+            }
             if (FlameComboSlotMachine.Instance.GetWinAmount() > 0)
             {
                 yield return new WaitUntil(() => FlameComboSlotMachine.Instance.isPaylineCompleted);
             }
             yield return new WaitUntil(() => FlameComboUIManager.Instance.winAnimationCompleted);
 
-            if (cancelRequested)
-            {
-                StopAutoSpin();
-                break;
-            }
+            
 
             if (FlameComboSlotMachine.Instance.isFreeGameReady)
                 break;
@@ -102,6 +112,20 @@ public class FlameComboAutoSpinController : MonoBehaviour
         isAutoSpinning = false;
         isAutoRunning = false;
         cancelRequested = false;
+    }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
+
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
     }
     #endregion
 }

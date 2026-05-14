@@ -20,7 +20,6 @@ namespace HeadTailGame
         {
             if (config == null || config.betOptions == null || config.betOptions.Count == 0)
             {
-                Debug.LogError("BetManager: Missing BetConfig or betOptions.");
                 enabled = false; return;
             }
 

@@ -38,7 +38,7 @@ public class BotManager : MonoBehaviour
         for (int i = 0; i < Random.Range(minBotQuantity, maxBotQuantity) && i < botGunPositions.Count; i++)
         {
             int betIndex = Random.Range(0, betOptions.Length);
-            Debug.Log("Bet Amount: " + betIndex);
+            //Debug.Log("Bet Amount: " + betIndex);
 
             SpawnBotGun(betIndex, i);
         }
@@ -61,7 +61,7 @@ public class BotManager : MonoBehaviour
 
         if (betIndex < 0 || betIndex >= gunLevels.Count)
         {
-            Debug.LogWarning("Invalid betIndex for bot gun. " + betIndex);
+            //Debug.LogWarning("Invalid betIndex for bot gun. " + betIndex);
             return;
         }
 

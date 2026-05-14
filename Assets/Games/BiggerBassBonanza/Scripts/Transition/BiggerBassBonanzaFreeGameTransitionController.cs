@@ -145,7 +145,7 @@ public class BiggerBassBonanzaFreeGameTransitionController : MonoBehaviour
         
         freeSpinStartAnimator.SetBool("HoldState", true);
         
-        Debug.Log("Clip Name: " + freeSpinStartAnimator.runtimeAnimatorController.animationClips[0].name + " Clip length: " + freeSpinStartAnimator.runtimeAnimatorController.animationClips[0].length);
+        //Debug.Log("Clip Name: " + freeSpinStartAnimator.runtimeAnimatorController.animationClips[0].name + " Clip length: " + freeSpinStartAnimator.runtimeAnimatorController.animationClips[0].length);
         
         yield return new WaitForSeconds(6f);
 
@@ -261,7 +261,7 @@ public class BiggerBassBonanzaFreeGameTransitionController : MonoBehaviour
             float betAmount = BiggerBassBonanzaUIManager.Instance.CurrentBet();
 
             GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, BiggerBassBonanzaSlotMachine.Instance.currentSpinResult.newBalance);
-            Invoke(nameof(BiggerBassBonanzaSlotMachine.Instance.UpdateGameCoin), 1f);
+            //Invoke(nameof(BiggerBassBonanzaSlotMachine.Instance.UpdateGameCoin), 1f);
             //else
             //{
             //    BiggerBassBonanzaUIManager.Instance.UpdateButtons("Default");

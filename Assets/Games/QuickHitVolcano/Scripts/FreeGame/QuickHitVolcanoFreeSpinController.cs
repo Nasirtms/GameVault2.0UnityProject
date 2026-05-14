@@ -14,20 +14,34 @@ public class QuickHitVolcanoFreeSpinController : MonoBehaviour
     private int freeSpinDone = 0;
     private bool isFreeGame = false;
     private bool firstSpin;
-
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
     #endregion
 
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
+
+    #endregion
     #region Public References
 
     public void StartFreeSpins()
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         freeSpinDone = 0;
 
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
 
     public void ResetFreeSpins()
@@ -77,6 +91,7 @@ public class QuickHitVolcanoFreeSpinController : MonoBehaviour
                 yield return new WaitForSeconds(delayBetweenSpins); // optional delay between spins
             }
 
+            if (cancelRequested) yield break;
             if (QuickHitVolcanoUIManager.Instance.textAnimationCoroutine != null)
                 StopCoroutine(QuickHitVolcanoUIManager.Instance.textAnimationCoroutine);
 
@@ -91,6 +106,8 @@ public class QuickHitVolcanoFreeSpinController : MonoBehaviour
             freeSpinDone++;
 
             yield return new WaitUntil(() => QuickHitVolcanoSlotMachine.Instance.isSpinAgain);
+
+            if (cancelRequested) yield break;
 
             if (QuickHitVolcanoSlotMachine.Instance.currentSpinResult != null)
             {
@@ -121,6 +138,18 @@ public class QuickHitVolcanoFreeSpinController : MonoBehaviour
 
         QuickHitVolcanoGameTransitionController.Instance.EndFreeSlotGame();
     }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
 
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        QuickHitVolcanoUIManager.Instance.UpdateButtons("Default");
+    }
     #endregion
 }

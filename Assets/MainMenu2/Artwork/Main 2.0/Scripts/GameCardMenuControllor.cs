@@ -69,7 +69,7 @@ namespace MainMenu
 
         private void OpenMenu()
         {
-
+            GlobleSoundManager.Instance.PlaySFX("Swipe");
             if (PanalsParent != null)
                 PanalsParent.gameObject.SetActive(true);
             toggleMEnuBTn();
@@ -100,6 +100,7 @@ namespace MainMenu
         private void CloseMenu()
         {
             toggleMEnuBTn();
+            GlobleSoundManager.Instance.PlaySFX("Swipe");
             if (PanalsParent != null)
                 PanalsParent.gameObject.SetActive(false);
         }
@@ -194,7 +195,7 @@ namespace MainMenu
             if (_isAnimating) return;
             if (panals == null || panals.Count == 0) return;
             if (_currentIndex >= panals.Count - 1) return;
-
+            GlobleSoundManager.Instance.PlaySFX("Swipe");
             AnimateToIndex(_currentIndex + 1);
         }
 
@@ -203,7 +204,7 @@ namespace MainMenu
             if (_isAnimating) return;
             if (panals == null || panals.Count == 0) return;
             if (_currentIndex <= 0) return;
-
+            GlobleSoundManager.Instance.PlaySFX("Swipe");
             AnimateToIndex(_currentIndex - 1);
         }
 

@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.SceneManagement;
 
 public static class SceneManagement
 {
     //Game Type
     public static SceneAccessType sceneAccessType;
+    public static BuildConfig buildConfig;
 
     //Current Game Scene Name
     public static string currentGameName;
@@ -95,4 +100,63 @@ public static class SceneManagement
         Debug.Log("✅ SceneManagement data has been reset.");
     }
 
+    //public static async void GoBackToMainMenu(bool forceShowLoading = true)
+    //{
+    //    bool isCached = await IsAddressableCached(MainMenuAddressableHandler.sceneLoaderSceneKey);
+
+    //    if (forceShowLoading && !isCached)
+    //    {
+    //        Debug.Log("SceneManagement-GoBackToMainMenu- ForceShowLoadingPanel");
+    //        ForceShowLoadingPanel();
+    //    }
+    //    else
+    //    {
+    //        Debug.Log($"SceneManagement-GoBackToMainMenu- forceShowLoading: {forceShowLoading} -- isCached: {isCached}");
+    //    }
+
+    //    LoadingBridge.SceneToLoad = MainMenuAddressableHandler.mainMenuSceneKey;
+    //    LoadingBridge.ShowExtraImage = true;
+    //    LoadingBridge.IsAddressableScene = true;
+    //    SceneManagement.currentGameID = "";
+    //    Addressables.LoadSceneAsync(MainMenuAddressableHandler.sceneLoaderSceneKey, LoadSceneMode.Single, true);    //SceneManager.LoadScene("SceneLoader");
+    //}
+
+    public static void GoBackToMainMenu(bool forceShowLoading = true)
+    {
+        if (forceShowLoading)
+            ForceShowLoadingPanel();
+
+        ApiHandler.instance?.GameExited(SceneManagement.currentGameID);
+
+        LoadingBridge.SceneToLoad = MainMenuAddressableHandler.mainMenuSceneKey;
+        LoadingBridge.ShowExtraImage = true;
+        LoadingBridge.IsAddressableScene = true;
+        SceneManagement.currentGameID = "";
+        Addressables.LoadSceneAsync(MainMenuAddressableHandler.sceneLoaderSceneKey, LoadSceneMode.Single, true);    //SceneManager.LoadScene("SceneLoader");
+    }
+
+    static void ForceShowLoadingPanel()
+    {
+        MainMenu.UILoadingPanel loadingPanel;
+        MainMenu.UILoadingPanel loadingPanelPrefab = Resources.Load<MainMenu.UILoadingPanel>("LoadingPanelWithCanvas");
+
+        loadingPanel = GameObject.Instantiate(loadingPanelPrefab);
+        loadingPanel.OpenPanel(.2f, .3f);
+    }
+
+    public static async Task<bool> IsAddressableCached(object key)
+    {
+        var handle = Addressables.GetDownloadSizeAsync(key);
+        await handle.Task;
+
+        bool isCached = false;
+
+        if (handle.Status == AsyncOperationStatus.Succeeded)
+        {
+            isCached = handle.Result == 0;
+        }
+
+        Addressables.Release(handle);
+        return isCached;
+    }
 }

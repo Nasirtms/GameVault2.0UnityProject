@@ -27,8 +27,6 @@ public class DayOfDeadPaylineController : MonoBehaviour
     [Header("Results")]
     [ShowInInspector][ReadOnly] private List<DayOfDeadPaylineResult> spinResult = new List<DayOfDeadPaylineResult>();
     private int resultScatterCount;
-
-    //private GameObject overlay;
     #endregion
 
     #region Unity Methods
@@ -90,10 +88,8 @@ public class DayOfDeadPaylineController : MonoBehaviour
 
         if (activePaylines.Count == 0 && resultScatterCount < 3)
         {
-            Debug.LogWarning("No valid paylines to display.");
-            //overlay.SetActive(false);
+            //Debug.LogWarning("No valid paylines to display.");
             DayOfDeadSlotMachine.Instance.isSlotAnimationCompleted = true;
-
             return;
         }
         isShowing = true;
@@ -118,26 +114,14 @@ public class DayOfDeadPaylineController : MonoBehaviour
         }
 
         ResetAllSlotsToDefault();
-
-        //overlay.SetActive(false);
     }
 
     private IEnumerator PlayPaylines()
     {
-        //SaharaRichesUIManager.Instance.PlaySound("Payline");
         if (!DayOfDeadAutoSpinController.isAutoSpinning && !DayOfDeadSlotMachine.Instance.isFreeGame)
         {
             DayOfDeadSlotMachine.Instance.isSlotAnimationCompleted = true;
         }
-        if (DayOfDeadSlotMachine.Instance.isFreeGame || DayOfDeadSlotMachine.Instance.isReSpin || DayOfDeadAutoSpinController.isAutoSpinning)
-        {
-            flickerDelay = 1f;
-        }
-        else
-        {
-            flickerDelay = 2f;
-        }
-        //overlay.SetActive(true);
 
         if (resultScatterCount >= 3)
         {
@@ -152,30 +136,31 @@ public class DayOfDeadPaylineController : MonoBehaviour
             if (activePaylines.Count == 1)
             {
                 yield return PlaySinglePayline(activePaylines[0]);
-
-                Invoke("PaylineAnimationCompleted", 2f);
-
             }
             else
             {
-                int i = 0;
-                while (isShowing)
+                if (DayOfDeadAutoSpinController.isAutoSpinning || DayOfDeadSlotMachine.Instance.isFreeGame ||
+                    DayOfDeadSlotMachine.Instance.isReSpin || DayOfDeadSlotMachine.Instance.isRespinActive)
                 {
                     foreach (var entry in activePaylines)
                     {
-                        i++;
-                        ResetAllSlotsToDefault();
-                        yield return null;
                         yield return PlaySinglePayline(entry);
                     }
-                    if (activePaylines.Count == i)
+                }
+                else
+                {
+                    while (isShowing)
                     {
-                        Invoke("PaylineAnimationCompleted", 2f);
+                        foreach (var entry in activePaylines)
+                        {
+                            yield return PlaySinglePayline(entry);
+                        }
                     }
                 }
             }
         }
 
+        DayOfDeadSlotMachine.Instance.isSlotAnimationCompleted = true;
     }
 
     public void PaylineAnimationCompleted()
@@ -185,9 +170,14 @@ public class DayOfDeadPaylineController : MonoBehaviour
     }
     private IEnumerator PlaySinglePayline(DayOfDeadPaylineEntry entry)
     {
-        if (DayOfDeadSlotMachine.Instance.isRespinActive || DayOfDeadSlotMachine.Instance.isFreeGame)
+        if (DayOfDeadSlotMachine.Instance.isFreeGame || DayOfDeadSlotMachine.Instance.isRespinActive
+            || DayOfDeadSlotMachine.Instance.isReSpin || DayOfDeadAutoSpinController.isAutoSpinning)
         {
-            flickerDelay = 1f;
+            flickerDelay = 1.5f;
+        }
+        else
+        {
+            flickerDelay = 2.5f;
         }
         for (int x = 0; x < DayOfDeadSlotMachine.Instance.reels.Count; x++)
         {
@@ -239,7 +229,7 @@ public class DayOfDeadPaylineController : MonoBehaviour
                 }
             }
         }
-
+        yield return new WaitForSeconds(1.5f);
         if (!DayOfDeadSlotMachine.Instance.isFreeGame)
         {
             DayOfDeadSlotMachine.Instance.firstFreeSpin = true;

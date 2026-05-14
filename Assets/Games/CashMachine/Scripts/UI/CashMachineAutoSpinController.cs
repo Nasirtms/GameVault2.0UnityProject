@@ -18,11 +18,15 @@ public class CashMachineAutoSpinController : MonoBehaviour
     #endregion
 
     #region Unity Methods
-
-    private void Start()
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
     #endregion
 
     #region Public References
@@ -72,16 +76,16 @@ public class CashMachineAutoSpinController : MonoBehaviour
             }
 
             float balance = UserManager.Instance.Coins;
-
+            if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) break;
             CashMachineUIManager.Instance.winAnimationCompleted = true;
-            CashMachineUIManager.Instance.PlaySpinMusic("Spin");
+            //CashMachineUIManager.Instance.PlaySpinMusic("Spin");
 
             if (CashMachineUIManager.Instance.textAnimationCoroutine != null)
                 StopCoroutine(CashMachineUIManager.Instance.textAnimationCoroutine);
             if (CashMachineUIManager.Instance.winCoroutine != null)
                 StopCoroutine(CashMachineUIManager.Instance.winCoroutine);
 
-            if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) break;
+            
 
             SlotSpinService.Instance.Spin(betAmount);
             if (CashMachineUIManager.Instance.CurrentButtonSet() != "Spin")
@@ -131,6 +135,19 @@ public class CashMachineAutoSpinController : MonoBehaviour
         isAutoRunning = false;
         cancelRequested = false;
     }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
 
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
 }

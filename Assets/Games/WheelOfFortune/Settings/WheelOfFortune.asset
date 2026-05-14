@@ -55,21 +55,13 @@ MonoBehaviour:
     audioClip: {fileID: 8300000, guid: a4497f84ef17da247aec084f37ac1ee0, type: 3}
     volume: 1
     pitch: 1
-  - soundName: ReelStop
-    audioClip: {fileID: 8300000, guid: bf9a5a63019fc9a438ee0ac428330134, type: 3}
-    volume: 1
-    pitch: 1
   - soundName: Win
     audioClip: {fileID: 8300000, guid: 6a445870b327dd5438ee8ce43c470b86, type: 3}
-    volume: 1
-    pitch: 1
-  - soundName: Spin
-    audioClip: {fileID: 8300000, guid: 5032b6b3ecace3e49969067180fee579, type: 3}
-    volume: 0.3
+    volume: 0.4
     pitch: 1
   - soundName: Start
     audioClip: {fileID: 8300000, guid: c5cf754790ff6a04f824dc7ea83b2111, type: 3}
-    volume: 1
+    volume: 0.5
     pitch: 1
   - soundName: Increase
     audioClip: {fileID: 8300000, guid: e9e127c9e605bbe43ac28e9c5c90f5c8, type: 3}
@@ -79,11 +71,23 @@ MonoBehaviour:
     audioClip: {fileID: 8300000, guid: 2b0ceb13303d5bb46a80ca9748fc1d61, type: 3}
     volume: 1
     pitch: 1
+  - soundName: SpinButton
+    audioClip: {fileID: 8300000, guid: e0958e375e9fd3742a99ed1ba520a3f3, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: b5394d045abbf6b49947d35a55bcddc2, type: 3}
+    volume: 0.3
+    pitch: 1
+  - soundName: SpinWheel
+    audioClip: {fileID: 8300000, guid: 67619dd74cc849b40a0286efe6398202, type: 3}
+    volume: 0.5
+    pitch: 1
   spinSettings:
     startSpin: 1
     endSpin: 0
     spinDirection: 0
-    delayAmongReels: {x: 0.2, y: 0.2}
+    delayAmongReels: {x: 0.3, y: 0.3}
     useSameAcceleration: 1
     useSameSpeed: 1
     minClamp: 0.5

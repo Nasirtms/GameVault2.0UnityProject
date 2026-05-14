@@ -319,6 +319,10 @@ MonoBehaviour:
     batchSize: 1
     batchSpacing: 0.5
     isRotatable: 0
+    rotationSpeed: 0.5
+    fishMultiplyer: 0
+    isBomb: 0
+    isPowerUp: 0
     allowOnlyOne: 0
     rarityWeight: 50
     spawnPattern: 0
@@ -339,14 +343,19 @@ MonoBehaviour:
   - {fileID: 7739841332593263878, guid: 1cd1a5a8131f0c84e9abca783ca56905, type: 3}
   - {fileID: 7739841332593263878, guid: c495c15136c3f6044af5c4d24333568d, type: 3}
   flashDuration: 0.1
-  lockedColor: {r: 1, g: 1, b: 1, a: 1}
+  lockedColor: {r: 0, g: 1, b: 0, a: 1}
   speed: 0
   destination: {x: 0, y: 0, z: 0}
+  useCustomAnimBool: 0
+  animationParameterName: 
   sr: {fileID: 7769559546805204798}
   originalLayer:
     serializedVersion: 2
     m_Bits: 256
   isRotatable: 1
+  rotationSpeed: 0.5
+  currentBetamount: 0
+  isInScreen: 0
 --- !u!50 &-6521508872195701337
 Rigidbody2D:
   serializedVersion: 4

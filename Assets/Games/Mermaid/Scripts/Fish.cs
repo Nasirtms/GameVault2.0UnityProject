@@ -1,7 +1,10 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
-using DG.Tweening;
+using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 
 public enum PowerupType
@@ -15,11 +18,14 @@ public enum PowerupType
 
 
 
-public class Fish : MonoBehaviour
+public class Fish : MonoBehaviour, IPointerDownHandler
 {
+    [SerializeField] public string fishGuid;
+    [SerializeField] public float hitByPlayerCount = 0;
 
     public static Fish CurrentLockedFish { get; private set; }
-    public static event Action<Fish> OnFishKilled;
+    public static event Action<Fish, FishWSNetworkMessages.FishHit_Response, bool> OnFishKilledByPlayer;
+    public static event Action<Fish, FishWSNetworkMessages.FishHit_Response, bool> OnFishKilledByBot;
     public static event Action<Fish> OnFishRRemoved;
     public FishData fishData;
 
@@ -55,12 +61,18 @@ public class Fish : MonoBehaviour
     [SerializeField] private Color hitColor = Color.red;
     [SerializeField] private GameObject[] explosionPrefab;
     [SerializeField] private float flashDuration = 0.1f;
-    [SerializeField] private Color lockedColor = Color.white;
+    [SerializeField] private Color lockedColor = Color.green;
+    private bool isLocked = false;
 
     [HideInInspector] public float speed;
     [HideInInspector] public Vector3 destination;
     [HideInInspector] public object lastAttacker;
 
+    [Header("Animation Settings")]
+    public bool useCustomAnimBool = false;
+    public string animationParameterName = "";
+
+    [Space]
     public SpriteRenderer sr;
     private SpriteRenderer[] allRenderers;
     private Color[] originalColors;
@@ -74,6 +86,9 @@ public class Fish : MonoBehaviour
     bool isFishKilled;
     public float currentBetamount;
     public bool isInScreen = false;
+
+    public bool isDead = false;
+    public bool despawnCallSentToBackend = false;
 
     private void Awake()
     {
@@ -97,7 +112,10 @@ public class Fish : MonoBehaviour
 
     private void OnEnable()
     {
+        isDead = false;
         isInScreen = false;
+        despawnCallSentToBackend = false;
+
         // cache the bomb child once per activation if needed
         if (bombVisual == null)
             bombVisual = FindDeepChild(transform, bombChildName);
@@ -111,6 +129,14 @@ public class Fish : MonoBehaviour
         isFishKilled = false;
         Manager.onHealthMultiplier += IncreaseHealthMultiplier;
 
+        hitByPlayerCount = 0;
+
+        //CompositeCollider2D cc2d = gameObject.GetComponent<CompositeCollider2D>();
+        //if (cc2d != null)
+        //{
+        //    cc2d.GenerateGeometry();
+        //}
+
         //StopCoroutine(nameof(CheckIfOutOfScreen_Coroutine));
         //StartCoroutine(nameof(CheckIfOutOfScreen_Coroutine));
     }
@@ -123,6 +149,7 @@ public class Fish : MonoBehaviour
     private void OnDisable()
     {
         //StopCoroutine(nameof(CheckIfOutOfScreen_Coroutine));
+        fishGuid = "";
         isInScreen = false;
         bombArmed = false;                  // reset armed state
         if (bombVisual) bombVisual.SetActive(false); // hide on return to pool
@@ -176,7 +203,10 @@ public class Fish : MonoBehaviour
         var animator = GetComponentInChildren<Animator>();
         if (animator != null)
         {
-            animator.SetBool(gameObject.name, true);
+            if (!useCustomAnimBool)
+                animator.SetBool(gameObject.name, true);
+            else
+                animator.SetBool(animationParameterName, true);
         }
     }
 
@@ -184,7 +214,10 @@ public class Fish : MonoBehaviour
         var animator = GetComponentInChildren<Animator>();
         if (animator != null)
         {
-            animator.SetBool(gameObject.name, true);
+            if (!useCustomAnimBool)
+                animator.SetBool(gameObject.name, true);
+            else
+                animator.SetBool(animationParameterName, true);
         }
     }
 
@@ -222,35 +255,175 @@ public class Fish : MonoBehaviour
             if (CurrentLockedFish != null && CurrentLockedFish != this)
                 CurrentLockedFish.SetLocked(false);
 
+            this.isLocked = true;
             CurrentLockedFish = this;
             originalLayer = gameObject.layer;
             gameObject.layer = LayerMask.NameToLayer("LockedFish");
-            SetAllColors(Color.green);
+            SetAllColors(lockedColor);
         }
         else
         {
             if (CurrentLockedFish == this)
                 CurrentLockedFish = null;
 
+            this.isLocked = false;
             gameObject.layer = originalLayer;
             ResetAllColors();
         }
     }
 
-    public void TakeDamage(float amount, string name, float bulletBetMultiplyer)
+    public void TakeDamageByBot(FishWSNetworkMessages.FishHit_Response response, Bullet bullet, float damageAmount, float betAmount)
     {
-        bulletName = name;
-        currentHealth -= amount;
+        if (isDead)
+            return;
+
+        if (response == null)
+        {
+            currentHealth -= damageAmount;
+            currentBetamount = betAmount;
+
+            if (currentHealth > 0)
+            {
+                StartCoroutine(HitFeedback());
+            }
+            else
+            {
+                FishWSNetworkMessages.FishHit_Request fh = new FishWSNetworkMessages.FishHit_Request()
+                {
+                    requestId = Guid.NewGuid().ToString(),
+                    gameId = SceneManagement.currentGameID,
+                    bulletId = bullet.bulletGuid,
+                    fishId = fishGuid,
+                    bulletCost = currentBetamount.ToString("G17", CultureInfo.InvariantCulture),
+                    killedByBomb = false,
+                    killedByBot = true
+                };
+
+                FishWSNetworkManager.Instance.Send(fh);
+                Debug.Log($"bulletHit ___ BotManager ___ currentBetAmount: {currentBetamount}");
+            }
+        }
+        else
+        {
+            if (currentHealth <= 0)
+            {
+                StartCoroutine(DieWithFeedback(response, false));
+            }
+        }
+
+        //if (LockManager.IsLockModeEnabled && LockManager.GetLockedFish() == null)
+        //    return;
+    }
+
+    public void TakeDamageByPlayer(FishWSNetworkMessages.FishHit_Response response)
+    {
+        if (isDead)
+            return;
+
+        hitByPlayerCount = response.hitCount;
+        currentBetamount = response.bulletCost;
 
         //if (LockManager.IsLockModeEnabled && LockManager.GetLockedFish() == null)
         //    return;
 
-        if (currentHealth > 0)
-            StartCoroutine(HitFeedback());
-        else
-            StartCoroutine(DieWithFeedback());
+        StartCoroutine(HitOrDieWithFeedback(response, false));
+    }
 
-        currentBetamount = bulletBetMultiplyer;
+    public IEnumerator HitOrDieWithFeedback(FishWSNetworkMessages.FishHit_Response response, bool fromForceKill)
+    {
+        if (!isDead)
+        {
+            //SetAllColors(hitColor);
+            //SpawnExplosion(ref explosionInstance);
+
+            if (!response.killed)
+            {
+                //yield return new WaitForSeconds(flashDuration);
+
+                //if (isLocked)
+                //{
+                //    SetAllColors(lockedColor);
+                //}
+                //else
+                //{
+                //    ResetAllColors();
+                //}
+
+                //CleanupExplosion(ref explosionInstance);
+            }
+            else
+            {
+                isDead = true;
+
+                if (LockManager.GetLockedFish() == this)
+                {
+                    Debug.Log("Fish killed while locked: " + gameObject.name);
+                    LockManager.ClearLockedFish();
+                }
+                CallDeathEvent();
+                OnFishKilledByPlayer?.Invoke(this, response, fromForceKill);
+                switch (powerupType)
+                {
+                    case PowerupType.Bomb:
+                        if (!fromForceKill)
+                        {
+                            if (bombArmed) FishManager.Instance.TriggerBomb(this, response);
+                        }
+                        break;
+
+                    case PowerupType.FullScreenBomb:
+                        if (!fromForceKill)
+                        {
+                            FishManager.Instance.TriggerFullScreenBomb(this, response);
+                        }
+                        break;
+
+                    case PowerupType.CoralReef:
+                        FishManager.Instance.TriggerCoralReef(this, response);
+                        break;
+
+                    case PowerupType.CannonCard:
+                        FishManager.Instance.TriggerCannonCard(this, response);
+                        break;
+                }
+
+                //yield return new WaitForSeconds(flashDuration);
+                //CleanupExplosion(ref explosionInstance);
+
+                FishManager.Instance.NotifyFishKilled(this);
+                FishPool.Instance.Release(gameObject);
+            }
+        }
+
+        yield return new WaitForEndOfFrame();
+    }
+
+    public void ShowDamageEffect()
+    {
+        StopCoroutine("ShowDamageEffect_Coroutine");
+        StartCoroutine("ShowDamageEffect_Coroutine");
+    }
+
+    IEnumerator ShowDamageEffect_Coroutine()
+    {
+        if (!isDead)
+        {
+            SetAllColors(hitColor);
+            SpawnExplosion(ref explosionInstance);
+
+            yield return new WaitForSeconds(flashDuration);
+
+            if (isLocked)
+            {
+                SetAllColors(lockedColor);
+            }
+            else
+            {
+                ResetAllColors();
+            }
+
+            CleanupExplosion(ref explosionInstance);
+        }
     }
 
     private IEnumerator HitFeedback()
@@ -258,7 +431,14 @@ public class Fish : MonoBehaviour
         SetAllColors(hitColor);
         SpawnExplosion(ref explosionInstance);
         yield return new WaitForSeconds(flashDuration);
-        ResetAllColors();
+        if (isLocked)
+        {
+            SetAllColors(lockedColor);
+        }
+        else
+        {
+            ResetAllColors();
+        }
         CleanupExplosion(ref explosionInstance);
     }
 
@@ -277,43 +457,53 @@ public class Fish : MonoBehaviour
     }
 
 
-    public IEnumerator DieWithFeedback()
+    public IEnumerator DieWithFeedback(FishWSNetworkMessages.FishHit_Response response, bool fromForceKill)
     {
-        SetAllColors(hitColor);
-        SpawnExplosion(ref explosionInstance);
-        yield return new WaitForSeconds(flashDuration);
-
-        if (LockManager.GetLockedFish() == this)
+        if (!isDead)
         {
-            Debug.Log("Fish killed while locked: " + gameObject.name);
-            LockManager.ClearLockedFish();
+            isDead = true;
+
+            SetAllColors(hitColor);
+            SpawnExplosion(ref explosionInstance);
+            yield return new WaitForSeconds(flashDuration);
+
+            if (LockManager.GetLockedFish() == this)
+            {
+                Debug.Log("Fish killed while locked: " + gameObject.name);
+                LockManager.ClearLockedFish();
+            }
+            CallDeathEvent();
+            OnFishKilledByBot?.Invoke(this, response, fromForceKill);
+            CleanupExplosion(ref explosionInstance);
+
+            switch (powerupType)
+            {
+                case PowerupType.Bomb:
+                    if (!fromForceKill)
+                    {
+                        if (bombArmed) FishManager.Instance.TriggerBomb(this, response);
+                    }
+                    break;
+
+                case PowerupType.FullScreenBomb:
+                    if (!fromForceKill)
+                    {
+                        FishManager.Instance.TriggerFullScreenBomb(this, response);
+                    }
+                    break;
+
+                case PowerupType.CoralReef:
+                    FishManager.Instance.TriggerCoralReef(this, response);
+                    break;
+
+                case PowerupType.CannonCard:
+                    FishManager.Instance.TriggerCannonCard(this, response);
+                    break;
+            }
+
+            FishManager.Instance.NotifyFishKilled(this);
+            FishPool.Instance.Release(gameObject);
         }
-        CallDeathEvent();
-        OnFishKilled?.Invoke(this);
-        CleanupExplosion(ref explosionInstance);
-        switch (powerupType)
-        {
-            case PowerupType.Bomb:
-                if (bombArmed) FishManager.Instance.TriggerBomb(this);
-                break;
-
-            case PowerupType.FullScreenBomb:
-                FishManager.Instance.TriggerFullScreenBomb(this);
-                break;
-
-            case PowerupType.CoralReef:
-                FishManager.Instance.TriggerCoralReef(this);
-                break;
-
-            case PowerupType.CannonCard:
-                FishManager.Instance.TriggerCannonCard(this);
-                break;
-        }
-
-
-
-        FishManager.Instance.NotifyFishKilled(this);
-        FishPool.Instance.Release(gameObject);
     }
 
     private void SpawnExplosion(ref GameObject instance)
@@ -343,7 +533,7 @@ public class Fish : MonoBehaviour
     private int GetGunIndex()
     {
         string key = !string.IsNullOrEmpty(bulletName) ? bulletName : GunManager.Instance.GunName;
-        //Debug.Log("Gun Key: " + key);
+
         if (key.Contains("Bullet1")) { UpdateBotOneScore(); return 0; }
         if (key.Contains("Bullet2")) { UpdateBotTwoScore(); return 1; }
         if (key.Contains("Bullet3")) { UpdateBotThreeScore(); return 2; }
@@ -364,7 +554,18 @@ public class Fish : MonoBehaviour
             if (allRenderers[i] != null) allRenderers[i].color = originalColors[i];
     }
 
-    private void OnMouseDown()
+    //private void OnMouseDown()
+    //{
+    //    Debug.LogError($"Fish Lock: {fishData.fishName} ___ OnMouseDown 111");
+    //    if (LockManager.IsLockModeEnabled)
+    //    {
+    //        Debug.LogError($"Fish Lock: {fishData.fishName} ___ OnMouseDown 222");
+    //        //Debug.Log("Fish Selected: " + gameObject.name);
+    //        LockManager.SetLockedFish(this);
+    //    }
+    //}
+
+    public void OnPointerDown(PointerEventData eventData)
     {
         if (LockManager.IsLockModeEnabled)
         {
@@ -390,6 +591,8 @@ public class Fish : MonoBehaviour
             Debug.Log($"Fish reached screen exit (InScreenTrigger): Fish: {fishData.fishName}");
             //FishManager.Instance.FishReachedDestination(this);
             transform.position = destination;
+
+            FishExitingScreen();
         }
     }
 
@@ -425,8 +628,165 @@ public class Fish : MonoBehaviour
         return !sr.isVisible;
     }
 
+    void FishExitingScreen()
+    {
+        // fish-hidden code here
+    }
+
+    public float GetWinAmountByFormula(float bulletCost)
+    {
+        return fishData.fishMultiplyer * bulletCost;
+    }
+
     private void UpdateBotOneScore() { }
     private void UpdateBotTwoScore() { }
     private void UpdateBotThreeScore() { }
     private void UpdateBotFourScore() { }
+
+    //    //[ContextMenu("SetupNewFishPrefab")]
+    //    [Button]
+    //    public void SetupNewFishPrefab()
+    //    {
+    //#if UNITY_EDITOR
+    //        UnityEditor.Undo.RecordObject(gameObject, "SetupNewFishPrefab");
+
+    //        if (UnityEditor.PrefabUtility.IsAnyPrefabInstanceRoot(gameObject))
+    //            UnityEditor.PrefabUtility.UnpackPrefabInstance(gameObject, UnityEditor.PrefabUnpackMode.OutermostRoot, UnityEditor.InteractionMode.AutomatedAction);
+    //#endif
+
+    //        GameObject fishObject = transform.GetChild(0).gameObject;
+
+    //        SpriteRenderer[] renderers = fishObject.GetComponentsInChildren<SpriteRenderer>(true);
+
+    //        foreach (SpriteRenderer r in renderers)
+    //        {
+    //            PolygonCollider2D pc2d = r.GetComponent<PolygonCollider2D>();
+    //            if (pc2d == null)
+    //                pc2d = r.gameObject.AddComponent<PolygonCollider2D>();
+
+    //            pc2d.usedByComposite = true;
+    //        }
+
+    //        if (!gameObject.GetComponent<CompositeCollider2D>())
+    //            gameObject.AddComponent<CompositeCollider2D>();
+    //        else
+    //            Debug.Log("SetupNewFishPrefab: Composite Collider already added.");
+
+    //        if (gameObject.GetComponent<BoxCollider2D>())
+    //            gameObject.GetComponent<BoxCollider2D>().enabled = false;
+
+    //        gameObject.name = fishObject.name.Replace(" ", "-");
+
+    //        fishObject.transform.localPosition = Vector3.zero;
+    //        fishObject.transform.localEulerAngles = new Vector3(0, 0, 270);
+
+    //        Transform bomb = transform.Find("Bomb");
+
+    //        if (bomb != null)
+    //        {
+    //            bomb.localPosition = new Vector3(0.25f, 0, 0);
+    //            bomb.localScale = fishObject.transform.localScale + new Vector3(0.1f, 0.1f, 0.1f);
+    //        }
+    //        else
+    //            Debug.Log("SetupNewFishPrefab: No bomb found.");
+
+    //        if (renderers.Length > 0)
+    //            sr = renderers[0];
+    //        else
+    //            Debug.Log("SetupNewFishPrefab: No renderers found.");
+
+    //#if UNITY_EDITOR
+    //        bool prefabCreated;
+    //        UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(gameObject, "Assets/Games/OceanKing/Prefabs/Fish/" + gameObject.name + ".prefab", UnityEditor.InteractionMode.AutomatedAction, out prefabCreated);
+    //#endif
+
+    //        Debug.Log($"SetupNewFishPrefab: Prefab{(!prefabCreated ? " NOT" : "")} created.");
+    //    }
+
+    //[Button]
+    //public void SetCollidersTag()
+    //{
+
+    //#if UNITY_EDITOR
+    //        UnityEditor.Undo.RecordObject(gameObject, "SetCollidersTag");
+    //#endif
+
+    //    GameObject fishObject = transform.GetChild(0).gameObject;
+
+    //    SpriteRenderer[] renderers = fishObject.GetComponentsInChildren<SpriteRenderer>(true);
+
+    //    foreach (SpriteRenderer r in renderers)
+    //    {
+    //        PolygonCollider2D pc2d = r.GetComponent<PolygonCollider2D>();
+    //        if (pc2d != null)
+    //            pc2d.gameObject.tag = "Fish";
+    //    }
+    //}
+
+    //    [Button]
+    //    public void ChangePolygonColliderSystemToEdgeColliderSystem()
+    //    {
+
+    //#if UNITY_EDITOR
+    //        UnityEditor.Undo.RecordObject(gameObject, "ChangePolygonColliderSystemToEdgeColliderSystem");
+    //#endif
+
+    //        GameObject fishObject = transform.GetChild(0).gameObject;
+
+    //        SpriteRenderer[] renderers = fishObject.GetComponentsInChildren<SpriteRenderer>(true);
+
+    //        foreach (SpriteRenderer r in renderers)
+    //        {
+    //            PolygonCollider2D pc2d = r.GetComponent<PolygonCollider2D>();
+    //            if (pc2d != null)
+    //            {
+    //                EdgeCollider2D ec2d = r.GetComponent<EdgeCollider2D>();
+    //                if (ec2d == null)
+    //                    ec2d = r.gameObject.AddComponent<EdgeCollider2D>();
+
+    //                if (pc2d.pathCount > 0)
+    //                {
+    //                    List<Vector2> pathPoints = new List<Vector2>(pc2d.GetPath(0));
+    //                    if (pathPoints.Count > 0)
+    //                    {
+    //                        pathPoints.Add(new Vector2(pathPoints[0].x, pathPoints[0].y));
+    //                        ec2d.points = pathPoints.ToArray();
+    //                    }
+    //                }
+
+    //                DestroyImmediate(pc2d);
+    //            }
+    //        }
+
+    //        if (gameObject.GetComponent<CompositeCollider2D>())
+    //            DestroyImmediate(gameObject.GetComponent<CompositeCollider2D>());
+    //    }
+
+    //    [Button]
+    //    public void RemoveEdgeCollidersAndMoveToCompositeSystem()
+    //    {
+    //#if UNITY_EDITOR
+    //        UnityEditor.Undo.RecordObject(gameObject, "RemoveEdgeCollidersAndMoveToCompositeSystem");
+    //#endif
+
+    //        GameObject fishObject = transform.GetChild(0).gameObject;
+
+    //        SpriteRenderer[] renderers = fishObject.GetComponentsInChildren<SpriteRenderer>(true);
+
+    //        foreach (SpriteRenderer r in renderers)
+    //        {
+    //            EdgeCollider2D ec2d = r.GetComponent<EdgeCollider2D>();
+    //            if (ec2d != null)
+    //                DestroyImmediate(ec2d);
+
+    //            PolygonCollider2D pc2d = r.GetComponent<PolygonCollider2D>();
+    //            if (pc2d == null)
+    //                pc2d = r.gameObject.AddComponent<PolygonCollider2D>();
+
+    //            pc2d.usedByComposite = true;
+    //        }
+
+    //        if (!gameObject.GetComponent<CompositeCollider2D>())
+    //            gameObject.AddComponent<CompositeCollider2D>();
+    //    }
 }

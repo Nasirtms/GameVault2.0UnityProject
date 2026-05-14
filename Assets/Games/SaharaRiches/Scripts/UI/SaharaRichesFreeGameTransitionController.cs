@@ -105,16 +105,16 @@ public class SaharaRichesFreeGameTransitionController : MonoBehaviour
         freeSpinController.InitialFreeSpinText();
 
         SaharaRichesUIManager.Instance.UpdateButtons("Free Spin");
-        SaharaRichesUIManager.Instance.StopMusic("Background");
-        SaharaRichesUIManager.Instance.PlayMusic("FreeSpin_Background");
+        //SaharaRichesUIManager.Instance.StopMusic("Background");
+        //SaharaRichesUIManager.Instance.PlayMusic("FreeSpin_Background");
 
         freeSpinController.StartFreeSpins();
     }
 
     private IEnumerator EndFreeSpin()
     {
-        SaharaRichesUIManager.Instance.StopMusic("FreeSpin_Background");
-        SaharaRichesUIManager.Instance.PlayMusic("Background");
+        //SaharaRichesUIManager.Instance.StopMusic("FreeSpin_Background");
+        //SaharaRichesUIManager.Instance.PlayMusic("Background");
 
         yield return new WaitForSeconds(1.5f);
         SaharaRichesPaylineController.Instance.StopPaylines();
@@ -162,7 +162,7 @@ public class SaharaRichesFreeGameTransitionController : MonoBehaviour
             float betAmount = SaharaRichesUIManager.Instance.CurrentBet();
 
             GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, SaharaRichesSlotMachine.Instance.currentSpinResult.newBalance);
-            Invoke(nameof(SaharaRichesSlotMachine.Instance.UpdateGameCoin), 1f);
+            //Invoke(nameof(SaharaRichesSlotMachine.Instance.UpdateGameCoin), 1f);
             SaharaRichesUIManager.Instance.UpdateButtons("Stop");
 
         }
@@ -176,8 +176,6 @@ public class SaharaRichesFreeGameTransitionController : MonoBehaviour
 
         obj.transform.DOScale(scale, duration * 1.2f)
             .SetEase(Ease.OutBack);
-
-        Debug.Log("Popup Animation");
     }
 
     #endregion

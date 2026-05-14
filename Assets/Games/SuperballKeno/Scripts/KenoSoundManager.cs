@@ -128,6 +128,25 @@ public class KenoSoundManager : MonoBehaviour
 
     }
 
+    public void StopSFX(string soundName)
+    {
+        if (isSoundMute) return;
+
+        if (soundData == null)
+        {
+            soundData = SuperBallKeno.Instance.settings;
+        }
+
+        var sound = soundData.GetSound(soundName);
+        if (sound != null)
+        {
+            sfxSource.Stop();
+        }
+        else { }
+    }
+
+
+
     public void MuteSFX(bool mute)
     {
         sfxSource.mute = mute;

@@ -28,11 +28,6 @@ public class PiratesOfTheCaribbeanSoundManager : MonoBehaviour
     {
         if (Instance != null) return;
         Instance = this;
-
-        if (musicSource == null || sfxSource == null)
-        {
-            Debug.LogError("Please assign both MusicSource and SFXSource in the SoundManager.");
-        }
     }
 
     #endregion
@@ -50,10 +45,6 @@ public class PiratesOfTheCaribbeanSoundManager : MonoBehaviour
             musicSource.loop = true;
             musicSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
     }
 
     public void StopMusic(string soundName)
@@ -63,10 +54,6 @@ public class PiratesOfTheCaribbeanSoundManager : MonoBehaviour
         {
             musicSource.clip = sound.audioClip;
             musicSource.Stop();
-        }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
     public void PlaySpinMusic(string soundName)
@@ -80,10 +67,6 @@ public class PiratesOfTheCaribbeanSoundManager : MonoBehaviour
             spinMusicSource.loop = true;
             spinMusicSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
     }
     public void StopSpinMusic(string soundName)
     {
@@ -92,10 +75,6 @@ public class PiratesOfTheCaribbeanSoundManager : MonoBehaviour
         {
             spinMusicSource.clip = sound.audioClip;
             spinMusicSource.Stop();
-        }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
     public void PlaySFX(string soundName)
@@ -111,10 +90,6 @@ public class PiratesOfTheCaribbeanSoundManager : MonoBehaviour
                 sfxSource.loop = false;
                 sfxSource.PlayOneShot(sound.audioClip);
             }
-            else
-            {
-                Debug.LogWarning($"SFX '{soundName}' not found.");
-            }
         }
     }
 
@@ -129,10 +104,6 @@ public class PiratesOfTheCaribbeanSoundManager : MonoBehaviour
             winSource.loop = true;
             winSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
     }
 
     public void StopWinMusic(string soundName)
@@ -142,10 +113,6 @@ public class PiratesOfTheCaribbeanSoundManager : MonoBehaviour
         {
             winSource.clip = sound.audioClip;
             winSource.Stop();
-        }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
 

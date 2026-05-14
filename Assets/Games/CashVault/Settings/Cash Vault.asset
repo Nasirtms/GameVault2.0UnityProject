@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17965952e0a30564dad26ef3cc67eee5, type: 3}
+  m_Name: Cash Vault
+  m_EditorClassIdentifier: 
+  slotResources:
+  - slotType: 3
+    slotAnimationBool: J
+    slotTypeIndex: 0
+  - slotType: 0
+    slotAnimationBool: A
+    slotTypeIndex: 1
+  - slotType: 5
+    slotAnimationBool: Ten
+    slotTypeIndex: 2
+  - slotType: 1
+    slotAnimationBool: K
+    slotTypeIndex: 3
+  - slotType: 2
+    slotAnimationBool: Q
+    slotTypeIndex: 4
+  - slotType: 10
+    slotAnimationBool: Cash
+    slotTypeIndex: 5
+  - slotType: 7
+    slotAnimationBool: Car
+    slotTypeIndex: 6
+  - slotType: 8
+    slotAnimationBool: Jet
+    slotTypeIndex: 7
+  - slotType: 11
+    slotAnimationBool: Ring
+    slotTypeIndex: 8
+  - slotType: 6
+    slotAnimationBool: Ship
+    slotTypeIndex: 9
+  - slotType: 9
+    slotAnimationBool: Sphere
+    slotTypeIndex: 10
+  - slotType: 12
+    slotAnimationBool: Scatter
+    slotTypeIndex: 11
+  - slotType: 13
+    slotAnimationBool: Watch
+    slotTypeIndex: 12
+  - slotType: 4
+    slotAnimationBool: Wild
+    slotTypeIndex: 13
+  soundItems:
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: fed34355028bffa4992746e98772b3eb, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: f298ed59c3dc27847a1a2b75536ec56f, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: c5628910a439b6d48be0e06795a98666, type: 3}
+    volume: 0.7
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 11a2683744cffb847834961319a0dd38, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: 714a1285ce058054580ef6fcc445671d, type: 3}
+    volume: 0.6
+    pitch: 1
+  - soundName: WinEnd
+    audioClip: {fileID: 8300000, guid: e30d9086f06dc46408c47683629ed79b, type: 3}
+    volume: 0.7
+    pitch: 1
+  spinSettings:
+    startSpin: 0
+    endSpin: 1
+    spinDirection: 0
+    SpinSpeed: 40
+    ReelStopDelay: 0.3
+    ReelStartDelay: 0.3
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    spinClampFrequency: 0.05
+    SpinClampStrength: 5
+    WindUpAmount: 0.1
+    WindUpDuration: 0.3
+    ClampDuration: 2
+  slotSettings:
+    MoveSpeed: 5
+    TopYPosition: 0
+    BottomYPosition: -0.06
+    MinSpinDuration: 1.5
+    MaxSpinDuration: 2.5
+    SymbolScaleX: 0.4
+    SymbolScaleY: 0.14

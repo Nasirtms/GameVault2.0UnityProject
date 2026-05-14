@@ -15,6 +15,20 @@ public class TheGreenMachineDeluxeFreeSpinController : MonoBehaviour
     private bool isFreeGame = false;
     private bool firstSpin;
 
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
+    #endregion
+
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
     #endregion
 
     #region Public References
@@ -23,11 +37,12 @@ public class TheGreenMachineDeluxeFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         freeSpinDone = 0;
 
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
 
     public void ResetFreeSpins()
@@ -74,6 +89,8 @@ public class TheGreenMachineDeluxeFreeSpinController : MonoBehaviour
                 yield return new WaitForSeconds(delayBetweenSpins); // optional delay between spins
             }
 
+            if (cancelRequested) yield break;
+
             float betAmount = TheGreenMachineDeluxeUIManager.Instance.CurrentBet();
             SlotSpinService.Instance.Spin(betAmount);
 
@@ -88,6 +105,7 @@ public class TheGreenMachineDeluxeFreeSpinController : MonoBehaviour
                 if (TheGreenMachineDeluxeSlotMachine.Instance.GetWinAmount() > 0)
                 {
                     yield return new WaitUntil(() => TheGreenMachineDeluxeSlotMachine.Instance.isSlotAnimationCompleted);
+                    yield return new WaitUntil(() => TheGreenMachineDeluxeUIManager.Instance.winAnimationCompleted);
                 }
             }
         }
@@ -101,13 +119,22 @@ public class TheGreenMachineDeluxeFreeSpinController : MonoBehaviour
     {
         isFreeGame = false;
 
-        //TheGreenMachineDeluxeSlotMachine.Instance.StopAllSlotAnimations();
         TheGreenMachineDeluxeSlotMachine.Instance.isFreeGame = false;
-
-        TheGreenMachineDeluxeUIManager.Instance.freeGameSpinCount = 0;
 
         TheGreenMachineDeluxeFreeGameTransitionController.Instance.EndFreeSpinTransition();
     }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
 
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        TheGreenMachineDeluxeUIManager.Instance.UpdateButtons("Base Game Transition");
+    }
     #endregion
 }

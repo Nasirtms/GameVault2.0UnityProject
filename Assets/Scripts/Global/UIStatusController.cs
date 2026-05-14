@@ -1,7 +1,8 @@
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using System.Collections;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIStatusController : MonoBehaviour
 {
@@ -11,6 +12,12 @@ public class UIStatusController : MonoBehaviour
     public GameObject loadingPanel;
     public Image spinnerImage;
     public TextMeshProUGUI loadingText;
+
+    [Header("AddressablesError Elements")]
+    public GameObject AddressablesError_Panel;
+    public GameObject AddressablesError_ScalePael;
+    public Button AddressablesError_Btn;
+    public TMP_Text AddressablesError_txt;
 
     [Header("Message Elements")]
     public GameObject messagePanel;
@@ -39,6 +46,12 @@ public class UIStatusController : MonoBehaviour
 
         loadingPanel.SetActive(false);
         messagePanel.SetActive(false);
+    }
+
+    private void Start()
+    {
+        AddressablesError_Btn.onClick.RemoveAllListeners();
+        AddressablesError_Btn.onClick.AddListener(loadMainMenuScene);
     }
 
     //public void Update()
@@ -135,5 +148,11 @@ public class UIStatusController : MonoBehaviour
         yield return new WaitForSeconds(delay);
         messageAnimator.enabled = false;
         messagePanel.SetActive(false);
+    }
+
+
+    void loadMainMenuScene()
+    {
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 }

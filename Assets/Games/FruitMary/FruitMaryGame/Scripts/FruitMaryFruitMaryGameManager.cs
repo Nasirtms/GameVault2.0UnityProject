@@ -244,7 +244,7 @@ public class FruitMaryFruitMaryGameManager : MonoBehaviour
         UpdateFreeSpins(freeSpins);
     }
 
-    public void DcreaseFreeSpinCount()
+    public void DecreaseFreeSpinCount()
     {
         freeSpins--;
         UpdateFreeSpins(freeSpins);

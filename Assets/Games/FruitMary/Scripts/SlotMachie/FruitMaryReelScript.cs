@@ -82,10 +82,10 @@ public class FruitMaryReelScript : MonoBehaviour
     public int reelIndex;
     public void ApplyFinalResult(int reelIndex)
     {
-        Debug.Log("spinSymbolMatrix.Count " + FruitMarySlotMachine.Instance.spinSymbolMatrix.Count);
+        //Debug.Log("spinSymbolMatrix.Count " + FruitMarySlotMachine.Instance.spinSymbolMatrix.Count);
         if (reelIndex >= FruitMarySlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"? No spin data for reel {reelIndex}!");
+            //Debug.LogError($"? No spin data for reel {reelIndex}!");
             return;
         }
         //Debug.Log("GO Name : " + gameObject.name);
@@ -136,7 +136,7 @@ public class FruitMaryReelScript : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"?? No slot resource found for ID: {symbolData.id}");
+                //Debug.LogWarning($"?? No slot resource found for ID: {symbolData.id}");
             }
         }
 
@@ -223,7 +223,7 @@ public class FruitMaryReelScript : MonoBehaviour
 
     public void ForceStop()
     {
-        Debug.Log("Force Stop : ");
+        //Debug.Log("Force Stop : ");
         _forceStop = true;
     }
 
@@ -240,7 +240,7 @@ public class FruitMaryReelScript : MonoBehaviour
                 slots[i].SetType(res);
             }
 
-            Debug.Log("Reel " + this._index + " Clamped Down");
+            //Debug.Log("Reel " + this._index + " Clamped Down");
         }
         //FruitMaryUIManager.Instance.PlaySound("FruitMary_ReelStop");
         OnSpinComplete?.Invoke(this._index);

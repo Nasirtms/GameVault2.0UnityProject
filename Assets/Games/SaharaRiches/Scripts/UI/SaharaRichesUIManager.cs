@@ -178,20 +178,6 @@ public class SaharaRichesUIManager : GameBetServices
         if (!SaharaRichesSoundManager.Instance.IsSoundMute())
             SaharaRichesSoundManager.Instance.SpinStopMusic(soundName);
     }
-    //private void PlayWinMusic(string soundName)
-    //{
-    //    if (string.IsNullOrEmpty(soundName)) return;
-    //    if (!SaharaRichesSoundManager.Instance.IsSoundMute())
-    //        SaharaRichesSoundManager.Instance.PlayWinText(soundName);
-    //}
-
-    //private void StopWinMusic(string soundName)
-    //{
-    //    if (string.IsNullOrEmpty(soundName)) return;
-    //    if (!SaharaRichesSoundManager.Instance.IsSoundMute())
-    //        SaharaRichesSoundManager.Instance.StopWinText(soundName);
-    //}
-
 
     private void SoundActive(bool soundActive)
     {
@@ -255,7 +241,7 @@ public class SaharaRichesUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -289,7 +275,6 @@ public class SaharaRichesUIManager : GameBetServices
             StopCoroutine(winCoroutine);
         }
         UpdateButtons("Spin");
-        PlaySpinMusic("Spin");
         SlotSpinService.Instance.Spin(betAmount);
     }
 
@@ -314,7 +299,6 @@ public class SaharaRichesUIManager : GameBetServices
         SaharaRichesSlotMachine.Instance.Reset();
         if (autoSpinController == null) return;
 
-        PlaySpinMusic("Spin");
         float betAmount = betController.GetCurrentBet();
         if (SaharaRichesSlotMachine.Instance.jackpotgame)
             return;
@@ -329,7 +313,7 @@ public class SaharaRichesUIManager : GameBetServices
         }
 
         autoSpinController.StartAutoSpin(betAmount);
-        UpdateButtons("Auto");
+        //UpdateButtons("Auto");
     }
     private void OnClickAutoStop()
     {
@@ -338,6 +322,9 @@ public class SaharaRichesUIManager : GameBetServices
         PlaySound("Button");
         StopSpinMusic("Spin");
         autoSpinController.CancelAutoSpin();
+        autoStopButton.ShowButton(false);
+        autoButton.ShowButton(true);
+        SetAutoInteractable(false);
     }
     #endregion
 
@@ -380,7 +367,7 @@ public class SaharaRichesUIManager : GameBetServices
                 break;
 
             case "Auto":
-                interactable = true;
+                interactable = false;
                 spinButton.ShowButton(false);
                 stopButton.ShowButton(true);
                 autoButton.ShowButton(false);
@@ -468,7 +455,11 @@ public class SaharaRichesUIManager : GameBetServices
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     private float currentSpinWin;
 
     public void UpdateWinAmount(float winAmount, bool compound = false)
@@ -522,13 +513,14 @@ public class SaharaRichesUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
-
-        textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
+        //textToAnimate.text = target.ToString("0.00");
     }
     private IEnumerator AnimateToValue(float target, float duration, TMP_Text textToAnimateOne, TMP_Text textToAnimateTwo)
     {
@@ -538,16 +530,18 @@ public class SaharaRichesUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
-
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
-
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
 
         StopCoroutine(textAnimationCoroutine);
     }
@@ -574,7 +568,6 @@ public class SaharaRichesUIManager : GameBetServices
         StopCoroutine(textAnimationCoroutine);
     }
     #endregion
-
 
     #region Helper Functions
 

@@ -112,7 +112,7 @@ public class AtomicMeltdownUIManager : GameBetServices
         SetupInputButtons();
         UserManager.Instance.UpdateGameCoins += UpdateCoins;
 
-        PlayMusic("Background");
+        PlayMusic("BG");
     }
 
     private void OnDestroy()
@@ -184,26 +184,26 @@ public class AtomicMeltdownUIManager : GameBetServices
     public void PlaySpinMusic(string soundName)
     {
         if (string.IsNullOrEmpty(soundName)) return;
-        if (!AtomicMeltdownSoundManager.Instance.IsMusicMute())
+        if (!AtomicMeltdownSoundManager.Instance.IsSoundMute())
             AtomicMeltdownSoundManager.Instance.PlaySpinMusic(soundName);
     }
     public void StopSpinMusic(string soundName)
     {
         if (string.IsNullOrEmpty(soundName)) return;
-        if (!AtomicMeltdownSoundManager.Instance.IsMusicMute())
+        if (!AtomicMeltdownSoundManager.Instance.IsSoundMute())
             AtomicMeltdownSoundManager.Instance.StopSpinMusic(soundName);
     }
     private void PlayWinMusic(string soundName)
     {
         if (string.IsNullOrEmpty(soundName)) return;
-        if (!AtomicMeltdownSoundManager.Instance.IsMusicMute())
+        if (!AtomicMeltdownSoundManager.Instance.IsSoundMute())
             AtomicMeltdownSoundManager.Instance.PlayWinMusic(soundName);
     }
 
     private void StopWinMusic(string soundName)
     {
         if (string.IsNullOrEmpty(soundName)) return;
-        if (!AtomicMeltdownSoundManager.Instance.IsMusicMute())
+        if (!AtomicMeltdownSoundManager.Instance.IsSoundMute())
             AtomicMeltdownSoundManager.Instance.StopWinMusic(soundName);
     }
     public void SoundActive(bool soundActive)
@@ -286,7 +286,7 @@ public class AtomicMeltdownUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -302,13 +302,12 @@ public class AtomicMeltdownUIManager : GameBetServices
     
     public void OnClickSpin()
     {
-        UpdateButtons("Spin");
-        PlaySound("SpinStart");
-        PlaySpinMusic("Spin");
-
         float betAmount = betController.GetCurrentBet();
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
 
+        UpdateButtons("Spin");
+        PlaySound("SpinStart");
+        PlaySpinMusic("Spin");
         LeverAnimator.SetTrigger("Play");
 
         if (textAnimationCoroutine != null)
@@ -324,7 +323,14 @@ public class AtomicMeltdownUIManager : GameBetServices
 
     private void OnClickStop()
     {
-        UpdateButtons("Default");
+        if (AtomicMeltdownSlotMachine.Instance.isFreeGame)
+        {
+            UpdateButtons("FreeSpin");
+        }
+        else
+        {
+            UpdateButtons("Default");
+        }
         PlaySound("SpinStop");
         StopSpinMusic("Spin");
 
@@ -430,7 +436,11 @@ public class AtomicMeltdownUIManager : GameBetServices
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount, bool compound = false)
     {
         if (winAmount > 0)
@@ -458,7 +468,6 @@ public class AtomicMeltdownUIManager : GameBetServices
         if (textAnimationCoroutine != null)
             StopCoroutine(textAnimationCoroutine);
 
-        PlaySound("Win");
         textAnimationCoroutine = StartCoroutine(AnimateToValue(winAmount, 0.5f, this.winAmount));
     }
 
@@ -477,13 +486,16 @@ public class AtomicMeltdownUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+
+            textToAnimate.text = FormatFloorValue(displayed);
+            //textToAnimate.text = displayed.ToString("0.00");
 
             timer += Time.deltaTime;
             yield return null;
         }
         //Debug.Log($"animate to target value, {target:0.00}");
-        textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
+        //textToAnimate.text = target.ToString("0.00");
     }
 
     private IEnumerator AnimateToValue(float target, float duration, TMP_Text textToAnimateOne, TMP_Text textToAnimateTwo)
@@ -494,17 +506,19 @@ public class AtomicMeltdownUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
-
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
 
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
-
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
         StopCoroutine(textAnimationCoroutine);
     }
 

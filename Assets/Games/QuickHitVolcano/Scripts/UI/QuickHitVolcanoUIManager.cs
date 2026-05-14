@@ -174,7 +174,18 @@ public class QuickHitVolcanoUIManager : GameBetServices
         if (!QuickHitVolcanoSoundManager.Instance.IsMusicMute())
             QuickHitVolcanoSoundManager.Instance.StopMusic(soundName);
     }
-
+    public void PlaySpinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!QuickHitVolcanoSoundManager.Instance.IsSoundMute())
+            QuickHitVolcanoSoundManager.Instance.PlaySpinMusic(soundName);
+    }
+    public void StopSpinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!QuickHitVolcanoSoundManager.Instance.IsSoundMute())
+            QuickHitVolcanoSoundManager.Instance.StopSpinMusic(soundName);
+    }
     private void PlayWinMusic(string soundName)
     {
         if (string.IsNullOrEmpty(soundName)) return;
@@ -264,7 +275,7 @@ public class QuickHitVolcanoUIManager : GameBetServices
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
 
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -281,11 +292,10 @@ public class QuickHitVolcanoUIManager : GameBetServices
 
     public void OnClickSpin()
     {
-        UpdateButtons("Spin");
-
         float betAmount = betController.GetCurrentBet();
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
 
+        UpdateButtons("Spin");
         PlaySound("Button");
 
         if (textAnimationCoroutine != null)
@@ -304,7 +314,7 @@ public class QuickHitVolcanoUIManager : GameBetServices
     private void OnClickStop()
     {
         PlaySound("Button");
-
+        StopSpinMusic("Spin");
         QuickHitVolcanoSlotMachine.Instance.isStopBtnPressed = true;
         QuickHitVolcanoSlotMachine.Instance.StopWithResult();
 
@@ -322,7 +332,7 @@ public class QuickHitVolcanoUIManager : GameBetServices
     {
         if (autoSpinController == null) return;
 
-        UpdateButtons("Spin");
+        //UpdateButtons("Spin");
         PlaySound("Button");
 
         if (textAnimationCoroutine != null)
@@ -409,7 +419,11 @@ public class QuickHitVolcanoUIManager : GameBetServices
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount, bool compound = false)
     {
         if (winAmount > 0)
@@ -466,14 +480,14 @@ public class QuickHitVolcanoUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
-
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
 
-        textToAnimate.text = target.ToString("0.00");
-
+        //textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
         if (!freeSpin)
         {
             StopWinMusic("Win");
@@ -488,17 +502,19 @@ public class QuickHitVolcanoUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
-
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
 
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
-
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
         StopCoroutine(textAnimationCoroutine);
 
     }

@@ -99,6 +99,8 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
         SetupInputButtons();
         UserManager.Instance.UpdateGameCoins += UpdateCoins;
         GameBetServices.Instance.SetActiveUI(this, coins, UpdateCoins);
+        winAnimationCompleted = true;
+        PlayMusic("BG");
     }
 
     private void OnDestroy()
@@ -170,19 +172,30 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
         if (!TheGreenMachineDeluxeSoundManager.Instance.IsMusicMute())
             TheGreenMachineDeluxeSoundManager.Instance.StopMusic(soundName);
     }
-
-    private void PlayWinText(string soundName)
+    public void PlaySpinMusic(string soundName)
     {
-        if (string.IsNullOrEmpty(soundName)) return;
-        if (!TheGreenMachineDeluxeSoundManager.Instance.IsMusicMute())
-            TheGreenMachineDeluxeSoundManager.Instance.PlayWinText(soundName);
+        if (soundName == null || TheGreenMachineDeluxeSoundManager.Instance == null) return;
+        if (!TheGreenMachineDeluxeSoundManager.Instance.IsSoundMute())
+            TheGreenMachineDeluxeSoundManager.Instance.PlaySpinMusic(soundName);
+    }
+    public void StopSpinMusic(string soundName)
+    {
+        if (soundName == null || TheGreenMachineDeluxeSoundManager.Instance == null) return;
+        if (!TheGreenMachineDeluxeSoundManager.Instance.IsSoundMute())
+            TheGreenMachineDeluxeSoundManager.Instance.StopSpinMusic(soundName);
+    }
+    private void PlayWinMusic(string soundName)
+    {
+        if (soundName == null || TheGreenMachineDeluxeSoundManager.Instance == null) return;
+        if (!TheGreenMachineDeluxeSoundManager.Instance.IsSoundMute())
+            TheGreenMachineDeluxeSoundManager.Instance.PlayWinMusic(soundName);
     }
 
-    private void StopWinText(string soundName)
+    private void StopWinMusic(string soundName)
     {
-        if (string.IsNullOrEmpty(soundName)) return;
-        if (!TheGreenMachineDeluxeSoundManager.Instance.IsMusicMute())
-            TheGreenMachineDeluxeSoundManager.Instance.StopWinText(soundName);
+        if (soundName == null || TheGreenMachineDeluxeSoundManager.Instance == null) return;
+        if (!TheGreenMachineDeluxeSoundManager.Instance.IsSoundMute())
+            TheGreenMachineDeluxeSoundManager.Instance.StopWinMusic(soundName);
     }
 
     private void SoundActive(bool soundActive)
@@ -248,7 +261,7 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -265,16 +278,15 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
     private void OnClickSpin()
     {
         PlaySound("Button");
+        if (!winAnimationCompleted) return;
 
         float betAmount = betController.GetCurrentBet();
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
 
-        PlayMusic("ReelSpin");
-
         if (textAnimationCoroutine != null)
         {
             StopCoroutine(textAnimationCoroutine);
-            StopWinText("WinText");
+            StopWinMusic("WinText");
         }
         if (winCoroutine != null)
         {
@@ -288,9 +300,6 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
     {
         PlaySound("Button");
 
-        //if (TheGreenMachineDeluxeSoundManager.Instance != null && !TheGreenMachineDeluxeAutoSpinController.isAutoSpinning)
-        //    TheGreenMachineDeluxeSoundManager.Instance.StopMusic("Spin1");
-
         TheGreenMachineDeluxeSlotMachine.Instance.isStopBtnPressed = true;
         TheGreenMachineDeluxeSlotMachine.Instance.StopWithResult();
 
@@ -303,19 +312,20 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
     private void OnClickAuto()
     {
         if (autoSpinController == null) return;
-
+        if (!winAnimationCompleted) return;
         PlaySound("Button");
         
         float betAmount = betController.GetCurrentBet();
         if (textAnimationCoroutine != null)
         {
+            StopWinMusic("WinText");
             StopCoroutine(textAnimationCoroutine);
-            StopWinText("WinText");
         }
         if (winCoroutine != null)
         {
             StopCoroutine(winCoroutine);
         }
+
         autoSpinController.StartAutoSpin(betAmount);
     }
 
@@ -325,8 +335,6 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
 
         PlaySound("Button");
 
-        //TheGreenMachineDeluxeSoundManager.Instance.StopMusic("Spin1");
-
         autoSpinController.CancelAutoSpin();
 
         if (TheGreenMachineDeluxeSlotMachine.Instance.InSpin)
@@ -335,12 +343,6 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
             autoButton.ShowButton(true);
             SetAutoInteractable(false);
         }
-
-        //if (!TheGreenMachineDeluxeSlotMachine.Instance.isPaylineCompleted)
-        //{
-        //    TheGreenMachineDeluxeAutoSpinController.isAutoSpinning = false;
-        //    UpdateButtons("Auto Stop");
-        //}
     }
 
     #endregion
@@ -401,6 +403,7 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
                 break;
 
             case "Free Spin":
+                inSpin = true;
                 spinButton.ShowButton(false);
                 break;
 
@@ -434,7 +437,11 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     private float currentSpinWin;
 
     public void UpdateWinAmount(float winAmount, bool compound = false)
@@ -464,7 +471,7 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
         if (textAnimationCoroutine != null)
             StopCoroutine(textAnimationCoroutine);
 
-        PlayWinText("WinText");
+        PlayWinMusic("WinText");
         textAnimationCoroutine = StartCoroutine(AnimateToValue(winAmount, 1f, this.winAmount, false));
     }
 
@@ -488,17 +495,17 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
-
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
 
-        textToAnimate.text = target.ToString("0.00");
-
+        //textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
         if (!freeSpin)
         {
-            StopWinText("WinText");
+            StopWinMusic("WinText");
             PlaySound("WinTextEnd");
         }
     }
@@ -510,7 +517,9 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+
             //textToAnimateTwo.text = displayed.ToString("0.00");
 
             timer += Time.deltaTime;
@@ -518,7 +527,8 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
         }
 
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
+        textToAnimateOne.text = FormatFloorValue(target);
+        //textToAnimateOne.text = target.ToString("0.00");
         //textToAnimateTwo.text = target.ToString("0.00");
 
         StopCoroutine(textAnimationCoroutine);
@@ -596,11 +606,11 @@ public class TheGreenMachineDeluxeUIManager : GameBetServices
 
         //winText.text = "0.00";
 
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.5f);
 
         textAnimationCoroutine = StartCoroutine(AnimateToValueTo(targetAmount, 2f, this.winAmount));
 
-        yield return new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(3f);
 
         animator.enabled = false;
 

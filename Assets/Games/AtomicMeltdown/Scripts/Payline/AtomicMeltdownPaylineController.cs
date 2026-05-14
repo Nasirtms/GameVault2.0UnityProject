@@ -97,7 +97,7 @@ public class AtomicMeltdownPaylineController : MonoBehaviour
 
         if (activePaylines.Count == 0 && resultFreeSpin <= 0)
         {
-            Debug.LogWarning("No paylines to display.");
+            //Debug.LogWarning("No paylines to display.");
             return;
         }
 
@@ -150,8 +150,6 @@ public class AtomicMeltdownPaylineController : MonoBehaviour
 
             if (resultFreeSpin > 0)
             {
-                AtomicMeltdownUIManager.Instance.PlaySound("FreeSpinStart");
-
                 AtomicMeltdownSlotMachine.Instance.firstFreeSpin = true;
                 AtomicMeltdownSlotMachine.Instance.isPaylineCompleted = true;
 

@@ -33,6 +33,7 @@ public class SaharaRichesReelScript : MonoBehaviour
     public bool IsSpinning => isSpinning;
     #endregion
 
+    #region Reel Initializations
     public void Reset()
     {
         foreach (SaharaRichesSlotScript slot in slots)
@@ -40,7 +41,6 @@ public class SaharaRichesReelScript : MonoBehaviour
             slot.wildParticle.SetActive(false);
         }
     }
-    #region Reel Initializations
     public void Initialize()
     {
         settings = SaharaRichesSlotMachine.Instance.settings;
@@ -84,13 +84,11 @@ public class SaharaRichesReelScript : MonoBehaviour
     }
     #endregion
 
-
     #region Backend Result
     public void ApplyFinalResult(int reelIndex)
     {
         if (reelIndex >= SaharaRichesSlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"No spin data for reel {reelIndex}!");
             return;
         }
 
@@ -127,10 +125,6 @@ public class SaharaRichesReelScript : MonoBehaviour
                     slot.UpdateCCAmount(0f);
                 }
                 slot.SetType(res.Value, true);
-            }
-            else
-            {
-                Debug.LogWarning($"No slot resource found for ID: {symbolData.id}");
             }
         }
 
@@ -285,7 +279,6 @@ public class SaharaRichesReelScript : MonoBehaviour
         EnsureSymbolsInProperPositions();
     }
     #endregion
-
 
     #region Reel Stop
     public void StopSpin()

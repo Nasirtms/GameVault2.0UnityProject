@@ -1,20 +1,28 @@
-﻿// Assets/Scripts/Game/GameManager.cs
+﻿using DG.Tweening;
 using HeadTailGame;
 using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
-
 
 public class HeadTailGameManager : MonoBehaviour
 {
+
+    #region Variables
     public CurrentPick currentPick;
 
     [Header("Refs")]
     [SerializeField] private HeadTailCoin3DController coin;
     [SerializeField] private HeadTailBetManager betManager;
     [SerializeField] private HeadTailUIManager ui;
+
+    [Header("Buttons Highlight")]
+    [SerializeField] private Image headsHighlightImage;
+    [SerializeField] private Image tailsHighlightImage;
+    [SerializeField] private float highlightFadeDuration = 0.3f;
 
     [Header("Timing")]
     [SerializeField, Min(0f)] private float preSpinPause = 0.1f;
@@ -26,10 +34,13 @@ public class HeadTailGameManager : MonoBehaviour
 
     bool _roundInProgress;
 
+    #endregion
+
+    #region Public References
     void Start()
     {
         // Wire UI events
-        
+        UpdateSlotServicesGameName();
         ui.IncreaseBetButton.onClick.AddListener(betManager.Increase);
         ui.DecreaseBetButton.onClick.AddListener(betManager.Decrease);
         betManager.OnBetChanged += ui.SetBetText;
@@ -46,7 +57,16 @@ public class HeadTailGameManager : MonoBehaviour
         };
         HeadTailSoundManager.Instance.PlayMusic("Background");
     }
+    void UpdateSlotServicesGameName()
+    {
+        string sceneName = GameSlotRegistry.TrimSceneName(SceneManager.GetActiveScene().name);
+        //GameSlotRegistry.Register(sceneName, this);
+        SceneManagement.UpdateCurrentSceneName(sceneName);
+    }
 
+    #endregion
+
+    #region PlayerPick & Spin
     void PlayerChooses(int playerPick)
     {
         if (_roundInProgress || coin.IsSpinning) return;
@@ -59,6 +79,8 @@ public class HeadTailGameManager : MonoBehaviour
            
         _roundInProgress = true;
 
+        FadeInImage(playerPick);
+
         if (playerPick == HeadTailCoinFaces.Tails)
             ui.SetAllButtonsInteractableExcept(ui.TailsButton);
         else
@@ -67,7 +89,7 @@ public class HeadTailGameManager : MonoBehaviour
         HeadTailSoundManager.Instance.PlaySpinMusic("Spin");
         StartCoroutine(RoundRoutine(playerPick));
     }
-
+    public int timeout = 20;
     IEnumerator RoundRoutine(int playerPick)
     {
         OnRoundStart?.Invoke();
@@ -76,8 +98,29 @@ public class HeadTailGameManager : MonoBehaviour
         yield return new WaitForSeconds(preSpinPause);
 
         // Fetch API result
-        yield return coin.FetchOutcome();
+        yield return coin.FetchOutcome(timeout);
+        if (coin.HasNetworkError)
+        {
+            CasinoUIManager.Instance.ShowErrorCanvas(1, "Network Error");
 
+            int fallbackFace = Random.value > 0.5f
+                ? HeadTailCoinFaces.Heads
+                : HeadTailCoinFaces.Tails;
+
+            bool doneError = false;
+
+            StartCoroutine(coin.StopSpinToResultAfterMinimum(
+                fallbackFace, 0f, 1, _ => doneError = true));
+
+            while (!doneError) yield return null;
+
+            SlotSpinService.Instance.AddCurrentBetCoinIntoUserCoin();
+            HeadTailSoundManager.Instance.StopSpinMusic("Spin");
+            FadeOutImage();
+            ui.SetAllButtonsInteractable(true);
+            _roundInProgress = false;
+            yield break;
+        }
         // Decide which face to land on
         int faceToLand = coin.LastIsWin
             ? playerPick
@@ -106,15 +149,45 @@ public class HeadTailGameManager : MonoBehaviour
         }
         yield return new WaitForSeconds(postResultPause);
 
+        FadeOutImage();
         ui.SetAllButtonsInteractable(true);
         _roundInProgress = false;
     }
+    #endregion
 
+    #region Helper Functions
     void UpdateGameCoin()
     {
         GameBetServices.Instance.UpdateCoins(coin.newBalance);
     }
+    private void FadeInImage(int playerPick)
+    {
+        Image img = playerPick == HeadTailCoinFaces.Heads
+            ? headsHighlightImage
+            : tailsHighlightImage;
 
+        if (!img) return;
+
+        img.DOKill();
+        img.color = new Color(img.color.r, img.color.g, img.color.b, 0f);
+        img.DOFade(1f, highlightFadeDuration);
+    }
+
+    private void FadeOutImage()
+    {
+        if (headsHighlightImage)
+        {
+            headsHighlightImage.DOKill();
+            headsHighlightImage.DOFade(0f, highlightFadeDuration);
+        }
+
+        if (tailsHighlightImage)
+        {
+            tailsHighlightImage.DOKill();
+            tailsHighlightImage.DOFade(0f, highlightFadeDuration);
+        }
+    }
+    #endregion
 }
 
 [Serializable]

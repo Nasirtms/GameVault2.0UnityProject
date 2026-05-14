@@ -29,7 +29,7 @@ public class BiggerBassBonanzaSoundManager : MonoBehaviour
 
         if (musicSource == null || sfxSource == null)
         {
-            Debug.LogError("Please assign both MusicSource and SFXSource in the SoundManager.");
+            //Debug.LogError("Please assign both MusicSource and SFXSource in the SoundManager.");
         }
     }
 
@@ -50,7 +50,7 @@ public class BiggerBassBonanzaSoundManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            //Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
 
@@ -64,7 +64,7 @@ public class BiggerBassBonanzaSoundManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            //Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
 
@@ -83,7 +83,7 @@ public class BiggerBassBonanzaSoundManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"SFX '{soundName}' not found.");
+                //Debug.LogWarning($"SFX '{soundName}' not found.");
             }
         }
     }
@@ -101,7 +101,7 @@ public class BiggerBassBonanzaSoundManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            //Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
 
@@ -115,7 +115,7 @@ public class BiggerBassBonanzaSoundManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            //Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
 

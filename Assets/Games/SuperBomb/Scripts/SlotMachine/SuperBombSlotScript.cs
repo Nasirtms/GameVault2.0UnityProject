@@ -1,9 +1,12 @@
 ﻿using Coffee.UIEffects;
 using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 [RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(Animator))]
@@ -284,7 +287,7 @@ public class SuperBombSlotScript : MonoBehaviour
 
     public void showPaylineWinOnce(float winAmount, int slotIndex)
     {
-        paylineWinOnce.text = winAmount.ToString("0.00");
+        paylineWinOnce.text = ToSpriteText(winAmount);
         paylineWinOnce.gameObject.SetActive(true);
         slotsPaylineGlowOnce[slotIndex].gameObject.SetActive(true);
 
@@ -296,5 +299,81 @@ public class SuperBombSlotScript : MonoBehaviour
                 slotsPaylineGlowOnce[slotIndex].gameObject.SetActive(false);
                 paylineWinOnce.gameObject.SetActive(false);
             });
+    }
+
+    public IEnumerator AnimatePaylineWinPath(float winAmount, List<SuperBombSlotScript> pathSlots, System.Action onComplete = null)
+    {
+        paylineWinOnce.text = ToSpriteText(winAmount);
+        paylineWinOnce.gameObject.SetActive(true);
+
+        CanvasGroup cg = paylineWinOnce.GetComponent<CanvasGroup>();
+        if (cg == null)
+            cg = paylineWinOnce.gameObject.AddComponent<CanvasGroup>();
+
+        cg.alpha = 1f;
+
+        Vector3 homePos = paylineWinOnce.transform.position;
+
+        paylineWinOnce.transform.position =
+            pathSlots[0].transform.position;
+
+
+        Sequence seq = DOTween.Sequence();
+
+        seq.Append(
+            paylineWinOnce.transform
+                .DOScale(2.7f, 0.45f)
+                .SetEase(Ease.OutBack)
+        );
+
+        float moveDurationPerSlot = 0.2f;
+
+        for (int i = 1; i < pathSlots.Count; i++)
+        {
+            Vector3 targetPos = pathSlots[i].transform.position;
+
+            seq.Append(
+                paylineWinOnce.transform
+                    .DOMove(targetPos, moveDurationPerSlot)
+                    .SetEase(Ease.Linear)
+            );
+        }
+
+        seq.Append(
+            paylineWinOnce.transform
+                .DOScale(1f, 0.2f)
+                .SetEase(Ease.InOutSine)
+        );
+
+        seq.AppendInterval(0.5f);
+
+        seq.Append(
+            cg.DOFade(0f, 0.25f)
+        );
+
+        yield return seq.WaitForCompletion();
+
+        paylineWinOnce.transform.position = homePos;
+        paylineWinOnce.transform.localScale = Vector3.zero;
+        cg.alpha = 1f;
+        paylineWinOnce.gameObject.SetActive(false);
+
+        onComplete?.Invoke();
+    }
+
+    string ToSpriteText(float amount)
+    {
+        string s = amount.ToString("0.00");
+        StringBuilder sb = new StringBuilder();
+
+        foreach (char c in s)
+        {
+            if (c == '.')
+                sb.Append("<sprite=10>");
+            else
+                sb.Append($"<sprite={c - '0'}>");
+        }
+
+        return sb.ToString();
     }
 }

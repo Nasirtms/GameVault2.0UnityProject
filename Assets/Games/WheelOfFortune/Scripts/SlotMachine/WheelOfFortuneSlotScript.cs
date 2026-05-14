@@ -103,17 +103,12 @@ public class WheelOfFortuneSlotScript : MonoBehaviour
     {
         StopAnimation();
         slotAnimator = slots[currentResource.slotTypeIndex].GetComponentInParent<Animator>();
+        slotAnimator.enabled = true;
         slotAnimator.SetBool(slotAnimationBool, true);
     }
 
     public void StopAnimation()
     {
-        //if (uiShiny != null)
-        //{
-        //    uiShiny.Stop();
-        //    uiShiny.enabled = false;
-        //}
-
         if (slotAnimator != null)
         {
             slotAnimator.SetBool(slotAnimationBool, false);

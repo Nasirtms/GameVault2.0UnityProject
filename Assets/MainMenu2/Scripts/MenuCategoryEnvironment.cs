@@ -42,6 +42,148 @@ namespace MainMenu
             //}
         }
 
+        protected override void MoveLeftOnePage()
+        {
+            if (isGoingInside)
+                return;
+
+            if (MainMenuManager.instance.player.isWalking && moveRightButtonConsecutivePressCount > 0)
+                return;
+
+            bool moveToEnd = false;
+            moveRightButtonConsecutivePressCount = 0;
+            //moveLeftButtonConsecutivePressCount++;
+
+            if (!MainMenuManager.instance.player.isWalking)
+            {
+                moveLeftButtonConsecutivePressCount = 1;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveLeftButtonConsecutivePressCount < MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                moveLeftButtonConsecutivePressCount++;
+                return;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveLeftButtonConsecutivePressCount >= MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                moveLeftButtonConsecutivePressCount = 0;
+                moveToEnd = true;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveLeftButtonConsecutivePressCount > MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                return;
+            }
+
+            MenuGameMachine machineToMoveTo = null;
+            if (!moveToEnd)
+            {
+                for (int i = gameMachines.Count - 1; i >= 0 && machineToMoveTo == null; i--)
+                {
+                    if (gameMachines[i].entryPoint.position.x < moveTarget.position.x - 0.2f)
+                    {
+                        machineToMoveTo = gameMachines[i];
+                    }
+                }
+            }
+            else
+            {
+                if (gameMachines.Count > 0)
+                {
+                    machineToMoveTo = gameMachines[0];
+                }
+            }
+
+            if (machineToMoveTo != null)
+            {
+                MainMenuManager.instance.movingWithButtons = true;
+                moveTargetPositionTemp.x = machineToMoveTo.entryPoint.position.x;
+                moveTargetPositionTemp.x = Mathf.Clamp(moveTargetPositionTemp.x, environmentBounds.x, environmentBounds.y); ;
+                moveTarget.position = moveTargetPositionTemp;
+                MainMenuManager.instance.mainCamera.followDamping = MainMenuManager.instance.mainCamera.followDampingMinMax.x;
+                MainMenuManager.instance.mainCamera.followTarget = MainMenuManager.instance.moveTarget.transform;
+                MainMenuManager.instance.moveTargetMarker.followTarget = MainMenuManager.instance.player.transform;
+                if (!moveToEnd)
+                    MainMenuManager.instance.player.moveSpeed = MainMenuManager.instance.player.moveSpeedMinMax.x;
+                else
+                {
+                    MainMenuManager.instance.player.moveSpeed = MainMenuManager.instance.player.moveSpeedMinMax.y;
+                    MainMenuManager.instance.player.transform.position = new Vector3(moveTargetPositionTemp.x, MainMenuManager.instance.player.transform.position.y, MainMenuManager.instance.player.transform.position.z);
+                    MainMenuManager.instance.player.SetAvatarDirection(false);
+                    //MainMenuManager.instance.player.moveSpeed = (((MainMenuManager.instance.player.moveSpeedMinMax.y - MainMenuManager.instance.player.moveSpeedMinMax.x) * .1f) + MainMenuManager.instance.player.moveSpeedMinMax.x);
+                }
+            }
+        }
+
+        protected override void MoveRightOnePage()
+        {
+            if (isGoingInside)
+                return;
+
+            if (MainMenuManager.instance.player.isWalking && moveLeftButtonConsecutivePressCount > 0)
+                return;
+
+            bool moveToEnd = false;
+            moveLeftButtonConsecutivePressCount = 0;
+            //moveRightButtonConsecutivePressCount++;
+
+            if (!MainMenuManager.instance.player.isWalking)
+            {
+                moveRightButtonConsecutivePressCount = 1;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveRightButtonConsecutivePressCount < MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                moveRightButtonConsecutivePressCount++;
+                return;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveRightButtonConsecutivePressCount >= MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                moveRightButtonConsecutivePressCount = 0;
+                moveToEnd = true;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveRightButtonConsecutivePressCount > MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                return;
+            }
+
+            MenuGameMachine machineToMoveTo = null;
+            if (!moveToEnd)
+            {
+                for (int i = 0; i < gameMachines.Count && machineToMoveTo == null; i++)
+                {
+                    if (gameMachines[i].entryPoint.position.x > moveTarget.position.x + 0.2f)
+                    {
+                        machineToMoveTo = gameMachines[i];
+                    }
+                }
+            }
+            else
+            {
+                if (gameMachines.Count > 0)
+                {
+                    machineToMoveTo = gameMachines[gameMachines.Count - 1];
+                }
+            }
+
+            if (machineToMoveTo != null)
+            {
+                MainMenuManager.instance.movingWithButtons = true;
+                moveTargetPositionTemp.x = machineToMoveTo.entryPoint.position.x;
+                moveTargetPositionTemp.x = Mathf.Clamp(moveTargetPositionTemp.x, environmentBounds.x, environmentBounds.y); ;
+                moveTarget.position = moveTargetPositionTemp;
+                MainMenuManager.instance.mainCamera.followDamping = MainMenuManager.instance.mainCamera.followDampingMinMax.x;
+                MainMenuManager.instance.mainCamera.followTarget = MainMenuManager.instance.moveTarget.transform;
+                MainMenuManager.instance.moveTargetMarker.followTarget = MainMenuManager.instance.player.transform;
+                if (!moveToEnd)
+                    MainMenuManager.instance.player.moveSpeed = MainMenuManager.instance.player.moveSpeedMinMax.x;
+                else
+                {
+                    MainMenuManager.instance.player.moveSpeed = MainMenuManager.instance.player.moveSpeedMinMax.y;
+                    MainMenuManager.instance.player.transform.position = new Vector3(moveTargetPositionTemp.x, MainMenuManager.instance.player.transform.position.y, MainMenuManager.instance.player.transform.position.z);
+                    MainMenuManager.instance.player.SetAvatarDirection(true);
+                    //MainMenuManager.instance.player.moveSpeed = (((MainMenuManager.instance.player.moveSpeedMinMax.y - MainMenuManager.instance.player.moveSpeedMinMax.x) * .1f) + MainMenuManager.instance.player.moveSpeedMinMax.x);
+                }
+            }
+        }
+
         public override void Clicked2DObject(GameObject clickedObject)
         {
             MenuGameMachine mgm = clickedObject.GetComponent<MenuGameMachine>();
@@ -90,7 +232,7 @@ namespace MainMenu
             Func<GameItem, eGameCategories, bool> condition;
 
             if (categoryName == eGameCategories.Hot)
-                condition = (game, categoryName) => game.Gametitle.ToLower().Contains("new");
+                condition = (game, categoryName) => game.Gametitle.ToLower().Contains("hot");
             else if (categoryName == eGameCategories.Favorites)
                 condition = (game, categoryName) => game.is_favorite;
             else
@@ -113,6 +255,7 @@ namespace MainMenu
                         // Instantiate and set data
                         MenuGameMachine menuGameMachine = Instantiate(machinePrefab, machinesContainer);
                         menuGameMachine.gameID = game.id;
+                        menuGameMachine.gameTitle = game.Gametitle;
                         menuGameMachine.sceneName = "Game" + game.name.Replace(" ", "");
                         //menuGameMachine.addressableLabel = game.name.Replace(" ", "_").ToLower();
                         menuGameMachine.addressableLabel = game.addressableLabel;
@@ -139,7 +282,15 @@ namespace MainMenu
                 environmentBoundsMaxTransform.localPosition.y,
                 environmentBoundsMaxTransform.localPosition.z);
             UpdateBoundsValues();
-            MainMenuManager.instance.mainCamera.UpdateBounds(environmentBounds.x, environmentBounds.y);
+            if (isActive)
+            {
+                MainMenuManager.instance.mainCamera.UpdateBounds(environmentBounds.x, environmentBounds.y);
+
+                moveTargetPositionTemp.x = Mathf.Clamp(moveTargetPositionTemp.x, environmentBounds.x, environmentBounds.y);
+                moveTarget.position = moveTargetPositionTemp;
+
+                MainMenuManager.instance.player.transform.position = new Vector3(moveTargetPositionTemp.x, MainMenuManager.instance.player.transform.position.y, MainMenuManager.instance.player.transform.position.z);
+            }
         }
 
         public void ResetMachinesList()
@@ -152,7 +303,10 @@ namespace MainMenu
 
             environmentBoundsMaxTransform.localPosition = environmentBoundsMinTransform.localPosition + new Vector3(machineDistance, 0, 0);
             UpdateBoundsValues();
-            MainMenuManager.instance.mainCamera.UpdateBounds(environmentBounds.x, environmentBounds.y);
+            if (isActive)
+            {
+                MainMenuManager.instance.mainCamera.UpdateBounds(environmentBounds.x, environmentBounds.y);
+            }
         }
     }
 }

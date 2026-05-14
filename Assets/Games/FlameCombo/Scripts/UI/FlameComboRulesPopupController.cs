@@ -37,7 +37,7 @@ public class FlameComboRulesPopupController : MonoBehaviour
 
     public void ClosePopup()
     {
-        //GoldenDragonUIManager.Instance.PlaySound("FruitParadise_Button");
+        FlameComboUIManager.Instance.PlaySound("Button");
         RulePanelBg.gameObject.SetActive(false);
         rulesPopupPanel.SetActive(false);
     }
@@ -54,13 +54,13 @@ public class FlameComboRulesPopupController : MonoBehaviour
 
     private void PreviousPage()
     {
-        //GoldenDragonUIManager.Instance.PlaySound("FruitParadise_Button");
+        FlameComboUIManager.Instance.PlaySound("Button");
         ShowPage(currentPageIndex - 1);
     }
 
     private void NextPage()
     {
-        //GoldenDragonUIManager.Instance.PlaySound("FruitParadise_Button");
+        FlameComboUIManager.Instance.PlaySound("Button");
         ShowPage(currentPageIndex + 1);
     }
 }

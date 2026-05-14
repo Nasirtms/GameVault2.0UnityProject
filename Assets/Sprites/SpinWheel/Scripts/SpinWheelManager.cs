@@ -43,7 +43,7 @@ public class SpinWheelManager : MonoBehaviour
     {
         if (!isGameHaveSpinWheel || !canFreeSpin) return;
         MainMenuUIManager.Instance?.ToggleMenuButtonsUI(false);
-        winFXPlayedThisSpin = false;
+        winFXPlayedThisSpin = true;
         // Instantiate spin wheel
         var obj = Instantiate(SpinWheelPrefab, SpinwheelParent);
         var wheel = obj.GetComponent<SpinWheel>();
@@ -136,7 +136,7 @@ public class SpinWheelManager : MonoBehaviour
                 ArmReenableAfter((float)(nextAvailableUtc - now).TotalSeconds);
             }
 
-            Debug.Log($"Current Time: {now} | Next Spin Time: {nextAvailableUtc}");
+            //Debug.Log($"Current Time: {now} | Next Spin Time: {nextAvailableUtc}");
         }
         UpdateCooldownUI();
     }

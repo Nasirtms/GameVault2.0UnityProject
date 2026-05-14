@@ -50,13 +50,13 @@ public class FruitMarySpinButton : MonoBehaviour, IPointerDownHandler, IPointerU
     private void OnPress()
     {
         FruitMaryUIManager.Instance.OnClickSpin();
-        Debug.Log("Pressed");
+        //Debug.Log("Pressed");
 
     }
     private void OnLongPress()
     {
         FruitMaryUIManager.Instance.OnHoldSpin();
-        Debug.Log("Long Pressed");
+        //Debug.Log("Long Pressed");
     }
 }
 

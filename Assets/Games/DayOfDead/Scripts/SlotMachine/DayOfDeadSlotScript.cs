@@ -7,7 +7,6 @@ using UnityEngine;
 public class DayOfDeadSlotScript : MonoBehaviour
 {
     #region Variables
-    //public SpriteMaskInteraction interaction = SpriteMaskInteraction.VisibleInsideMask;
 
     public int reelIndex;
     public int slotIndex;
@@ -47,21 +46,45 @@ public class DayOfDeadSlotScript : MonoBehaviour
     #region Slot Switching
     public void GetRandom(bool blur = false)
     {
+        var resources = DayOfDeadSlotMachine.Instance.settings.slotResources;
 
-        var random = DayOfDeadSlotMachine.Instance.settings.slotResources[UnityEngine.Random.Range(0, DayOfDeadSlotMachine.Instance.settings.slotResources.Count)];
+        DayOfDeadSlotResource random;
+
+        do
+        {
+            random = resources[UnityEngine.Random.Range(0, resources.Count)];
+        }
+        while (random.slotType == DayOfDeadSlotType.ExpandingWild);
+        //var random = DayOfDeadSlotMachine.Instance.settings.slotResources[UnityEngine.Random.Range(0, DayOfDeadSlotMachine.Instance.settings.slotResources.Count)];
         SetType(random);
     }
-
-    public void SetType(DayOfDeadSlotResource newType)
+    public void SetType(DayOfDeadSlotResource newType, bool allowExpandingWild = false)
     {
-        slots[currentResource.slotTypeIndex].SetActive(false);
+        if (newType.slotType == DayOfDeadSlotType.ExpandingWild && !allowExpandingWild)
+        {
+            GetRandom();
+            return;
+        }
 
-        this.currentResource = newType;
-        this.slotType = newType.slotType;
-        this.slotAnimationBool = newType.slotAnimationBool;
+        if (currentResource.slotTypeIndex >= 0 && currentResource.slotTypeIndex < slots.Length)
+            slots[currentResource.slotTypeIndex].SetActive(false);
+
+        currentResource = newType;
+        slotType = newType.slotType;
+        slotAnimationBool = newType.slotAnimationBool;
 
         slots[newType.slotTypeIndex].SetActive(true);
     }
+    //public void SetType(DayOfDeadSlotResource newType)
+    //{
+    //    slots[currentResource.slotTypeIndex].SetActive(false);
+
+    //    this.currentResource = newType;
+    //    this.slotType = newType.slotType;
+    //    this.slotAnimationBool = newType.slotAnimationBool;
+
+    //    slots[newType.slotTypeIndex].SetActive(true);
+    //}
 
     #endregion
 
@@ -76,7 +99,6 @@ public class DayOfDeadSlotScript : MonoBehaviour
 
     public void StopAnimation()
     {
-        //SetSpriteToDefault();
         if (slotAnimator != null)
         {
             slotAnimator.SetBool(slotAnimationBool, false);
@@ -88,28 +110,27 @@ public class DayOfDeadSlotScript : MonoBehaviour
 
     public IEnumerator MoveParticles(Vector3 targetPosition)
     {
-        Vector3 movePos = transform.InverseTransformPoint(targetPosition);
-        yield return MoveAndResetParticles(movePos);
+        //Debug.Log("targetPosition Position: " + targetPosition);
+        yield return MoveAndResetParticles(targetPosition);
     }
     private IEnumerator MoveAndResetParticles(Vector3 targetPosition)
     {
-        Vector3 originalPosition = wildParticle.transform.localPosition;
-
+        Vector3 originalPosition = wildParticle.transform.position;
+        //Debug.Log("origianl Position: " + originalPosition);
         wildParticle.SetActive(true);
 
         Sequence seq = DOTween.Sequence();
 
-        seq.AppendInterval(0.25f)
+        seq.AppendInterval(0.1f)
            .Append(wildParticle.transform
-               .DOLocalMove(targetPosition, 1f)
+               .DOMove(targetPosition, 0.6f)
                .SetEase(Ease.Linear))
-           .AppendInterval(0.75f)
+           .AppendInterval(0.9f)
            .OnComplete(() =>
            {
                wildParticle.SetActive(false);
-               wildParticle.transform.localPosition = originalPosition;
+               wildParticle.transform.position = originalPosition;
            });
-
         yield return seq.WaitForCompletion();
     }
     #endregion

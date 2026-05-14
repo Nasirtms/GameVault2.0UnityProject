@@ -15,7 +15,7 @@ MonoBehaviour:
   fishList:
   - fishName: fish-1
     sprite: {fileID: 198738730717614354, guid: 5f1931268630a064ebd35d683e78b33e, type: 3}
-    maxHealth: 2
+    maxHealth: 28
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -32,7 +32,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: fish-2
     sprite: {fileID: 5871017991904681773, guid: 382f2e46df2f8c04981ea499d2ca4f10, type: 3}
-    maxHealth: 3
+    maxHealth: 28
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -49,12 +49,12 @@ MonoBehaviour:
     spawnPattern: 2
   - fishName: fish-3
     sprite: {fileID: 1671681185357561888, guid: 70de7a74b889dd440955bcd1deab62c6, type: 3}
-    maxHealth: 3
+    maxHealth: 31
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
     spawnOffset: 0.5
-    batchSize: 1
+    batchSize: 5
     batchSpacing: 0.5
     isRotatable: 1
     rotationSpeed: 0.5
@@ -66,7 +66,7 @@ MonoBehaviour:
     spawnPattern: 2
   - fishName: fish-4
     sprite: {fileID: 1767885799870292252, guid: 730b27c1b454a3e4c90aba6ed9038dae, type: 3}
-    maxHealth: 4
+    maxHealth: 19
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -83,7 +83,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: fish-5
     sprite: {fileID: 3108597066102634222, guid: 7541b2eb917fd514fb2d9eef956c63f4, type: 3}
-    maxHealth: 5
+    maxHealth: 28
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -100,7 +100,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: fish-6
     sprite: {fileID: 83087534243271701, guid: 4d18f18a07ae21c45a4e6bd3b204a23f, type: 3}
-    maxHealth: 5
+    maxHealth: 32
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -117,12 +117,12 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: fish-7
     sprite: {fileID: 4563378838624385291, guid: b81a712e6ea7dec4ea9aedbc292c7df7, type: 3}
-    maxHealth: 6
+    maxHealth: 43
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
     spawnOffset: 0.5
-    batchSize: 1
+    batchSize: 2
     batchSpacing: 0.5
     isRotatable: 1
     rotationSpeed: 0.5
@@ -134,7 +134,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: fish-8
     sprite: {fileID: 694544864787715453, guid: c14a608bef8a1ba4ba1ed9ee3eb7646d, type: 3}
-    maxHealth: 7
+    maxHealth: 23
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -151,7 +151,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: fish-9
     sprite: {fileID: 1728643633780746302, guid: f53a93b85b0cced4aab742395b5edb8f, type: 3}
-    maxHealth: 9
+    maxHealth: 39
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -168,7 +168,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: turtle
     sprite: {fileID: 4305401398393253045, guid: d59e7c62b3bf7d14aa0c3f5d138b2f28, type: 3}
-    maxHealth: 8
+    maxHealth: 36
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -185,12 +185,12 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: fish-12
     sprite: {fileID: 859967198663435201, guid: 7df51ea90cf3eb5419bbf9fc08e0c489, type: 3}
-    maxHealth: 10
+    maxHealth: 41
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
     spawnOffset: 0.5
-    batchSize: 2
+    batchSize: 1
     batchSpacing: 0.5
     isRotatable: 1
     rotationSpeed: 0.5
@@ -202,7 +202,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: fish-15
     sprite: {fileID: 1924020300076154139, guid: 02432105e6a6aef418ab992bc636e4c7, type: 3}
-    maxHealth: 10
+    maxHealth: 35
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -219,7 +219,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: swordFish
     sprite: {fileID: 8263812481316119144, guid: 9ec4d03300f2d3247843e05a5e20a7f4, type: 3}
-    maxHealth: 8
+    maxHealth: 32
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -228,7 +228,7 @@ MonoBehaviour:
     batchSpacing: 0.5
     isRotatable: 1
     rotationSpeed: 0.5
-    fishMultiplyer: 18
+    fishMultiplyer: 20
     isBomb: 0
     isPowerUp: 0
     allowOnlyOne: 1
@@ -236,7 +236,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: stingray
     sprite: {fileID: 2839790139270233563, guid: 8b1cd464cea00f1498a7f1e545f2efa2, type: 3}
-    maxHealth: 12
+    maxHealth: 30
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -253,7 +253,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: dolphin
     sprite: {fileID: 5217469496441726354, guid: 2ffce85582aceda44b2b23e3a69baff9, type: 3}
-    maxHealth: 9
+    maxHealth: 45
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -270,7 +270,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: hammerheadshark
     sprite: {fileID: 6370930112917099111, guid: ece736aa7277b644c90ee12796394f07, type: 3}
-    maxHealth: 30
+    maxHealth: 37
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -287,7 +287,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: hammerheadsharksilver
     sprite: {fileID: 5454793286172753041, guid: 7cd640ca58ddbdc4fb9bfb4fcbd36b43, type: 3}
-    maxHealth: 50
+    maxHealth: 15
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -304,7 +304,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: hammerheadsharkgold
     sprite: {fileID: 7396860341578737381, guid: 5ce4e60c071d5dd4e8888a0b6253c020, type: 3}
-    maxHealth: 18
+    maxHealth: 45
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -321,7 +321,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: mermaidA
     sprite: {fileID: 9015383662435003828, guid: 4b401ba520c92ee46b5b0aca1ced40d4, type: 3}
-    maxHealth: 45
+    maxHealth: 25
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -338,7 +338,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: penguin
     sprite: {fileID: 515206095348466204, guid: 19df88dd41f517247a80f02cd26748e6, type: 3}
-    maxHealth: 30
+    maxHealth: 15
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -355,7 +355,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: shark
     sprite: {fileID: 4214515472013066739, guid: 6c6052ffbe85f9f42baff087c9b3030e, type: 3}
-    maxHealth: 45
+    maxHealth: 49
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -364,7 +364,7 @@ MonoBehaviour:
     batchSpacing: 0.5
     isRotatable: 1
     rotationSpeed: 0.5
-    fishMultiplyer: 240
+    fishMultiplyer: 180
     isBomb: 0
     isPowerUp: 0
     allowOnlyOne: 1
@@ -372,7 +372,7 @@ MonoBehaviour:
     spawnPattern: 0
   - fishName: mermaidB
     sprite: {fileID: 8139101282566160346, guid: 5ae854d6955e3564b8229c4368b39452, type: 3}
-    maxHealth: 45
+    maxHealth: 38
     prizeAmount: 5
     minSpeed: 1
     maxSpeed: 3
@@ -381,7 +381,7 @@ MonoBehaviour:
     batchSpacing: 0.5
     isRotatable: 0
     rotationSpeed: 0.5
-    fishMultiplyer: 150
+    fishMultiplyer: 1
     isBomb: 1
     isPowerUp: 0
     allowOnlyOne: 1
@@ -502,7 +502,7 @@ MonoBehaviour:
     movementType: 2
     spawnOffset: {x: 5, y: 0}
     bigFishes:
-    - fishName: mermaidB
+    - fishName: mermaidA
       sprite: {fileID: 8139101282566160346, guid: 5ae854d6955e3564b8229c4368b39452, type: 3}
       maxHealth: 45
       prizeAmount: 300

@@ -85,7 +85,7 @@ public class MonkeyMadnessPaylineController : MonoBehaviour
             if (entry.payline.paylineSprite != null)
                 entry.payline.paylineSprite.SetActive(true);
 
-            MonkeyMadnessSlotMachine.Instance.AnimateSlotsFromPattern(entry.payline.ToMatrix(), flickerDelay);
+            MonkeyMadnessSlotMachine.Instance.AnimateSlotsFromPattern(entry.payline.ToMatrix(), 0.08f);
         }
 
         yield return new WaitForSeconds(flickerDelay);

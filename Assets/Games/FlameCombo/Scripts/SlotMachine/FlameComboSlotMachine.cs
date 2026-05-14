@@ -36,17 +36,17 @@ public class FlameComboSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
-    [HideInInspector] public bool isPaylineCompleted;
+    public bool isPaylineCompleted;
     [HideInInspector] public bool isResultReceived;
     private bool _isSingleSpin;
     private bool isSettingResult;
 
     public bool isMiniGame;
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool isFreeGameReady;
     [HideInInspector] public float freeSpinWinAmount;
     [HideInInspector] public bool firstFreeSpin;
@@ -206,10 +206,11 @@ public class FlameComboSlotMachine : BaseSlotMachine
 
             freeSpinCount = currentSpinResult.freeSpinCount;
         }
-        else if (isFakeSpins)
+        if (isFakeSpins)
         {
             if (!isFreeGame)
                 isFreeGameReady = true;
+
             freeSpinCount = fakeFreeSpins;
         }
 
@@ -245,7 +246,7 @@ public class FlameComboSlotMachine : BaseSlotMachine
     public override void Spin()
     {
         if (InSpin) return;
-
+        FlameComboUIManager.Instance.StopCurrentSFX();
         if (!isFreeGame || firstFreeSpin)
         {
             isFreeGameReady = false;
@@ -257,7 +258,7 @@ public class FlameComboSlotMachine : BaseSlotMachine
         StopAllCoroutines();
         FlameComboPaylineController.Instance.ClearPaylineData();
         FlameComboUIManager.Instance.SetStopInteractable(false);
-
+        FlameComboUIManager.Instance.PlaySpinMusic("Spin");
         // Reset Variables and Functions State
         freeSpinCount = 0;
         scatterCount = 0;
@@ -319,7 +320,7 @@ public class FlameComboSlotMachine : BaseSlotMachine
     #region Stop
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 7f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -348,7 +349,7 @@ public class FlameComboSlotMachine : BaseSlotMachine
             }
 
             isSpinAgain = true;
-
+            FlameComboUIManager.Instance.StopSpinMusic("Spin");
             yield break;
         }
 
@@ -436,10 +437,10 @@ public class FlameComboSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
+            //Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
-
+        FlameComboUIManager.Instance.StopSpinMusic("Spin");
         if (forcedWin)
         {
             winAmount = forcedPrize;
@@ -448,7 +449,8 @@ public class FlameComboSlotMachine : BaseSlotMachine
         {
             winAmount = currentSpinResult.totalWin;
         }
-
+        Debug.Log("winAmount : " + winAmount);
+        Debug.Log("newBalance : " + currentSpinResult.newBalance);
         if (isFreeGame && winAmount > 0)
         {
             firstFreeSpin = false;
@@ -458,7 +460,7 @@ public class FlameComboSlotMachine : BaseSlotMachine
         else if (winAmount > 0f)
         {
             float betAmount = FlameComboUIManager.Instance.CurrentBet();
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
         }
 
@@ -479,9 +481,10 @@ public class FlameComboSlotMachine : BaseSlotMachine
         {
             isPaylineCompleted = true;
         }
-
-        //GoldenDragonUIManager.Instance.StopSpinMusic("Spin");
-
+        if (winAmount > 0)
+        {
+            FlameComboUIManager.Instance.PlaySound("Win");
+        }
         InSpin = false;
         isSpinAgain = true;
 
@@ -540,7 +543,7 @@ public class FlameComboSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.resourcesList == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
+            //Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

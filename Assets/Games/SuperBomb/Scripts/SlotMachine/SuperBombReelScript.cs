@@ -123,7 +123,7 @@ public class SuperBombReelScript : MonoBehaviour
     {
         if (reelIndex >= SuperBombSlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"❌ No spin data for reel {reelIndex}!");
+            //Debug.LogError($"❌ No spin data for reel {reelIndex}!");
             return;
         }
 
@@ -147,7 +147,7 @@ public class SuperBombReelScript : MonoBehaviour
                 {
                     row -= 1;
 
-                    Debug.Log("Slot Clamped on Reel: " + this._index + " row: " + row);
+                    //Debug.Log("Slot Clamped on Reel: " + this._index + " row: " + row);
                 }
 
                 var slot = slots[row + 1]; // Make sure slots[1], [2], [3] are the visible ones
@@ -240,7 +240,7 @@ public class SuperBombReelScript : MonoBehaviour
                 slots[i].SetType(res);
             }
            
-            Debug.Log("Reel " + this._index + " Clamped Down");
+            //Debug.Log("Reel " + this._index + " Clamped Down");
         }
 
         SuperBombUIManager.Instance.PlaySound("ReelStop");

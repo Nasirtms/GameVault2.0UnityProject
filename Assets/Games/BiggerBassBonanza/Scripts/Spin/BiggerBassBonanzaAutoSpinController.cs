@@ -22,19 +22,22 @@ public class BiggerBassBonanzaAutoSpinController : MonoBehaviour
     #endregion
 
     #region Unity Methods
-
-    private void Start()
+    private void OnEnable()
     {
-       
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
     #endregion
 
     #region Public References
 
     public void StartAutoSpin(float betAmount)
     {
-        if (isAutoRunning || BiggerBassBonanzaSlotMachine.Instance.inSpin) return;
+        if (isAutoRunning || BiggerBassBonanzaSlotMachine.Instance.InSpin) return;
 
         firstAuto = true;
         isAutoRunning = true;
@@ -72,8 +75,9 @@ public class BiggerBassBonanzaAutoSpinController : MonoBehaviour
                 StopAutoSpin();
                 break;
             }
-
-            if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) break;
+            BiggerBassBonanzaUIManager.Instance.winAnimationCompleted = true;
+            if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount))
+                break;
 
             if (BiggerBassBonanzaUIManager.Instance.textAnimationCoroutine != null)
                 StopCoroutine(BiggerBassBonanzaUIManager.Instance.textAnimationCoroutine);
@@ -83,7 +87,10 @@ public class BiggerBassBonanzaAutoSpinController : MonoBehaviour
 
             SlotSpinService.Instance.Spin(betAmount);
 
-            yield return new WaitUntil(() => !BiggerBassBonanzaSlotMachine.Instance.inSpin);
+            if (BiggerBassBonanzaUIManager.Instance.CurrentButtonSet() != "Auto Spin")
+                BiggerBassBonanzaUIManager.Instance.UpdateButtons("Auto Spin");
+
+            yield return new WaitUntil(() => !BiggerBassBonanzaSlotMachine.Instance.InSpin);
 
             if (cancelRequested)
             {
@@ -95,9 +102,9 @@ public class BiggerBassBonanzaAutoSpinController : MonoBehaviour
             {
                 yield return new WaitUntil(() => BiggerBassBonanzaSlotMachine.Instance.isFishCollectionCompleted);
                 yield return new WaitUntil(() => BiggerBassBonanzaSlotMachine.Instance.isSlotAnimationCompleted);
-                yield return new WaitUntil(() => BiggerBassBonanzaUIManager.Instance.winAnimationCompleted);
-            }
 
+            }
+            yield return new WaitUntil(() => BiggerBassBonanzaUIManager.Instance.winAnimationCompleted);
             if (BiggerBassBonanzaSlotMachine.Instance.isFreeGameReady)
                 break;
         }
@@ -121,5 +128,20 @@ public class BiggerBassBonanzaAutoSpinController : MonoBehaviour
         cancelRequested = false;
     }
 
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
+
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
+
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +24,8 @@ namespace MainMenu
         public static Action<float> OnDragEvent;
         public static Action<Vector2> OnClickedEvent;
         public static Action<bool> OnMouseUpEvent;
+
+        public bool isActive;
 
         private void Awake()
         {
@@ -104,21 +106,103 @@ namespace MainMenu
             HandleDrag();
         }
 
+        //void HandleDrag()
+        //{
+        //    if (isActive && Input.GetMouseButtonDown(0))
+        //    {
+
+        //        if (IsPointerOverObject())
+        //            return;
+
+        //        mouseDown = true;
+        //        mousePosition_current = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        //        mousePosition_previous = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        //    }
+        //    else if (mouseDown && Input.GetMouseButton(0) && !isDragging)
+        //    {
+        //        mousePosition_current = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+        //        deltaX = mousePosition_current.x - mousePosition_previous.x;
+        //        deltaX /= mainCamera.orthographicSize * 2;
+
+        //        if (Mathf.Abs(deltaX) > dragThreshold)
+        //        {
+        //            isDragging = true;
+        //            OnDragStartedEvemt?.Invoke();
+        //            OnDragEvent?.Invoke(deltaX);
+        //            mousePosition_previous = mousePosition_current;
+        //        }
+        //    }
+        //    else if (mouseDown && Input.GetMouseButton(0) && isDragging)
+        //    {
+        //        mousePosition_current = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+        //        deltaX = mousePosition_current.x - mousePosition_previous.x;
+        //        deltaX /= mainCamera.orthographicSize * 2;
+
+        //        //if (Mathf.Abs(deltaX) > 0.05f)
+        //        //{
+        //        OnDragEvent?.Invoke(deltaX);
+        //        mousePosition_previous = mousePosition_current;
+        //        //}
+        //    }
+        //    if (mouseDown && Input.GetMouseButtonUp(0))
+        //    {
+        //        if (!isDragging)
+        //        {
+        //            //Point and Move
+        //            mousePosition_current = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        //            OnClickedEvent?.Invoke(mousePosition_current);
+        //        }
+
+        //        OnMouseUpEvent?.Invoke(isDragging);
+
+        //        isDragging = false;
+        //        mouseDown = false;
+        //    }
+        //}
+
         void HandleDrag()
         {
-            if (Input.GetMouseButtonDown(0))
-            {
+            // Unified pointer snapshot for this frame
+            bool hasTouch = Input.touchCount > 0;
 
-                if (IsPointerOverUIObject())
+            bool down, held, up;
+            Vector2 screenPos;
+
+            if (hasTouch)
+            {
+                Touch t = Input.GetTouch(0);
+                screenPos = t.position;
+
+                down = t.phase == TouchPhase.Began;
+                held = (t.phase == TouchPhase.Moved || t.phase == TouchPhase.Stationary);
+                up = (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled);
+            }
+            else
+            {
+                screenPos = Input.mousePosition;
+
+                down = Input.GetMouseButtonDown(0);
+                held = Input.GetMouseButton(0);
+                up = Input.GetMouseButtonUp(0);
+            }
+
+            // DOWN: keep your original "isActive only gates the down"
+            if (isActive && down)
+            {
+                // Your old IsPointerOverObject() was mouse-centric.
+                // This version blocks consistently for both mouse & touch.
+                if (IsPointerOverUI(screenPos))
                     return;
 
                 mouseDown = true;
-                mousePosition_current = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-                mousePosition_previous = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+                mousePosition_current = mainCamera.ScreenToWorldPoint(screenPos);
+                mousePosition_previous = mainCamera.ScreenToWorldPoint(screenPos);
             }
-            else if (mouseDown && Input.GetMouseButton(0) && !isDragging)
+            else if (mouseDown && held && !isDragging)
             {
-                mousePosition_current = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+                mousePosition_current = mainCamera.ScreenToWorldPoint(screenPos);
 
                 deltaX = mousePosition_current.x - mousePosition_previous.x;
                 deltaX /= mainCamera.orthographicSize * 2;
@@ -131,25 +215,23 @@ namespace MainMenu
                     mousePosition_previous = mousePosition_current;
                 }
             }
-            else if (mouseDown && Input.GetMouseButton(0) && isDragging)
+            else if (mouseDown && held && isDragging)
             {
-                mousePosition_current = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+                mousePosition_current = mainCamera.ScreenToWorldPoint(screenPos);
 
                 deltaX = mousePosition_current.x - mousePosition_previous.x;
                 deltaX /= mainCamera.orthographicSize * 2;
 
-                //if (Mathf.Abs(deltaX) > 0.05f)
-                //{
                 OnDragEvent?.Invoke(deltaX);
                 mousePosition_previous = mousePosition_current;
-                //}
             }
-            if (mouseDown && Input.GetMouseButtonUp(0))
+
+            // UP: completes even if isActive became false mid-touch (your requirement)
+            if (mouseDown && up)
             {
                 if (!isDragging)
                 {
-                    //Point and Move
-                    mousePosition_current = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+                    mousePosition_current = mainCamera.ScreenToWorldPoint(screenPos);
                     OnClickedEvent?.Invoke(mousePosition_current);
                 }
 
@@ -160,12 +242,48 @@ namespace MainMenu
             }
         }
 
-        public static bool IsPointerOverUIObject()
+
+        static bool IsPointerOverUI(Vector2 screenPos)
+        {
+            if (EventSystem.current == null)
+                return false;
+
+            var eventData = new PointerEventData(EventSystem.current)
+            {
+                position = screenPos
+            };
+
+            var results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(eventData, results);
+
+            // "Any UI element blocks"
+            return results.Count > 0;
+        }
+
+
+        public static bool IsPointerOverObject()
         {
             PointerEventData pointerData = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
             List<RaycastResult> raycastResult = new List<RaycastResult>();
             EventSystem.current.RaycastAll(pointerData, raycastResult);
             return EventSystem.current.IsPointerOverGameObject();
+        }
+
+        public static bool IsPointerOverUIObject()
+        {
+            PointerEventData eventData = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
+
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(eventData, results);
+
+            foreach (var result in results)
+            {
+                // UI only → GraphicRaycaster
+                if (result.module is GraphicRaycaster)
+                    return true;
+            }
+
+            return false;
         }
 
         public static GameObject GetClicked2DObject()

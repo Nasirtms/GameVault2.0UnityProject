@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
+
     [SerializeField] private SoundData soundData;
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;

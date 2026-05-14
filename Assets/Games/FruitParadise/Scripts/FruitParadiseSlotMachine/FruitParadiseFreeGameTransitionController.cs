@@ -137,7 +137,7 @@ public class FruitParadiseFreeGameTransitionController : MonoBehaviour
             float freeGameWin = FruitParadiseSlotMachine.Instance.freeSpinWinAmount;
             float betAmount = FruitParadiseUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, FruitParadiseSlotMachine.Instance.currentSpinResult.newBalance);
-            Invoke(nameof(FruitParadiseSlotMachine.Instance.UpdateGameCoin), 1f);
+            //Invoke(nameof(FruitParadiseSlotMachine.Instance.UpdateGameCoin), 1f);
         }
     } 
     private void PopupAnimation(GameObject obj, float scale, float duration, bool state)

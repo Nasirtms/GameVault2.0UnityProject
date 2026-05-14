@@ -56,6 +56,7 @@ public class SuperBallKeno : MonoBehaviour
     public TMP_Text betText;
     public TMP_Text picksCountText;
     public TMP_Text infoPanelBetText;
+    public TMP_Text infoPanelBetTextShadow;
 
     [Header("Balance")]
     [SerializeField] public TMP_Text balanceText;
@@ -72,6 +73,7 @@ public class SuperBallKeno : MonoBehaviour
 
     public Transform GridParent;
     GameObject drawsLastObject;
+    public GameObject lastdrawball;
 
     private Coroutine drawCoroutine;
     private bool isDrawStopped = false;
@@ -128,6 +130,9 @@ public class SuperBallKeno : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+
+        ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
     }
 
     void Start()
@@ -244,6 +249,12 @@ public class SuperBallKeno : MonoBehaviour
             KenoSoundManager.Instance.PlaySFX(soundName);
     }
 
+    public void StopSound(string soundName)
+    {
+        if (soundName == null) return;
+        KenoSoundManager.Instance.StopSFX(soundName);
+    }
+
     #region Machine Registery
 
 
@@ -264,7 +275,7 @@ public class SuperBallKeno : MonoBehaviour
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 #endregion
 
@@ -487,6 +498,7 @@ public class SuperBallKeno : MonoBehaviour
     {
         currentBetIndex = (currentBetIndex + 1) % betOptions.Length;
         infoPanelBetText.text = $"{betOptions[currentBetIndex]:0.00}";
+        infoPanelBetTextShadow.text = $"{betOptions[currentBetIndex]:0.00}";
         FullPayTable();
     }
 
@@ -508,6 +520,7 @@ public class SuperBallKeno : MonoBehaviour
     {
         currentBetIndex = (currentBetIndex - 1 + betOptions.Length) % betOptions.Length;
         infoPanelBetText.text = $"{betOptions[currentBetIndex]:0.00}";
+        infoPanelBetTextShadow.text = $"{betOptions[currentBetIndex]:0.00}";
         FullPayTable();
     }
 
@@ -605,23 +618,28 @@ public class SuperBallKeno : MonoBehaviour
 
             for (int i = 0; i <= 8; i++) // Picks 2–10
             {
-                var textComponent = rowObj.transform.GetChild(i).GetComponent<TextMeshProUGUI>();
+                var textComponentShadow = rowObj.transform.GetChild(i).GetComponent<TextMeshProUGUI>();
+                var textComponent = rowObj.transform.GetChild(i).GetChild(0).GetComponent<TextMeshProUGUI>();
                 if (textComponent == null) continue;
+                if(textComponentShadow == null) continue;
 
                 float payout = payouts[hit, i];
                 if (payout > 0f)
                 {
                     textComponent.text = payout.ToString("0.00");
+                    textComponentShadow.text = payout.ToString("0.00");
                     textComponent.color = Color.green;
                 }
                 else if (hit <= maxHitWithValue[i])
                 {
                     textComponent.text = "0.00";
+                    textComponentShadow.text = "0.00";
                     textComponent.color = Color.yellow;
                 }
                 else
                 {
                     textComponent.text = "";
+                    textComponentShadow.text = "";
                 }
             }
         }
@@ -726,7 +744,7 @@ public class SuperBallKeno : MonoBehaviour
             yield break;
         }
         int currentIndex = 0;
-        KenoSoundManager.Instance.PlayMusic("Drawing_Balls");
+        PlaySound("Drawing_Balls");
         foreach (int n in draws)
         {
             currentIndex++;
@@ -738,8 +756,10 @@ public class SuperBallKeno : MonoBehaviour
                     int drawNumber = draws[i];
 
                     GameObject go = ballPool.SpawnAt(target1.position, drawnBallContainer.parent);
-                    var ballText = go.GetComponentInChildren<TMP_Text>(true);
+                    var ballText = go.transform.GetChild(0).GetComponent<TMP_Text>();
+                    var ballTextShadow = go.transform.GetChild(1).GetComponent<TMP_Text>();
                     ballText.text = drawNumber.ToString();
+                    ballTextShadow.text = drawNumber.ToString();
                     go.name = "DrawnBall" + drawNumber;
                     go.transform.localScale = Vector3.one;
 
@@ -748,7 +768,7 @@ public class SuperBallKeno : MonoBehaviour
 
                     if (i == draws.Count - 1)
                     {
-                        KenoSoundManager.Instance.StopMusic("Drawing_Balls");
+                        StopSound("Drawing_Balls");
                         lastDrawBg.gameObject.SetActive(true);
                         drawsLastObject = numberButtons[drawNumber - 1].gameObject;
                         LastHitBtn(drawsLastObject);
@@ -766,8 +786,10 @@ public class SuperBallKeno : MonoBehaviour
             // Instantiate the ball at target1
             GameObject db = ballPool.SpawnAt(target1.position, drawnBallContainer.parent);
 
-            var text = db.GetComponentInChildren<TMP_Text>(true);
+            var text = db.transform.GetChild(0).GetComponent<TMP_Text>();
+            var shadowText = db.transform.GetChild(1).GetComponent<TMP_Text>();
             text.text = n.ToString();
+            shadowText.text = n.ToString();
             db.name = "DrawnBall" + n;
 
             // Temporarily move to layout container to get target position
@@ -776,7 +798,7 @@ public class SuperBallKeno : MonoBehaviour
             db.transform.localScale = Vector3.one;
 
             LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)drawnBallContainer);
-            Vector3 finalWorldPos;
+            Vector2 finalWorldPos;
             //if (isSamePicks && currentIndex == 1)
             //{
             //    finalWorldPos = new Vector3(3.96f, -4.20f, 90.00f);
@@ -790,33 +812,31 @@ public class SuperBallKeno : MonoBehaviour
 
             if (currentIndex == 20)
             {
-                KenoSoundManager.Instance.StopMusic("Drawing_Balls");
                 lastDrawBg.gameObject.SetActive(true);
                 yield return db.transform.DOMove(numberButtons[draws[currentIndex - 1] - 1].transform.position, moveDuration)
                                          .SetEase(Ease.InOutSine).WaitForCompletion();
+                lastdrawball = db;
                 drawsLastObject = numberButtons[draws[currentIndex - 1] - 1].gameObject;
                 LastHitBtn(drawsLastObject);
             }
+
 
             if (currentIndex != 20)
             {
                 //Debug.Log("Current Index: " + currentIndex);
                 if (currentIndex % 2 == 0)
                 {
-                    PlaySound("Each_Hit");
                     yield return db.transform.DOMove(target2.position, moveDuration)
                                              .SetEase(Ease.InOutSine).WaitForCompletion();
                 }
                 else
                 {
-                    PlaySound("Each_Hit");
                     yield return db.transform.DOMove(target3.position, moveDuration)
                                              .SetEase(Ease.InOutSine).WaitForCompletion();
                 }
-
             }
 
-                yield return db.transform.DOMove(finalWorldPos, moveDuration)
+            yield return db.transform.DOMove(finalWorldPos, moveDuration)
                          .SetEase(Ease.InOutSine).WaitForCompletion();
 
             float baseBounceHeight = bounceHeight;
@@ -828,21 +848,21 @@ public class SuperBallKeno : MonoBehaviour
                 bounce.Append(db.transform.DOMoveY(finalWorldPos.y + adjustedBounceHeight, bounceDuration / 2f).SetEase(Ease.OutSine));
                 bounce.Append(db.transform.DOMoveY(finalWorldPos.y, bounceDuration / 2f).SetEase(Ease.InSine));
 
-                yield return bounce.WaitForCompletion();
+                bounce.Play();
             }
             // Final placement
-            db.transform.SetParent(drawnBallContainer);
+            //db.transform.SetParent(drawnBallContainer);
             db.transform.localScale = Vector3.one;
 
             numberButtons[n - 1].SetState(currentPicks.Contains(n) ? KenoButtonState.Hit : KenoButtonState.Drawn);
-
-
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(0.001f);
+            db.transform.SetParent(drawnBallContainer);
         }
-
+        lastdrawball.transform.SetParent(drawnBallContainer);
         TogglePlayBUtton();
         UpdateCoinIntoBD();
     }
+
 
     private void UpdateCoinIntoBD()
     {
@@ -868,14 +888,14 @@ public class SuperBallKeno : MonoBehaviour
         {
             currentSpinWin = winAmount;
             PlayTextAnimation(currentSpinWin);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            UpdateGameCoin();
         }
         else
         {
             currentSpinWin = 0;
             this.winAmount_Text.text = "0.00";
         }
-        Invoke(nameof(UpdateGameCoin), 1f);
+        UpdateGameCoin();
     }
 
     void UpdateGameCoin()

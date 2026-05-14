@@ -124,7 +124,7 @@ public class QuickHitVolcanoReelScript : MonoBehaviour
     {
         if (reelIndex >= QuickHitVolcanoSlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"❌ No spin data for reel {reelIndex}!");
+            //Debug.LogError($"❌ No spin data for reel {reelIndex}!");
             return;
         }
 
@@ -148,16 +148,12 @@ public class QuickHitVolcanoReelScript : MonoBehaviour
                 {
                     row -= 1;
 
-                    Debug.Log("Slot Clamped on Reel: " + this._index + " row: " + row);
+                    //Debug.Log("Slot Clamped on Reel: " + this._index + " row: " + row);
                 }
 
                 var slot = slots[row + 1]; // Make sure slots[1], [2], [3] are the visible ones
 
                 slot.SetType(res.Value);
-            }
-            else
-            {
-                Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
             }
         }
 
@@ -214,8 +210,6 @@ public class QuickHitVolcanoReelScript : MonoBehaviour
                 var res = slots[i - 1].currentResource;
                 slots[i].SetType(res);
             }
-
-            Debug.Log("Reel " + this._index + " Clamped Down");
         }
 
         QuickHitVolcanoUIManager.Instance.PlaySound("ReelStop");

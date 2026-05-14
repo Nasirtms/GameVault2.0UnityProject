@@ -144,7 +144,7 @@ public class FlameComboReelScript : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
+                //Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
             }
         }
 
@@ -229,7 +229,7 @@ public class FlameComboReelScript : MonoBehaviour
                 slots[i].SetType(res);
             }
         }
-        //FruitParadiseUIManager.Instance.PlaySound("FruitParadise_ReelStop");
+        //FlameComboUIManager.Instance.PlaySound("ReelStop");
         OnSpinComplete?.Invoke(this._index);
     }
 

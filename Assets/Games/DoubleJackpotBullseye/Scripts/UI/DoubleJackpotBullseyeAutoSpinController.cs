@@ -19,11 +19,15 @@ public class DoubleJackpotBullseyeAutoSpinController : MonoBehaviour
     #endregion
 
     #region Unity Methods
-
-    private void Start()
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
     #endregion
 
     #region Public References
@@ -75,7 +79,7 @@ public class DoubleJackpotBullseyeAutoSpinController : MonoBehaviour
             float balance = UserManager.Instance.Coins;
 
             DoubleJackpotBullseyeUIManager.Instance.winAnimationCompleted = true;
-            DoubleJackpotBullseyeUIManager.Instance.PlaySpinMusic("Spin");
+            //DoubleJackpotBullseyeUIManager.Instance.PlaySpinMusic("Spin");
 
             if (DoubleJackpotBullseyeUIManager.Instance.textAnimationCoroutine != null)
                 StopCoroutine(DoubleJackpotBullseyeUIManager.Instance.textAnimationCoroutine);
@@ -132,6 +136,19 @@ public class DoubleJackpotBullseyeAutoSpinController : MonoBehaviour
         isAutoRunning = false;
         cancelRequested = false;
     }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
 
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
 }

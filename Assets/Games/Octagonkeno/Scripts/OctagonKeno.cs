@@ -130,6 +130,9 @@ public class OctagonKeno : MonoBehaviour
             Destroy(gameObject);
         }
         SetGameButtons();
+
+
+        ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
     }
 
     void Start()
@@ -251,7 +254,7 @@ public class OctagonKeno : MonoBehaviour
     // User-triggered Play
     private void OnUserPlay()
     {
-        if (balance < CurrentBet)
+        if (UserManager.Instance.Coins < CurrentBet)
         {
             CasinoUIManager.Instance.ShowErrorCanvas(1, "Insufficiant Balance");
         }
@@ -284,7 +287,7 @@ public class OctagonKeno : MonoBehaviour
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     public void PlaySound(string soundName)
@@ -529,12 +532,16 @@ public class OctagonKeno : MonoBehaviour
             instructions.text = "Select 1-10 Numbers To Play!";
             return;
         }
-
+        if (UserManager.Instance.Coins < betOptions[currentBetIndex])
+        {
+            CasinoUIManager.Instance.ShowErrorCanvas(1, "Insufficiant Balance");
+            EnterErrorState();
+            return;
+        }
         autoRoundTarget = roundCount;
         autoRoundsRemaining = (roundCount == -1 ? int.MaxValue : roundCount);
 
         //Debug.Log($" nasir  : Starting auto bet for {autoRoundsRemaining} rounds");
-
         isAutoBetting = true;
         stopHoldable.IsHoldEnabled = false;
         isSamePicks = false;
@@ -1073,7 +1080,7 @@ public class OctagonKeno : MonoBehaviour
         {
             return;
         }
-        if (balance < betOptions[currentBetIndex])
+        if (UserManager.Instance.Coins < betOptions[currentBetIndex])
         {
             CasinoUIManager.Instance.ShowErrorCanvas(1, "Insufficiant Balance");
             EnterErrorState();

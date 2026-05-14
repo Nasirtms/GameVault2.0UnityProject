@@ -100,25 +100,4 @@ public class ZombieParadiseSlotScript : MonoBehaviour
     }
 
     #endregion
-
-    //#region Helper Functions
-
-    //private bool isValidSlotForAnimation(ZombieParadiseSlotType slotType)
-    //{
-    //    switch (slotType)
-    //    {
-    //        case ZombieParadiseSlotType.Nine:
-    //        case ZombieParadiseSlotType.Ten:
-    //        case ZombieParadiseSlotType.Jack:
-    //        case ZombieParadiseSlotType.Queen:
-    //        case ZombieParadiseSlotType.King:
-    //        case ZombieParadiseSlotType.Ace:
-    //        case ZombieParadiseSlotType.Spider:
-    //            return false;
-    //        default:
-    //            return true;
-    //    }
-    //}
-
-    //#endregion
 }

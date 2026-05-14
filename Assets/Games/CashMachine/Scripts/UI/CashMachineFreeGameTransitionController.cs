@@ -61,6 +61,11 @@ public class CashMachineFreeGameTransitionController : MonoBehaviour
 
     private IEnumerator StartFreeSpin()
     {
+        if(CashMachineSlotMachine.Instance.GetWinAmount() > 0)
+        {
+            yield return new WaitUntil(() => CashMachineUIManager.Instance.winAnimationCompleted);
+        }
+        yield return new WaitUntil(() => CashMachineSlotMachine.Instance.isPaylineCompleted);
         yield return new WaitForSeconds(0.8f);
 
         freeSpin.SetActive(true);

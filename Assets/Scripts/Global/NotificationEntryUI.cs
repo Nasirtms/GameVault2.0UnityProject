@@ -7,7 +7,7 @@ public class NotificationEntryUI : MonoBehaviour
 
     public void SetMessage(string msg)
     {
-        Debug.Log($"[ENTRY] SetMessage called: {msg}");
+        //Debug.Log($"[ENTRY] SetMessage called: {msg}");
         messageText.text = msg;
     }
 }

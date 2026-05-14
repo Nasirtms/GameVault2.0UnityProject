@@ -291,7 +291,7 @@ public class CashMachineUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -308,10 +308,10 @@ public class CashMachineUIManager : GameBetServices
     public void OnClickSpin()
     {
         if(CashMachineSlotMachine.Instance.isFreeGameReady) return;
-        PlaySpinMusic("Spin");
+        
         float betAmount = betController.GetCurrentBet();
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
-
+        //PlaySpinMusic("Spin");
         if (textAnimationCoroutine != null)
         {
             StopCoroutine(textAnimationCoroutine);
@@ -417,6 +417,8 @@ public class CashMachineUIManager : GameBetServices
         exitGameButton.interactable = !inSpin;
         increaseBetButton.interactable = !inSpin;
         decreaseBetButton.interactable = !inSpin;
+        highStakeButton.interactable = !inSpin;
+        lowStakeButton.interactable = !inSpin;
 
         currentButtonSet = type;
     }
@@ -424,7 +426,11 @@ public class CashMachineUIManager : GameBetServices
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount)
     {
         if (winAmount > 0)
@@ -461,14 +467,15 @@ public class CashMachineUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
         StopWinMusic("Win");
+        winAnimationCompleted = true;
     }
 
     private IEnumerator AnimateToValue(float target, float duration, TMP_Text textToAnimateOne, TMP_Text textToAnimateTwo)
@@ -479,16 +486,16 @@ public class CashMachineUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
 
         StopCoroutine(textAnimationCoroutine);
     }
@@ -501,14 +508,14 @@ public class CashMachineUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, endValue, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
         // Make sure it ends exactly at endValue
-        textToAnimate.text = endValue.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(endValue);
     }
 
     #endregion

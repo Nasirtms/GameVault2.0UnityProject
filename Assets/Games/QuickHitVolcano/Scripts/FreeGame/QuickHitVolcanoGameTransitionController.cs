@@ -237,7 +237,7 @@ public class QuickHitVolcanoGameTransitionController : MonoBehaviour
             float betAmount = QuickHitVolcanoUIManager.Instance.CurrentBet();
 
             GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, QuickHitVolcanoSlotMachine.Instance.currentSpinResult.newBalance);
-            Invoke(nameof(QuickHitVolcanoSlotMachine.Instance.UpdateGameCoin), 1f);
+            //Invoke(nameof(QuickHitVolcanoSlotMachine.Instance.UpdateGameCoin), 1f);
 
             QuickHitVolcanoUIManager.Instance.UpdateButtons("Default");
         }

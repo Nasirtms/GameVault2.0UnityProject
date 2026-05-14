@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e06498096678384abb762b89e2a8bd1, type: 3}
+  m_Name: CashVaultMiniGame
+  m_EditorClassIdentifier: 
+  slotResources:
+  - slotType: 0
+    slotTypeIndex: 0
+  - slotType: 1
+    slotTypeIndex: 1
+  spinSettings:
+    startSpin: 0
+    endSpin: 1
+    spinDirection: 0
+    MoveSpeed: 10
+    ReelStopDelay: 0.3
+    ReelStartDelay: 0.1
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    ManualDelta: 0.005
+    WindUpAmount: 0.15
+    WindUpDuration: 0.2
+    ClampDuration: 2
+  slotSettings:
+    TopYPosition: 1.1
+    BottomYPosition: -2.2
+    SlotShiftStepDelay: 0.1
+    MinSpinDuration: 1.5
+    MaxSpinDuration: 2.5
+    SymbolScaleX: 1
+    SymbolScaleY: 1

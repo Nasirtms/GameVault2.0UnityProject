@@ -145,7 +145,6 @@ public class CleopatraReelScript : MonoBehaviour
     {
         if (reelIndex >= CleopatraSlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"❌ No spin data for reel {reelIndex}!");
             return;
         }
 
@@ -178,10 +177,6 @@ public class CleopatraReelScript : MonoBehaviour
                 var slot = slots[row + 1]; // Make sure slots[1], [2], [3] are the visible ones
 
                 slot.SetType(res.Value);
-            }
-            else
-            {
-                Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
             }
         }
 
@@ -296,8 +291,6 @@ public class CleopatraReelScript : MonoBehaviour
                     slots[i].SetType(res);
                 }
             }
-
-            Debug.Log("Reel " + this._index + " Clamped Down");
         }
         OnSpinComplete?.Invoke(this._index);
         PlaySlotAnimations?.Invoke();

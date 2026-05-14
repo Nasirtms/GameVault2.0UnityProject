@@ -78,12 +78,12 @@ public class LeaderboardPanelManager : MonoBehaviour
             var entry = entries[i];
 
             // Rank section
-            Transform rank = row.transform.GetChild(0);
+            Transform rank = row.transform.GetChild(1);
             Image rankImage = rank.GetComponent<Image>();
             TextMeshProUGUI rankText = rank.GetComponentInChildren<TextMeshProUGUI>(true); // Include inactive
 
             // User section
-            Transform user = row.transform.GetChild(1);
+            Transform user = row.transform.GetChild(0);
             Image userImage = user.GetComponent<Image>();
             Image imageEffect = user.Find("Winning").GetComponent<Image>();
             TextMeshProUGUI usernameText = user.Find("Name").GetComponent<TextMeshProUGUI>();
@@ -92,30 +92,32 @@ public class LeaderboardPanelManager : MonoBehaviour
             if (i < 3)
             {
                 rankImage.sprite = topRankImages[i];
+                rankImage.enabled = true;
                 rankText.text = "";
 
                 userImage.sprite = topUserImages[i];
-                imageEffect.enabled = true;
-                imageEffect.sprite = topImageEffects[i];
+                //imageEffect.enabled = true;
+                //imageEffect.sprite = topImageEffects[i];
 
                 //usernameText.font = topFontAssets[i];
-                usernameText.color = rankNameColor;
-                pointsText.color = topColors[i];
+                //usernameText.color = rankNameColor;
+                //pointsText.color = topColors[i];
             }
             else
             {
-                rankImage.sprite = defaultRankImage;
+                //rankImage.sprite = defaultRankImage;
+                rankImage.enabled = false;
                 rankText.text = (i + 1).ToString();
 
                 userImage.sprite = defaultUserImage;
-                imageEffect.enabled = false;
+                //imageEffect.enabled = false;
 
                 //usernameText.font = defaultFontAsset;
-                usernameText.color = defaultNameColor;
-                pointsText.color = defaultColor;
+                //usernameText.color = defaultNameColor;
+                //pointsText.color = defaultColor;
             }
 
-            usernameText.font = defaultFontAsset;
+            //usernameText.font = defaultFontAsset;
             usernameText.text = entry.Username;
             if (UserManager.Instance != null)
             {
@@ -267,20 +269,25 @@ public class LeaderboardPanelManager : MonoBehaviour
             Debug.LogWarning("⚠️ No leaderboard entries to display");
             return;
         }
-
+        Debug.LogError("leaderrrrr 1");
         testEntries.Clear();
-
+        Debug.LogError("leaderrrrr 2");
         foreach (var entry in response)
         {
+            Debug.LogError("leaderrrrr 3");
             testEntries.Add(new LeaderboardEntry
             {
                 Username = entry.username ?? "Unknown",
                 Points = entry.coinBalance
             });
+            Debug.LogError("leaderrrrr 4");
         }
+        Debug.LogError("leaderrrrr 5");
 
         PopulateLeaderboard(testEntries);
+        Debug.LogError("leaderrrrr 6");
         UpdateYourRankText(yourRank);
+        Debug.LogError("leaderrrrr 7");
         StartCoroutine(LoadEffect());
         Debug.Log($"✅ Loaded {testEntries.Count} leaderboard entries.");
     }

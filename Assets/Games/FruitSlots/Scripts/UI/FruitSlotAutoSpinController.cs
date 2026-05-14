@@ -16,10 +16,17 @@ public class FruitSlotAutoSpinController : MonoBehaviour
 
     public bool IsAutoRunning => isAutoRunning;
 
-    private void Start()
+    #region Unity Methods
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
+    #endregion
     public void StartAutoSpin(float betAmount)
     {
         if (isAutoRunning || FruitSlotMachine.Instance.InSpin)
@@ -51,7 +58,6 @@ public class FruitSlotAutoSpinController : MonoBehaviour
         while (!cancelRequested)
         {
             FruitSlotUIManager.Instance.winAnimationCompleted = true;
-            FruitSlotUIManager.Instance.PlaySound("FruitSlot_Spin");
 
             float balance = UserManager.Instance.Coins;
 
@@ -64,13 +70,14 @@ public class FruitSlotAutoSpinController : MonoBehaviour
 
             SlotSpinService.Instance.Spin(betAmount);
             yield return new WaitUntil(() => !FruitSlotMachine.Instance.InSpin);
+
+            if (cancelRequested) break;
+
             if (FruitSlotMachine.Instance.GetWinAmount() > 0)
             {
                 yield return new WaitUntil(() => FruitSlotMachine.Instance.isPaylineCompleted);
             }
             yield return new WaitUntil(() => FruitSlotUIManager.Instance.winAnimationCompleted);
-
-            if (cancelRequested) break;
 
             yield return new WaitForSeconds(delayBetweenSpins);
 
@@ -90,5 +97,19 @@ public class FruitSlotAutoSpinController : MonoBehaviour
         {
             FruitSlotUIManager.Instance.UpdateButtons("Stop");
         }
+    }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
+
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
     }
 }

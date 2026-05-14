@@ -12,6 +12,7 @@ public static class LoadingBridge
     public static string SceneToLoad;             // The name / address of the scene to load
     public static bool ShowExtraImage;
     public static bool IsAddressableScene = true; // <-- new: mark true if the target scene is in Addressables
+    public static bool pauseProfileApiCall = false; // <-- new: mark true if the target scene is in Addressables
 }
 
 public class FakeLoaderManager : MonoBehaviour
@@ -60,9 +61,13 @@ public class FakeLoaderManager : MonoBehaviour
         }
 #endif
 
-        if (UserManager.Instance != null)
+        if (LoadingBridge.pauseProfileApiCall)
         {
-            UserManager.Instance.StartUpdateCanAddCoin(false);
+            if (UserManager.Instance != null)
+            {
+                UserManager.Instance.StartUpdateCanAddCoin(false);
+            }
+            LoadingBridge.pauseProfileApiCall = false;
         }
     }
 

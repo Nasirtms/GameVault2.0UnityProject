@@ -70,11 +70,23 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _OutlineTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 2.09, y: 1}
+        m_Offset: {x: 0.37, y: 0}
     m_Ints: []
     m_Floats:
+    - _FaceDilate: 0.016
+    - _OutlineWidth: 0.377
+    - _ScaleRatioA: 0.9
+    - _ScaleRatioB: 0.71685
+    - _ScaleRatioC: 0.71685
     - _UnderlayDilate: 0
+    - _UnderlayOffsetX: 0.032
+    - _UnderlayOffsetY: -0.259
     m_Colors:
+    - _OutlineColor: {r: 0.20911944, g: 0, b: 0.26415092, a: 1}
     - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_BuildTextureStacks: []
 --- !u!114 &11400000

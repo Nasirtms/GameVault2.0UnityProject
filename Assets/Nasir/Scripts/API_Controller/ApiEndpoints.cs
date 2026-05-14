@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Supabase.Gotrue;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,6 +61,7 @@ public static class ApiEndpoints
     public static string UpdateUserProfile => $"{BaseUrl}{ApiPrefix}/users/profile"; // PUT
     public static string UpdateUserProfileImage => $"{BaseUrl}{ApiPrefix}/users/profile"; // PUT
     public static string CheckSession => $"{BaseUrl}{ApiPrefix}/users/check-session"; // PUT
+    public static string SendFeedback => $"{BaseUrl}{ApiPrefix}/users/feedback";    // POST
 
 
     // ==============
@@ -151,11 +153,11 @@ public static class ApiEndpoints
     public static string AllEvents => $"{BaseUrl}{ApiPrefix}/event";                          // GET
     public static string ActiveEvents => $"{BaseUrl}{ApiPrefix}/event/active";                // GET
     public static string GetEventById(string eventId) => $"{BaseUrl}{ApiPrefix}/event/{eventId}"; // GET
+    public static string SendGameActionEvent => $"{BaseUrl}{ApiPrefix}/games/action";            // POST
 
     #endregion
     // Golden Dragon Mini Game
     public static string GoldenDragonMiniGameCoinUpdate => $"{BaseUrl}{ApiPrefix}/slot/{slotGameName}/CoinUpdateForMiniGame";
-
 
     public static string slotGameSpin => $"{BaseUrl}{ApiPrefix}/slot/{slotGameName}/spin";   //POST
     public static string slot2FreeSpin => $"{BaseUrl}{ApiPrefix}/slot/{slotGameName}/test-freespin?wildColumns=2"; //POST
@@ -163,9 +165,8 @@ public static class ApiEndpoints
     public static string slot4FreeSpin => $"{BaseUrl}{ApiPrefix}/slot/{slotGameName}/test-freespin?wildColumns=4";   //POST
 
 
-    //Sahara Riches Test
-    public static string saharaRichesTest => $"{BaseUrl}{ApiPrefix}/slot/starburstslots/spin";
-
+    //Any NewGame Test(which don't have an api)
+    public static string newGameTest => $"{BaseUrl}{ApiPrefix}/slot/zombieparadise/spin";
 
     //Keno Games 
     public static string superBallKeno => $"{BaseUrl}{ApiPrefix}/superballkeno/spin";
@@ -176,6 +177,8 @@ public static class ApiEndpoints
     // HeadsNTails
     public static string HeadsNTails => $"{BaseUrl}{ApiPrefix}/headntails/play";
 
+    //Gold Rush Gus(CoinGambleGame) API
+    public static string GoldRushGusCoinGambleGame => $"{BaseUrl}{ApiPrefix}/slot/{slotGameName}/collect-coin-gamble";
 
     #region Refresh Token Code
 
@@ -214,6 +217,8 @@ public static class ApiEndpoints
         };
 
         var bodyJson = JsonUtility.ToJson(refreshReq);
+
+        //Debug.Log("RefreshMethod body: " + bodyJson);
         using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
             byte[] bodyRaw = Encoding.UTF8.GetBytes(bodyJson);

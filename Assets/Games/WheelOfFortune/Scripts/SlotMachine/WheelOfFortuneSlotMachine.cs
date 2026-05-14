@@ -36,8 +36,8 @@ public class WheelOfFortuneSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     public bool isPaylineCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -45,14 +45,14 @@ public class WheelOfFortuneSlotMachine : BaseSlotMachine
     private bool isSettingResult;
 
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     public bool isFreeGameReady;
-    [HideInInspector] public int freeSpinCount;
+    [HideInInspector] public int freeSpinWinIndex;
     public float freeSpinWinAmount;
     [HideInInspector] public bool firstFreeSpin;
 
     // Coins Variables
-    private float winAmount;
+    public float winAmount;
     // Events
     public event Action StopReelProcess;
 
@@ -191,9 +191,10 @@ public class WheelOfFortuneSlotMachine : BaseSlotMachine
 
     #region Spin Result Received
     [Header("Fake Free Spin")]
-    public int fakeFreeSpins;
-
-private void OnSpinResultReceived(BaseSpinResult result)
+    public bool fakeFreeSpin;
+    public int fakeWinIndex = 0;
+  
+    private void OnSpinResultReceived(BaseSpinResult result)
     {
         if (result is SpinResult normalSpin)
         {
@@ -201,22 +202,23 @@ private void OnSpinResultReceived(BaseSpinResult result)
         }
 
         Debug.Log("SpinResult (parsed):\n" + JsonConvert.SerializeObject(currentSpinResult, Formatting.Indented));
-
+        //Debug.Log("New Balance : " + currentSpinResult.newBalance.ToString());
         spinSymbolMatrix.Clear();
 
-        if (currentSpinResult.isFreeSpin)
+        if (currentSpinResult.isBonusGame)
         {
             if (!isFreeGame)
                 isFreeGameReady = true;
 
-            //freeSpinCount = currentSpinResult.freeSpinCount;
+            freeSpinWinIndex = currentSpinResult.freeSpinCount;
+            freeSpinWinAmount = currentSpinResult.goldenDragonIsBonusMultiplier;
         }
-        else if (fakeFreeSpins > 0)    
+        else if (fakeFreeSpin)    
         {
             if (!isFreeGame)
                 isFreeGameReady = true;
 
-            freeSpinCount = fakeFreeSpins;
+            freeSpinWinIndex = fakeWinIndex;
         }
 
         int reelIndex = 0;
@@ -256,21 +258,15 @@ private void OnSpinResultReceived(BaseSpinResult result)
     public override void Spin()
     {
         if (InSpin) return;
-        if (!isFreeGame || firstFreeSpin)
-        {
-            isFreeGameReady = false;
-            WheelOfFortuneUIManager.Instance.UpdateWinAmount(0f, false);
-            freeSpinWinAmount = 0f;
-            winAmount = 0f;
-        }
+
         StopAllCoroutines();
         WheelOfFortunePaylineController.Instance.StopPaylineLoop();
         WheelOfFortunePaylineController.Instance.ClearPaylineResults();
-        //if (!isFreeGame) WheelOfFortuneUIManager.Instance.UpdateWinAmount(0f);
         WheelOfFortuneUIManager.Instance.SetStopInteractable(false);
 
         // Reset Variables and Functions State
-        freeSpinCount = 0;
+        isFreeSpinRunning = false;
+        freeSpinWinIndex = 0;
         currentSpinResult = null;
         InSpin = true;
         isSpinAgain = false;
@@ -281,6 +277,12 @@ private void OnSpinResultReceived(BaseSpinResult result)
         hasSymbol = false;
         symbolCount = 0;
         _reelsCount = reels.Count;
+        WheelOfFortuneUIManager.Instance.PlaySpinMusic("Spin");
+        //FreeSpin
+        isFreeGameReady = false;
+        WheelOfFortuneUIManager.Instance.UpdateWinAmount(0f, false);
+        freeSpinWinAmount = 0f;
+        winAmount = 0f;
         WheelOfFortuneUIManager.Instance.winAnimationCompleted = true;
         ClearPaylines();
 
@@ -330,7 +332,7 @@ private void OnSpinResultReceived(BaseSpinResult result)
     #region Stop
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -344,10 +346,19 @@ private void OnSpinResultReceived(BaseSpinResult result)
         {
             CasinoUIManager.Instance.ShowErrorCanvas(1, "Network Error");
             StopWithResult(); // fallback
+            if (WheelOfFortuneAutoSpinController.isAutoSpinning)
+            {
+               WheelOfFortuneUIManager.Instance.CancelAutoSpin();
+            }
+            else
+            {
+                WheelOfFortuneUIManager.Instance.UpdateButtons("Default");
+            }
+            isSpinAgain = true;
+            WheelOfFortuneUIManager.Instance.StopSpinMusic("Spin");
             yield break;
         }
 
-        // Optional: small delay for visual pacing
         yield return new WaitForSeconds(0.5f);
 
         StopWithResult();
@@ -357,7 +368,8 @@ private void OnSpinResultReceived(BaseSpinResult result)
 
     public void Stop()
     {
-        if (InSpin == false) { return; }
+        if (!InSpin) return; 
+
         if (currentSpinResult == null || currentSpinResult.reels == null || currentSpinResult.reels.Count == 0)
         {
             InSpin = false;
@@ -388,7 +400,11 @@ private void OnSpinResultReceived(BaseSpinResult result)
         {
             reels[i].canStopReel = true;
         }
-
+        //if (lastReelAnimator != null)
+        //{
+        //    lastReelAnimator.SetBool("LastReel", false);
+        //    lastReelEffect.SetActive(false);
+        //}
         WheelOfFortuneUIManager.Instance.SetStopInteractable(false);
     }
 
@@ -407,7 +423,9 @@ private void OnSpinResultReceived(BaseSpinResult result)
                 {
                     lastReelEffect.SetActive(true);
                     lastReelAnimator.SetBool("LastReel", true);
-                    yield return new WaitForSeconds(2);
+                    if (isStopBtnPressed)
+                        break;
+                    yield return new WaitForSeconds(1.1f);
                     lastReelAnimator.SetBool("LastReel", false);
                     lastReelEffect.SetActive(false);
                 }
@@ -425,7 +443,9 @@ private void OnSpinResultReceived(BaseSpinResult result)
                 {
                     lastReelEffect.SetActive(true);
                     lastReelAnimator.SetBool("LastReel", true);
-                    yield return new WaitForSeconds(2);
+                    if (isStopBtnPressed)
+                        break;
+                    yield return new WaitForSeconds(1.1f);
                     lastReelAnimator.SetBool("LastReel", false);
                     lastReelEffect.SetActive(false);
                 }
@@ -438,7 +458,10 @@ private void OnSpinResultReceived(BaseSpinResult result)
         if (isStopBtnPressed)
             StopButtonPressed();
 
+        WheelOfFortuneUIManager.Instance.StopSpinMusic("Spin");
         ProcessSpinResult();
+        InSpin = false;
+        isSpinAgain = true;
     }
 
     [Header("Forced Prize")]
@@ -461,50 +484,50 @@ private void OnSpinResultReceived(BaseSpinResult result)
             winAmount = currentSpinResult.totalWin;
         }
 
-        if (isFreeGameReady && winAmount > 0)
+        StartCoroutine(HandleWinFlow(winAmount));
+    }
+    public bool isFreeSpinRunning;
+    private IEnumerator HandleWinFlow(float winAmount)
+    {
+        if (isFreeGameReady)
         {
-            firstFreeSpin = false;
-            freeSpinWinAmount += winAmount;
-            WheelOfFortuneUIManager.Instance.UpdateWinAmount(winAmount, true);
+            WheelOfFortuneUIManager.Instance.UpdateButtons("FreeSpin");
+            isFreeSpinRunning = true;
+            yield return StartCoroutine(FreeSpinCoroutine());
+            yield return new WaitUntil(() => !isFreeSpinRunning);
         }
-        else if (winAmount > 0f)
+        else
         {
             float betAmount = WheelOfFortuneUIManager.Instance.CurrentBet();
-            UpdateGameCoin();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
+            if (winAmount > 0)
+            {
+                WheelOfFortuneUIManager.Instance.PlaySound("Win");
+            }
         }
-
-
-        if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0 || isFreeGameReady)
+        if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0)
         {
             foreach (var payline in currentSpinResult.paylineWins)
             {
                 WheelOfFortunePaylineResult result = new WheelOfFortunePaylineResult(payline.paylineIndex, payline.symbol, payline.count);
                 WheelOfFortunePaylineController.Instance.AddPaylineResult(result);
             }
-
             Invoke("ShowPaylines", 1f);
         }
         else
         {
             isPaylineCompleted = true;
         }
-        WheelOfFortuneUIManager.Instance.StopSpinMusic("Spin");
-        InSpin = false;
-        isSpinAgain = true;
 
-        if (isFreeGameReady)
-        {
-            WheelOfFortuneUIManager.Instance.UpdateButtons("Transition");
-        }
-        else if (!WheelOfFortuneAutoSpinController.isAutoSpinning && !isFreeGame && WheelOfFortuneUIManager.Instance.winAnimationCompleted)
+        if (!WheelOfFortuneAutoSpinController.isAutoSpinning && !isFreeGame && WheelOfFortuneUIManager.Instance.winAnimationCompleted)
         {
             WheelOfFortuneUIManager.Instance.UpdateButtons("Default");
         }
-        else if (isFreeGame)
-        {
-            WheelOfFortuneUIManager.Instance.UpdateButtons("FreeSpin");
-        }
+    }
+    public IEnumerator FreeSpinCoroutine()
+    {
+        WheelOfFortuneFreeGameTransitionController.Instance.StartFreeSpinTransition();
+        yield return new WaitUntil(() => !isFreeSpinRunning);
     }
     public void UpdateGameCoin()
     {
@@ -512,9 +535,8 @@ private void OnSpinResultReceived(BaseSpinResult result)
     }
     private void ShowPaylines()
     {
-        WheelOfFortunePaylineController.Instance.StartPaylineLoop(isFreeGameReady);
+        WheelOfFortunePaylineController.Instance.StartPaylineLoop();
     }
-
     #endregion
 
     #region Cleanup

@@ -1,35 +1,17 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting.FullSerializer;
+using UnityEngine;
 
-public enum SceneAccessType
-{
-    Dev,
-    Publish,
-    Both
-}
 
 public class MainMenuSceneAcessType : MonoBehaviour
 {
-    [Header("Select scene access type for this session")]
-    public SceneAccessType SceneAccessType;
-
     private void Awake()
     {
-#if UNITY_EDITOR
-        // Load last saved choice if key exists
-        if (UnityEditor.EditorPrefs.HasKey("SelectedSceneAccessType"))
+        if (SceneManagement.buildConfig == null)
         {
-            SceneAccessType = (SceneAccessType)UnityEditor.EditorPrefs.GetInt("SelectedSceneAccessType");
+            Debug.LogError("BuildConfig is NULL!");
+            return;
         }
-#endif
-        // Apply to SceneManagement
-        SceneManagement.sceneAccessType = SceneAccessType;
-    }
 
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        // Save current choice whenever changed in Inspector
-        UnityEditor.EditorPrefs.SetInt("SelectedSceneAccessType", (int)SceneAccessType);
+        SceneManagement.sceneAccessType = SceneManagement.buildConfig.gameType;
     }
-#endif
 }

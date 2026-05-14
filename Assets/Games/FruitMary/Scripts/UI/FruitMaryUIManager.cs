@@ -10,6 +10,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(FruitMaryAutoSpinController))]
 public class FruitMaryUIManager : GameBetServices
 {
+
     #region Variables
     public static FruitMaryUIManager Instance;
 
@@ -81,7 +82,6 @@ public class FruitMaryUIManager : GameBetServices
     private float currentSpinWin;
     private string currentButtonSet;
     #endregion
-
 
     #region Unity Methods
     private void Awake()
@@ -157,7 +157,11 @@ public class FruitMaryUIManager : GameBetServices
         if (!FruitMarySoundManager.Instance.IsSoundMute())
             FruitMarySoundManager.Instance.PlaySFX(soundName);
     }
-
+    public void StopCurrentSFX()
+    {
+        if (!FruitMarySoundManager.Instance.IsSoundMute())
+            FruitMarySoundManager.Instance.StopSFX();
+    }
     public void PlayMusic(string soundName)
     {
         if (string.IsNullOrEmpty(soundName)) return;
@@ -222,7 +226,6 @@ public class FruitMaryUIManager : GameBetServices
     }
     #endregion
 
-
     #region Bet
     private void IncreaseBetAmount()
     {
@@ -252,7 +255,7 @@ public class FruitMaryUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
     private void OpenRulesPopup()
     {
@@ -275,7 +278,6 @@ public class FruitMaryUIManager : GameBetServices
         {
             return;
         }
-
 
         float betAmount = betController.GetCurrentBet();
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
@@ -416,6 +418,11 @@ public class FruitMaryUIManager : GameBetServices
     #endregion
 
     #region Text Animation
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount, bool compound = false)
     {
         if (winAmount > 0)
@@ -463,13 +470,15 @@ public class FruitMaryUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        textToAnimate.text = target.ToString("0.00");
+        //textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
         StopWinMusic("Win");
         PlaySound("WinEnd");
     }
@@ -482,17 +491,19 @@ public class FruitMaryUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
-
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
 
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
-
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
         StopCoroutine(textAnimationCoroutine);
 
     }
@@ -582,6 +593,10 @@ public class FruitMaryUIManager : GameBetServices
     public float CurrentBet()
     {
         return betController.GetCurrentBet();
+    }
+    public void CancelAutoSpin()
+    {
+        autoSpinController.CancelAutoSpin();
     }
     #endregion
 }

@@ -405,6 +405,7 @@ GameObject:
   - component: {fileID: 2633915503004278353}
   - component: {fileID: -6656870415301935579}
   - component: {fileID: 2539414984988651531}
+  - component: {fileID: 8785351435381846927}
   m_Layer: 8
   m_Name: Hammerhead-Shark-Silver
   m_TagString: Fish
@@ -497,9 +498,11 @@ MonoBehaviour:
   - {fileID: 7739841332593263878, guid: 1cd1a5a8131f0c84e9abca783ca56905, type: 3}
   - {fileID: 7739841332593263878, guid: c495c15136c3f6044af5c4d24333568d, type: 3}
   flashDuration: 0.1
-  lockedColor: {r: 1, g: 1, b: 1, a: 1}
+  lockedColor: {r: 0, g: 1, b: 0, a: 1}
   speed: 0
   destination: {x: 0, y: 0, z: 0}
+  useCustomAnimBool: 0
+  animationParameterName: 
   sr: {fileID: 6638243927143244090}
   originalLayer:
     serializedVersion: 2
@@ -542,7 +545,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5454793286172753041}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -580,6 +583,69 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 6, y: 1.5}
   m_EdgeRadius: 0
+--- !u!60 &8785351435381846927
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5454793286172753041}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 1.0458707, y: 0.77872837}
+      - {x: -0.08105065, y: 1.6020014}
+      - {x: 0.18594925, y: 0.71877766}
+      - {x: -1.6253304, y: 0.27656624}
+      - {x: -2.9974499, y: 1.0441236}
+      - {x: -2.4529097, y: 0.0368311}
+      - {x: -2.9492254, y: -1.0434265}
+      - {x: -1.6555933, y: -0.31147197}
+      - {x: 0.15010539, y: -0.6656868}
+      - {x: -0.0642035, y: -1.5897154}
+      - {x: 0.98841244, y: -0.7671941}
+      - {x: 1.7528331, y: -0.7468929}
+      - {x: 1.7185234, y: -1.68376}
+      - {x: 2.4875188, y: -1.8460507}
+      - {x: 2.9125047, y: 0.013025718}
+      - {x: 2.4507756, y: 1.8155787}
+      - {x: 1.7547959, y: 1.6796509}
+      - {x: 1.7435476, y: 0.73085344}
+  m_UseDelaunayMesh: 0
 --- !u!1 &7117241362824982006
 GameObject:
   m_ObjectHideFlags: 0

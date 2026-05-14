@@ -123,7 +123,6 @@ public class TheGreenMachineDeluxeReelScript : MonoBehaviour
     {
         if (reelIndex >= TheGreenMachineDeluxeSlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"❌ No spin data for reel {reelIndex}!");
             return;
         }
 
@@ -141,22 +140,14 @@ public class TheGreenMachineDeluxeReelScript : MonoBehaviour
 
             if (res.HasValue)
             {
-                //TheGreenMachineDeluxeSlotMachine.Instance.isResultReceived = true;
-
                 if (_clampedDown)
                 {
                     row -= 1;
-
-                    //Debug.Log("Slot Clamped on Reel: " + this._index + " row: " + row);
                 }
 
                 var slot = slots[row + 1]; // Make sure slots[1], [2], [3] are the visible ones
 
                 slot.SetType(res.Value);
-            }
-            else
-            {
-                Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
             }
         }
 

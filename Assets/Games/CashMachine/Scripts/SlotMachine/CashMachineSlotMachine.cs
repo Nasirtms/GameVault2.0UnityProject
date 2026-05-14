@@ -13,6 +13,7 @@ public class CashMachineSlotMachine : BaseSlotMachine
     #region Variables
 
     public static CashMachineSlotMachine Instance;
+    public List<int> LockedReels = new List<int>();
 
     [Header("Machine References")]
     [OnValueChanged("UpdateSettings")] public CashMachineGameSettings settings;
@@ -36,16 +37,16 @@ public class CashMachineSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
-    [HideInInspector] public bool isSpinAgain = false;
+    //public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
+    public bool isSpinAgain = false;
     [HideInInspector] public bool isPaylineCompleted;
     [HideInInspector] public bool isResultReceived;
     private bool _isSingleSpin;
     private bool isSettingResult;
 
     [HideInInspector] public float freeSpinWinAmount = 0f;
-    [HideInInspector] public bool isFreeGame = false;
+    //[HideInInspector] public bool isFreeGame = false;
     [HideInInspector] public bool isFreeGameReady = false;
     [HideInInspector] public bool playingwinanimation;
     [HideInInspector] public int bullseyeCount = 0;
@@ -70,7 +71,7 @@ public class CashMachineSlotMachine : BaseSlotMachine
     public bool zeroOnReel2;
     public bool zeroOnReel3;
     public bool doubleZeroOnReel3;
-    private int freeSpinsDone = 0;
+    public int freeSpinsDone = 0;
     public bool decoyFreeSpinBool = false;
     #endregion
 
@@ -276,6 +277,11 @@ public class CashMachineSlotMachine : BaseSlotMachine
         if (!isFreeGame) CashMachineUIManager.Instance.UpdateWinAmount(0f);
         CashMachineUIManager.Instance.SetStopInteractable(false);
 
+        if (!isFreeGame)
+        {
+            LockedReels.Clear();
+        }
+        CashMachineUIManager.Instance.winAnimationCompleted = true;
         // Reset Variables and Functions State
         winAmount = 0;
         if (!isFreeGame) freeSpinWinAmount = 0f;
@@ -288,7 +294,7 @@ public class CashMachineSlotMachine : BaseSlotMachine
         horizontalLayout.enabled = false;
         _reelsCount = reels.Count;
         ClearPaylines();
-
+        CashMachineUIManager.Instance.PlaySpinMusic("Spin");
         // Getting Spin Settings
         _acceleration = settings.spinSettings.useSameAcceleration
             ? CashMachineGameExtension.GetRandomValue(settings.spinSettings.acceleration)
@@ -299,7 +305,6 @@ public class CashMachineSlotMachine : BaseSlotMachine
             : 0f;
 
         _delayAmongReel = CashMachineGameExtension.GetRandomValue(settings.spinSettings.delayAmongReels);
-
 
         if (settings.spinSettings.startSpin == CashMachineSpinType.All)
         {
@@ -319,6 +324,14 @@ public class CashMachineSlotMachine : BaseSlotMachine
 
                 CashMachineUIManager.Instance.reel1SpinBg.SetActive(true);
                 reels[i].ResetShape();
+                if (isFreeGame)
+                {
+                    reels[i].ReverseDirection(true);
+                }
+                else
+                {
+                    reels[i].ReverseDirection(false);
+                }
                 reels[i].Spin(_delayAmongReel, _acceleration, _speed);
             }
         }
@@ -326,6 +339,14 @@ public class CashMachineSlotMachine : BaseSlotMachine
         {
             //start spin the first reel
             reels[0].ResetShape();
+            if (isFreeGame)
+            {
+                reels[0].ReverseDirection(true);
+            }
+            else
+            {
+                reels[0].ReverseDirection(false);
+            }
             reels[0].Spin(_delayAmongReel, _acceleration, _speed);
 
             //init delay variables
@@ -368,7 +389,7 @@ public class CashMachineSlotMachine : BaseSlotMachine
     public bool errorFreeSpin;
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -395,7 +416,7 @@ public class CashMachineSlotMachine : BaseSlotMachine
             {
                 CashMachineUIManager.Instance.UpdateButtons("Stop");
             }
-
+            CashMachineUIManager.Instance.StopSpinMusic("Spin");
             isSpinAgain = true;
             yield break;
         }
@@ -555,76 +576,75 @@ public class CashMachineSlotMachine : BaseSlotMachine
             }
             else
             {
-                CashMachineUIManager.Instance.StartCoroutine(CashMachineUIManager.Instance.AnimateValue(freeSpinWinAmount, (freeSpinWinAmount+winAmount), 0.7f, CashMachineUIManager.Instance.winAmount));
+                CashMachineUIManager.Instance.StartCoroutine(CashMachineUIManager.Instance.AnimateValue(freeSpinWinAmount, (freeSpinWinAmount + winAmount), 0.7f, CashMachineUIManager.Instance.winAmount));
                 freeSpinWinAmount += winAmount;
             }
-            Invoke(nameof(UpdateGameCoin), 1f);
+            Invoke(nameof(UpdateGameCoin), 0.5f);
         }
 
         if (winAmount > 0)
         {
             Invoke("ShowPaylines", 0.5f);
         }
-        else
+        else isPaylineCompleted = true;
+
+        if (isFreeGameReady && !isFreeGame && !decoyFreeSpinBool)
         {
-            isPaylineCompleted = true;
-            if (isFreeGameReady && !isFreeGame && !decoyFreeSpinBool)
+            decoyFreeSpinBool = true;
+            CashMachineUIManager.Instance.UpdateButtons("enterfreeSpin");
+            CashMachineUIManager.Instance.SetStopInteractable(false);
+            if (!canReel3spin && canReel2spin)
             {
-                decoyFreeSpinBool = true;
-                CashMachineUIManager.Instance.UpdateButtons("enterfreeSpin");
-                CashMachineUIManager.Instance.SetStopInteractable(false);
-                if (!canReel3spin && canReel2spin)
+                canReel2spin = false;
+                CashMachineUIManager.Instance.reel2LockedBg.SetActive(true);
+            }
+            else if (canReel2spin && canReel3spin)
+            {
+                if (zeroOnReel2 && !doubleZeroOnReel3 && !zeroOnReel3)
                 {
                     canReel2spin = false;
                     CashMachineUIManager.Instance.reel2LockedBg.SetActive(true);
                 }
-                else if (canReel2spin && canReel3spin)
+                else if ((zeroOnReel2 && doubleZeroOnReel3) || (zeroOnReel2 && zeroOnReel3))
                 {
-                    if (zeroOnReel2 && !doubleZeroOnReel3 && !zeroOnReel3)
-                    {
-                        canReel2spin = false;
-                        CashMachineUIManager.Instance.reel2LockedBg.SetActive(true);
-                    }
-                    else if ((zeroOnReel2 && doubleZeroOnReel3) || (zeroOnReel2 && zeroOnReel3))
-                    {
-                        canReel3spin = false;
-                        canReel2spin = false;
-                        CashMachineUIManager.Instance.reel2LockedBg.SetActive(true);
-                        CashMachineUIManager.Instance.reel3LockedBg.SetActive(true);
-                        freeSpinsDone++;
-                    }
-                    else if((doubleZeroOnReel3 && !zeroOnReel2 && !zeroOnReel3) ||(!doubleZeroOnReel3 && !zeroOnReel2 && zeroOnReel3))
-                    {
-                        canReel3spin = false;
-                        CashMachineUIManager.Instance.reel3LockedBg.SetActive(true);
-                    }
-                }
-                Invoke("StartFreeSpins", 0.5f);
-            }
-            else if(isFreeGame && decoyFreeSpinBool)
-            {
-                if (zeroOnReel2 && !doubleZeroOnReel3 && !zeroOnReel3)
-                {
-                    CashMachineFreeSpinController.Instance.UpdateFreeSpins(1);
-                    decoyFreeSpinBool = false;
-                }
-                else if ((zeroOnReel3 && doubleZeroOnReel3) || (zeroOnReel2 && zeroOnReel3))
-                {
-                    CashMachineFreeSpinController.Instance.UpdateFreeSpins(1);
+                    canReel3spin = false;
+                    canReel2spin = false;
+                    CashMachineUIManager.Instance.reel2LockedBg.SetActive(true);
+                    CashMachineUIManager.Instance.reel3LockedBg.SetActive(true);
                     freeSpinsDone++;
-                    if (freeSpinsDone == 3)
-                    {
-                        decoyFreeSpinBool = false;
-                    }
                 }
                 else if ((doubleZeroOnReel3 && !zeroOnReel2 && !zeroOnReel3) || (!doubleZeroOnReel3 && !zeroOnReel2 && zeroOnReel3))
                 {
-                    CashMachineFreeSpinController.Instance.UpdateFreeSpins(1);
+                    canReel3spin = false;
+                    CashMachineUIManager.Instance.reel3LockedBg.SetActive(true);
+                }
+            }
+            Invoke("StartFreeSpins", 0.5f);
+        }
+        else if (isFreeGame && decoyFreeSpinBool)
+        {
+            if (zeroOnReel2 && !doubleZeroOnReel3 && !zeroOnReel3)
+            {
+                CashMachineFreeSpinController.Instance.UpdateFreeSpins(1);
+                decoyFreeSpinBool = false;
+            }
+            else if ((zeroOnReel3 && doubleZeroOnReel3) || (zeroOnReel2 && zeroOnReel3))
+            {
+                CashMachineFreeSpinController.Instance.UpdateFreeSpins(1);
+                freeSpinsDone++;
+                if (freeSpinsDone == 3)
+                {
                     decoyFreeSpinBool = false;
                 }
             }
+            else if ((doubleZeroOnReel3 && !zeroOnReel2 && !zeroOnReel3) || (!doubleZeroOnReel3 && !zeroOnReel2 && zeroOnReel3))
+            {
+                CashMachineFreeSpinController.Instance.UpdateFreeSpins(1);
+                decoyFreeSpinBool = false;
+            }
         }
-        
+
+
         InSpin = false;
         isSpinAgain = true;
 

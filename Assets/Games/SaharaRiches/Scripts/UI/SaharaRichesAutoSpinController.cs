@@ -16,9 +16,14 @@ public class SaharaRichesAutoSpinController : MonoBehaviour
     #endregion
 
     #region Unity Methods
-
-    private void Start()
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
     }
     #endregion
 
@@ -65,8 +70,10 @@ public class SaharaRichesAutoSpinController : MonoBehaviour
             if (SaharaRichesUIManager.Instance.winCoroutine != null)
                 StopCoroutine(SaharaRichesUIManager.Instance.winCoroutine);
 
-            SaharaRichesUIManager.Instance.PlaySpinMusic("Spin");
             SlotSpinService.Instance.Spin(betAmount);
+
+            if (SaharaRichesUIManager.Instance.CurrentButtonSet() != "Auto")
+                SaharaRichesUIManager.Instance.UpdateButtons("Auto");
 
             yield return new WaitUntil(() => SaharaRichesSlotMachine.Instance.isSpinAgain);
             //yield return new WaitUntil(() => !SaharaRichesSlotMachine.Instance.InSpin);
@@ -107,6 +114,20 @@ public class SaharaRichesAutoSpinController : MonoBehaviour
         isAutoSpinning = false;
         isAutoRunning = false;
         cancelRequested = false;
+    }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
+
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
     }
     #endregion
 }

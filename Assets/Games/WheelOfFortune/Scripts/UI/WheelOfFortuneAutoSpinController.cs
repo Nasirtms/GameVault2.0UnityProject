@@ -17,6 +17,18 @@ public class WheelOfFortuneAutoSpinController : MonoBehaviour
 
     #endregion
 
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
+    #endregion
+
     #region Public References
 
     public bool IsAutoRunning => isAutoRunning;
@@ -60,12 +72,16 @@ public class WheelOfFortuneAutoSpinController : MonoBehaviour
                 break;
             }
 
-            WheelOfFortuneUIManager.Instance.PlaySpinMusic("Spin");
+
             float balance = UserManager.Instance.Coins;
 
+            if (WheelOfFortuneUIManager.Instance.textAnimationCoroutine != null)
+                StopCoroutine(WheelOfFortuneUIManager.Instance.textAnimationCoroutine);
+            if (WheelOfFortuneUIManager.Instance.winCoroutine != null)
+                StopCoroutine(WheelOfFortuneUIManager.Instance.winCoroutine);
+
             if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) break;
-
-
+            WheelOfFortuneUIManager.Instance.PlaySpinMusic("Spin");
             SlotSpinService.Instance.Spin(betAmount);
 
             yield return new WaitUntil(() => WheelOfFortuneSlotMachine.Instance.isSpinAgain);
@@ -109,6 +125,19 @@ public class WheelOfFortuneAutoSpinController : MonoBehaviour
         isAutoRunning = false;
         cancelRequested = false;
     }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
 
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
 }

@@ -16,7 +16,7 @@ public class FlameComboUIManager : GameBetServices
 
     [Space(10)]
     [Header("User Details")]
-    [SerializeField] private TMP_Text coins;
+    public TMP_Text coins;
     [SerializeField] public TMP_Text winAmount;
     [SerializeField] private float duration = 1.5f;
 
@@ -100,7 +100,7 @@ public class FlameComboUIManager : GameBetServices
         MusicActive(musicOn);
         UpdateCoins();
         SetupInputButtons();
-
+        PlayMusic("BG");
         StartTitleLoop();
         UserManager.Instance.UpdateGameCoins += UpdateCoins;
     }
@@ -150,7 +150,11 @@ public class FlameComboUIManager : GameBetServices
         if (!FlameComboSoundManager.Instance.IsSoundMute())
             FlameComboSoundManager.Instance.PlaySFX(soundName);
     }
-
+    public void StopCurrentSFX()
+    {
+        if (!FlameComboSoundManager.Instance.IsSoundMute())
+            FlameComboSoundManager.Instance.StopSFX();
+    }
     public void PlayMusic(string soundName)
     {
         if (string.IsNullOrEmpty(soundName)) return;
@@ -230,30 +234,30 @@ public class FlameComboUIManager : GameBetServices
     private void IncreaseBetAmount()
     {
         if (betController == null) return;
-        //PlaySound("FruitParadise_Increase_Button");
+        PlaySound("Bet");
         betController.IncreaseChipValue();
     }
 
     private void DecreaseBetAmount()
     {
         if (betController == null) return;
-        //PlaySound("FruitParadise_Decrease_Button");
+        PlaySound("Bet");
         betController.DecreaseChipValue();
     }
 
     private void ExitGame()
     {
-        //PlaySound("FruitParadise_Button");
+        PlaySound("Button");
         if (UserManager.Instance != null)
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
     private void OpenRulesPopup()
     {
         if (rulesPopupController == null) return;
-        //PlaySound("FruitParadise_Button");
+        PlaySound("Button");
         rulesPopupController.OpenPopup();
     }
     #endregion
@@ -263,11 +267,12 @@ public class FlameComboUIManager : GameBetServices
     {
         if (FlameComboSlotMachine.Instance.InSpin) return;
 
+        StopCurrentSFX();
         float betAmount = betController.GetCurrentBet();
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
 
         UpdateButtons("Spin");
-        //PlaySound("FruitParadise_Spin");
+        PlaySound("Button");
 
         if (textAnimationCoroutine != null)
         {
@@ -284,7 +289,9 @@ public class FlameComboUIManager : GameBetServices
 
     private void OnClickStop()
     {
-        //PlaySound("FruitParadise_Button");
+        StopCurrentSFX();
+        PlaySound("Button");
+        StopSpinMusic("Spin");
         if (FlameComboSlotMachine.Instance.isFreeGame)
         {
             UpdateButtons("Free Spin");
@@ -434,6 +441,11 @@ public class FlameComboUIManager : GameBetServices
     #endregion
 
     #region Text Animation
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount, bool compound = false)
     {
         if (winAmount > 0)
@@ -490,15 +502,16 @@ public class FlameComboUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            //textToAnimate.text = displayed.ToString("0.00");
+
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        textToAnimate.text = target.ToString("0.00");
-        //StopWinMusic("Win");
-        //PlaySound("WinEnd");
+        textToAnimate.text = FormatFloorValue(target);
+        //textToAnimate.text = target.ToString("0.00");
     }
     private IEnumerator AnimateToValue(float target, float duration, TMP_Text textToAnimateOne, TMP_Text textToAnimateTwo)
     {

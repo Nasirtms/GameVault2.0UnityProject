@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using UnityEngine;
 public class SuperBombPaylineEntry
 {
     public SuperBombPaylineData payline;
@@ -10,6 +12,8 @@ public class SuperBombPaylineEntry
         this.payline = payline;
         this.reelLimit = reelLimit;
         this.paylineWinAmount = paylineWinAmount;
+        UnityEngine.Debug.Log("paylineWinAmount : " + this.paylineWinAmount);
+
         this.isLeftToRight = isLeftToRight;
     }
 }

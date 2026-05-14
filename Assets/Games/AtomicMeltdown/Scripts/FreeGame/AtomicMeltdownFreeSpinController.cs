@@ -13,6 +13,20 @@ public class AtomicMeltdownFreeSpinController : MonoBehaviour
     private bool isFreeGame = false;
     private bool firstSpin;
 
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
+    #endregion
+
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
     #endregion
 
     #region Public References
@@ -21,11 +35,11 @@ public class AtomicMeltdownFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         freeSpinDone = 0;
-        AtomicMeltdownUIManager.Instance.StopMusic("Background");
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
 
     public void ResetFreeSpins()
@@ -64,15 +78,17 @@ public class AtomicMeltdownFreeSpinController : MonoBehaviour
                 yield return new WaitForSeconds(delayBetweenSpins); // optional delay between spins
             }
 
+            if (cancelRequested) yield break;
             float betAmount = AtomicMeltdownUIManager.Instance.CurrentBet();
             SlotSpinService.Instance.Spin(betAmount);
 
-            Debug.Log("Network Free Spins Done: " + freeSpinDone);
+            //Debug.Log("Network Free Spins Done: " + freeSpinDone);
 
             freeSpinDone++;
 
             yield return new WaitUntil(() => AtomicMeltdownSlotMachine.Instance.isSpinAgain);
 
+            if (cancelRequested) yield break;
             if (AtomicMeltdownSlotMachine.Instance.currentSpinResult != null)
             {
                 if (AtomicMeltdownSlotMachine.Instance.GetWinAmount() > 0)
@@ -93,6 +109,18 @@ public class AtomicMeltdownFreeSpinController : MonoBehaviour
         AtomicMeltdownSlotMachine.Instance.isFreeGame = false;
         AtomicMeltdownFreeGameTransitionController.Instance.EndFreeSpinTransition();
     }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
 
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        AtomicMeltdownUIManager.Instance.UpdateButtons("Default");
+    }
     #endregion
 }

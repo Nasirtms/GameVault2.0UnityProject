@@ -14,6 +14,20 @@ public class SaharaRichesFreeSpinController : MonoBehaviour
     private bool isFreeGame = false;
     private bool firstSpin;
 
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
+    #endregion
+
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
     #endregion
 
     #region Public References
@@ -22,11 +36,12 @@ public class SaharaRichesFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         freeSpinDone = 0;
 
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop()); 
     }
 
     public void ResetFreeSpins()
@@ -73,7 +88,8 @@ public class SaharaRichesFreeSpinController : MonoBehaviour
             {
                 yield return new WaitForSeconds(delayBetweenSpins); // optional delay between spins
             }
-            
+
+            if (cancelRequested) yield break;
             float betAmount = SaharaRichesUIManager.Instance.CurrentBet();
             SlotSpinService.Instance.Spin(betAmount);
 
@@ -82,6 +98,8 @@ public class SaharaRichesFreeSpinController : MonoBehaviour
             UpdateSpinCount();
 
             yield return new WaitUntil(() => SaharaRichesSlotMachine.Instance.isSpinAgain);
+
+            if (cancelRequested) yield break;
 
             if (SaharaRichesSlotMachine.Instance.currentSpinResult != null)
             {
@@ -112,6 +130,18 @@ public class SaharaRichesFreeSpinController : MonoBehaviour
 
         SaharaRichesFreeGameTransitionController.Instance.EndFreeSpinTransition();
     }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
 
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        SaharaRichesUIManager.Instance.UpdateButtons("Free Spin End");
+    }
     #endregion
 }

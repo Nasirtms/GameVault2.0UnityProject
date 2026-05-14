@@ -159,8 +159,9 @@ public class BotController : MonoBehaviour
         if (bs != null)
         {
             //bs.damage = Mathf.CeilToInt(BotManager.instance.betOptions[betIndex]);
-            bs.damage = GunManager.Instance.bulletDamage_base * GunManager.Instance.bulletDamageCurve.Evaluate(BotManager.instance.betOptions[betIndex]) * (Mathf.Clamp(betIndex, 0, gunLevels.Count - 1) + 1);
-            Debug.Log($"Bot Bullet Spawned ___ betIndex: {betIndex} ___ betamount: {BotManager.instance.betOptions[betIndex]} ___ gunlevel: {(Mathf.Clamp(betIndex, 0, gunLevels.Count - 1) + 1)} ___ bulletDamage_base: {GunManager.Instance.bulletDamage_base} ___ damageCurveValue: {GunManager.Instance.bulletDamageCurve.Evaluate(BotManager.instance.betOptions[betIndex])} ___ damage: {bs.damage}");
+            //bs.damage = GunManager.Instance.bulletDamage_base * GunManager.Instance.bulletDamageCurve.Evaluate(BotManager.instance.betOptions[betIndex]) * (Mathf.Clamp(betIndex, 0, gunLevels.Count - 1) + 1);
+            bs.damage = 1;
+            //Debug.Log($"Bot Bullet Spawned ___ betIndex: {betIndex} ___ betamount: {BotManager.instance.betOptions[betIndex]} ___ gunlevel: {(Mathf.Clamp(betIndex, 0, gunLevels.Count - 1) + 1)} ___ bulletDamage_base: {GunManager.Instance.bulletDamage_base} ___ damageCurveValue: {GunManager.Instance.bulletDamageCurve.Evaluate(BotManager.instance.betOptions[betIndex])} ___ damage: {bs.damage}");
             bs.shooter = this;
             bs.currentBetAmount = BotManager.instance.betOptions[betIndex];
             bs.targetLayer = LayerMask.GetMask("Fish");

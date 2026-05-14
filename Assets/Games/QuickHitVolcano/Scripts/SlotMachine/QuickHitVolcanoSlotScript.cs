@@ -192,7 +192,7 @@ public class QuickHitVolcanoSlotScript : MonoBehaviour
             {
                 uiShiny.Stop();
                 uiShiny.enabled = false;
-                Debug.Log("Shiny - Disabled");
+                //Debug.Log("Shiny - Disabled");
             }
         });
 

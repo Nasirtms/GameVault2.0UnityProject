@@ -86,7 +86,7 @@ public class CleopatraUIManager : GameBetServices
     [SerializeField] private string superWinTrigger;
     [SerializeField] private string jackpotWinTrigger;
     public Coroutine winCoroutine;
-
+    [HideInInspector] public bool winAnimationCompleted = false;
     public Coroutine textAnimationCoroutine;
 
     private CleopatraBetController betController;
@@ -293,7 +293,7 @@ public class CleopatraUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -309,8 +309,8 @@ public class CleopatraUIManager : GameBetServices
 
     private void OnClickSpin()
     {
-        PlaySound("Spin_Button");
-        PlaySpinMusic("Spin");
+        float betAmount = betController.GetCurrentBet();
+        if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
 
         if (CleopatraSlotMachine.Instance.isFreeGameReady)
         {
@@ -329,8 +329,8 @@ public class CleopatraUIManager : GameBetServices
             return;
         }
 
-        float betAmount = betController.GetCurrentBet();
-        if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
+        PlaySound("Spin_Button");
+        //PlaySpinMusic("Spin");
 
         if (textAnimationCoroutine != null)
         {
@@ -364,7 +364,6 @@ public class CleopatraUIManager : GameBetServices
     private void OnClickAuto()
     {
         if (autoSpinController == null) return;
-
         PlaySound("Auto_Button");
 
         if (autoSpinPopupPanel.activeSelf == true)
@@ -386,18 +385,9 @@ public class CleopatraUIManager : GameBetServices
 
         autoSpinController.CancelAutoSpin();
 
-        if (CleopatraSlotMachine.Instance.InSpin)
-        {
-            autoStopButton.ShowButton(false);
-            autoButton.ShowButton(true);
-            SetAutoInteractable(false);
-        }
-
-        if (!CleopatraSlotMachine.Instance.isPaylineCompleted)
-        {
-            CleopatraAutoSpinController.isAutoSpinning = false;
-            UpdateButtons("Auto Stop");
-        }
+        autoStopButton.ShowButton(false);
+        autoButton.ShowButton(true);
+        SetAutoInteractable(false);
     }
 
     private void OnAutoSpinOptionSelected(int spinCount)
@@ -406,13 +396,15 @@ public class CleopatraUIManager : GameBetServices
 
         autoSpinPopupPanel.SetActive(false);
         autoSpinCountPanel.SetActive(true);
-        PlaySpinMusic("Spin");
+        //PlaySpinMusic("Spin");
         float betAmount = betController.GetCurrentBet();
         if (textAnimationCoroutine != null)
         {
             StopCoroutine(textAnimationCoroutine);
             StopWinMusic("Win");
         }
+        if (winCoroutine != null)
+            StopCoroutine(winCoroutine);
         autoSpinController.SetSpinCount(spinCount);
         autoSpinController.StartAutoSpin(betAmount);
     }
@@ -474,6 +466,7 @@ public class CleopatraUIManager : GameBetServices
                 //stopButton.ShowButton(false);
                 autoButton.ShowButton(true);
                 autoStopButton.ShowButton(false);
+                SetAutoInteractable(true);
                 break;
 
             case "Free Spin":
@@ -500,11 +493,15 @@ public class CleopatraUIManager : GameBetServices
 
         currentButtonSet = type;
     }
-    
+
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount)
     {
         if (winAmount > 0)
@@ -550,13 +547,13 @@ public class CleopatraUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
         StopWinMusic("Win");
         PlaySound("WinEnd");
     }
@@ -569,41 +566,21 @@ public class CleopatraUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
 
         StopCoroutine(textAnimationCoroutine);
     }
 
     #endregion
-
-    //public void PlayBigWin(float winAmount)
-    //{
-    //    PlayBigWinAnimation(winAmount);
-    //}
-
-    //private void PlayBigWinAnimation(float winAmount)
-    //{
-    //    if (textAnimationCoroutine != null)
-    //    {
-    //        StopCoroutine(textAnimationCoroutine);
-    //    }
-
-    //    if (winCoroutine != null)
-    //    {
-    //        StopCoroutine(winCoroutine);
-    //    }
-
-    //    winCoroutine = StartCoroutine(BigWinAnimation(winAmount));
-    //}
 
     #region Win Animations
 
@@ -634,6 +611,7 @@ public class CleopatraUIManager : GameBetServices
 
     private IEnumerator WinAnimation(GameObject winType, TMP_Text winText, float targetAmount, int animatorIndex, string animationTrigger)
     {
+        winAnimationCompleted = false;
         yield return new WaitForSeconds(1.5f);
 
         winAnimations.SetActive(true);
@@ -656,7 +634,19 @@ public class CleopatraUIManager : GameBetServices
 
         winType.SetActive(false);
         winAnimations.SetActive(false);
-
+        winAnimationCompleted = true;
+        if (CleopatraSlotMachine.Instance.isFreeGameReady)
+        {
+            UpdateButtons("Free Spin");
+        }
+        else if (CleopatraAutoSpinController.isAutoSpinning)
+        {
+            UpdateButtons("Auto Start");
+        }
+        else
+        {
+            UpdateButtons("Single Stop");
+        }
         StopCoroutine(winCoroutine);
     }
 

@@ -8,8 +8,9 @@ public class TheGreenMachineDeluxeSoundManager : MonoBehaviour
 
     [SerializeField] private TheGreenMachineDeluxeGameSettings soundData;
     [SerializeField] private AudioSource musicSource;
+    [SerializeField] private AudioSource spinMusicSource;
     [SerializeField] private AudioSource sfxSource;
-    [SerializeField] private AudioSource winTextSource;
+    [SerializeField] private AudioSource winSource;
 
     private bool isSoundMute = false;
     private bool isMusicMute = false;
@@ -21,11 +22,6 @@ public class TheGreenMachineDeluxeSoundManager : MonoBehaviour
     {
         if (Instance != null) return;
         Instance = this;
-
-        if (musicSource == null || sfxSource == null)
-        {
-            Debug.LogError("Please assign both MusicSource and SFXSource in the SoundManager.");
-        }
     }
 
     public void PlayMusic(string soundName)
@@ -39,10 +35,6 @@ public class TheGreenMachineDeluxeSoundManager : MonoBehaviour
             musicSource.loop = true;
             musicSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
     }
 
     public void StopMusic(string soundName)
@@ -53,12 +45,28 @@ public class TheGreenMachineDeluxeSoundManager : MonoBehaviour
             musicSource.clip = sound.audioClip;
             musicSource.Stop();
         }
-        else
+    }
+    public void PlaySpinMusic(string soundName)
+    {
+        var sound = soundData.GetSound(soundName);
+        if (sound != null)
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            spinMusicSource.clip = sound.audioClip;
+            spinMusicSource.volume = sound.volume;
+            spinMusicSource.pitch = sound.pitch;
+            spinMusicSource.loop = true;
+            spinMusicSource.Play();
         }
     }
-
+    public void StopSpinMusic(string soundName)
+    {
+        var sound = soundData.GetSound(soundName);
+        if (sound != null)
+        {
+            spinMusicSource.clip = sound.audioClip;
+            spinMusicSource.Stop();
+        }
+    }
     public void PlaySFX(string soundName)
     {
         if (!string.IsNullOrEmpty(soundName))
@@ -72,48 +80,29 @@ public class TheGreenMachineDeluxeSoundManager : MonoBehaviour
                 sfxSource.loop = false;
                 sfxSource.PlayOneShot(sound.audioClip);
             }
-            else
-            {
-                Debug.LogWarning($"SFX '{soundName}' not found.");
-            }
         }
     }
-
-    public void PlayWinText(string soundName)
+    public void PlayWinMusic(string soundName)
     {
         var sound = soundData.GetSound(soundName);
         if (sound != null)
         {
-            winTextSource.clip = sound.audioClip;
-            winTextSource.volume = sound.volume;
-            winTextSource.pitch = sound.pitch;
-            winTextSource.loop = true;
-            winTextSource.Play();
-        }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            winSource.clip = sound.audioClip;
+            winSource.volume = sound.volume;
+            winSource.pitch = sound.pitch;
+            winSource.loop = true;
+            winSource.Play();
         }
     }
 
-    public void StopWinText(string soundName)
+    public void StopWinMusic(string soundName)
     {
         var sound = soundData.GetSound(soundName);
         if (sound != null)
         {
-            winTextSource.clip = sound.audioClip;
-            winTextSource.Stop();
+            winSource.clip = sound.audioClip;
+            winSource.Stop();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
-    }
-
-    public void MuteSFX(bool mute)
-    {
-        sfxSource.mute = mute;
-        isSoundMute = mute;
     }
 
     public void MuteMusic(bool mute)
@@ -122,8 +111,11 @@ public class TheGreenMachineDeluxeSoundManager : MonoBehaviour
         isMusicMute = mute;
     }
 
-    public void MuteText(bool mute)
+    public void MuteSFX(bool mute)
     {
-        winTextSource.mute = mute;
+        sfxSource.mute = mute;
+        isSoundMute = mute;
+        winSource.mute = mute;
+        spinMusicSource.mute = mute;
     }
 }

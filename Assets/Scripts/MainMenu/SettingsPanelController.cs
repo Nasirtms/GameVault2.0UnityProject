@@ -207,6 +207,16 @@ public class SettingsPanelController : MonoBehaviour
         JSInputHandler.OnLogoutSuccess();
         #endregion
         CasinoUIManager.Instance.ShowErrorCanvas(2, "");
+
+        if (WebSocketManager.Instance != null)
+            Destroy(WebSocketManager.Instance.gameObject);
+
+        if (InternetWatchdog.Instance != null)
+            Destroy(InternetWatchdog.Instance.gameObject);
+
+        if (UnitySessionManager.Instance != null)
+            Destroy(UnitySessionManager.Instance.gameObject);
+
         SceneManager.LoadScene("Login");
         //Debug.Log("User logged out.");
     }

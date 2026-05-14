@@ -1,6 +1,8 @@
 ﻿using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -65,7 +67,7 @@ public class GunManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Manager.Instance.balance += Manager.Instance.betOptions[Manager.Instance.betIndex];
+        //Manager.Instance.balance += Manager.Instance.betOptions[Manager.Instance.betIndex];
         autoButtonImage = autoOnButton?.GetComponent<Image>();
         lockButtonImage = lockButton?.GetComponent<Image>();
         if (autoOnButton != null) autoOnButton.onClick.AddListener(OnAutoOn);
@@ -78,7 +80,11 @@ public class GunManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (uIBlocker.IsPointerOverUI())
+            //if (uIBlocker.IsPointerOverUI())
+            //    return;
+            //if (EventSystem.current.IsPointerOverGameObject())
+            //    return;
+            if (MainMenu.UIDragHandler.IsPointerOverUIObject())
                 return;
 
             Vector3 clickWorld = GetWorldPointFromScreen(Input.mousePosition);
@@ -99,6 +105,7 @@ public class GunManager : MonoBehaviour
                 targetRotation,
                 360f * Time.deltaTime
             );
+
             if (Quaternion.Angle(gunTransform.rotation, targetRotation) < 0.5f)
             {
                 isRotating = false;
@@ -137,7 +144,7 @@ public class GunManager : MonoBehaviour
 
     public void ToggleLockMode()
     {
-        lockButtonImage.color = LockManager.IsLockModeEnabled ? Color.white : Color.blue;
+        lockButtonImage.color = LockManager.IsLockModeEnabled ? Color.white : new Color32(200, 255, 0, 255);
         LockManager.ToggleLockMode();
     }
 
@@ -184,6 +191,94 @@ public class GunManager : MonoBehaviour
         isRotating = true;
     }
 
+    //private void FireSingle()
+    //{
+    //    float bet = Manager.Instance.betOptions[Manager.Instance.betIndex];
+    //    if (Manager.Instance.balance < bet)
+    //    {
+    //        isAutoOn = false;
+    //        return;
+    //    }
+
+    //    Manager.Instance.balance -= bet;
+    //    Manager.totalBetAmountPerInterval += bet;
+    //    Manager.Instance.UpdateBalanceUI();
+
+    //    int index = currentgunIndex;
+    //    var gunLevel = gunDatabase.gunLevels[index];
+    //    int bulletsToSpawn = gunLevel.numberOfBullets;
+
+    //    Debug.Log($"Spawning {bulletsToSpawn} bullets from gun {index}");
+
+    //    float spacing = 0.25f; // horizontal distance between bullets
+    //    Vector3 right = firingPoint.right; // horizontal offset direction
+
+    //    // Center the bullets horizontally
+    //    float totalWidth = (bulletsToSpawn - 1) * spacing;
+    //    Vector3 startOffset = -right * (totalWidth / 2f);
+
+    //    for (int i = 0; i < bulletsToSpawn; i++)
+    //    {
+    //        // spawn next to each other horizontally
+    //        Vector3 spawnPos = firingPoint.position + startOffset + right * (i * spacing);
+
+    //        GameObject bulletGO = BulletPool.Instance.Get(
+    //            bulletPrefab,
+    //            spawnPos,
+    //            firingPoint.rotation,
+    //            bulletContainer != null ? bulletContainer.transform : null
+    //        );
+
+    //        if (bulletGO == null)
+    //        {
+    //            Debug.LogWarning("BulletPool returned null!");
+    //            continue;
+    //        }
+
+    //        var rb = bulletGO.GetComponent<Rigidbody2D>();
+    //        var bs = bulletGO.GetComponent<Bullet>();
+
+    //        if (bs != null)
+    //        {
+    //            bs.damage = totalBulletsDamage;
+    //            bs.shooter = this;
+    //            bs.currentBetAmount = Manager.currentBetAmoun;
+
+    //            if (nextShotCannonCard)
+    //            {
+    //                bs.isCannonCard = true;
+    //                bs.TintAll(cannonCardColor);
+    //                nextShotCannonCard = false;
+    //            }
+    //        }
+
+    //        Fish targetFish = LockManager.GetLockedFish();
+    //        if (LockManager.IsLockModeEnabled && targetFish != null)
+    //        {
+    //            bulletGO.layer = LayerMask.NameToLayer("LockedFishBullet");
+    //            if (bs != null) bs.targetLayer = LayerMask.GetMask("LockedFish");
+
+    //            // aim directly at target fish
+    //            Vector2 dir = (targetFish.transform.position - firingPoint.position).normalized;
+    //            if (rb != null)
+    //                rb.velocity = dir * (bulletSpeed / 2f) * targetFish.maxSpeed;
+    //        }
+    //        else
+    //        {
+    //            bulletGO.layer = LayerMask.NameToLayer("Bullet");
+    //            if (bs != null) bs.targetLayer = LayerMask.GetMask("Fish");
+
+    //            // straight bullet fire
+    //            Vector2 dir = firingPoint.up; // fire direction (up)
+    //            if (rb != null)
+    //                rb.velocity = dir * bulletSpeed;
+    //        }
+    //    }
+
+    //    SimulateRecoil();
+    //    StartCoroutine(FireImage());
+    //}
+
     private void FireSingle()
     {
         float bet = Manager.Instance.betOptions[Manager.Instance.betIndex];
@@ -193,9 +288,14 @@ public class GunManager : MonoBehaviour
             return;
         }
 
-        Manager.Instance.balance -= bet;
+        StartCoroutine("FireSingle_Coroutine", bet);
+    }
+
+    IEnumerator FireSingle_Coroutine(float bet)
+    {
+        //Manager.Instance.balance -= bet;
+        //Manager.Instance.UpdateBalanceUI();
         Manager.totalBetAmountPerInterval += bet;
-        Manager.Instance.UpdateBalanceUI();
 
         int index = currentgunIndex;
         var gunLevel = gunDatabase.gunLevels[index];
@@ -237,6 +337,17 @@ public class GunManager : MonoBehaviour
                 bs.shooter = this;
                 bs.currentBetAmount = Manager.currentBetAmoun;
 
+                bs.bulletGuid = Guid.NewGuid().ToString();
+
+                FishWSNetworkMessages.BulletFire_Request bf_req = new FishWSNetworkMessages.BulletFire_Request()
+                {
+                    requestId = Guid.NewGuid().ToString(),
+                    gameId = SceneManagement.currentGameID,
+                    bulletId = bs.bulletGuid,
+                    bulletCost = bs.currentBetAmount.ToString("G17", CultureInfo.InvariantCulture),
+                };
+                FishWSNetworkManager.Instance.Send(bf_req);
+
                 if (nextShotCannonCard)
                 {
                     bs.isCannonCard = true;
@@ -270,9 +381,19 @@ public class GunManager : MonoBehaviour
 
         SimulateRecoil();
         StartCoroutine(FireImage());
+
+        yield return new WaitForEndOfFrame();
     }
 
-
+    public void BulletFireResponse(FishWSNetworkMessages.BulletFire_Response response)
+    {
+        if (response.success)
+        {
+            //Manager.Instance.balance = response.newBalance;
+            Manager.Instance.balance -= response.bulletCost;
+            Manager.Instance.UpdateBalanceUI();
+        }
+    }
 
 
 
@@ -365,8 +486,8 @@ public class GunManager : MonoBehaviour
             {
                 // 2) Otherwise do your old random‐aim
                 Vector3 randV = new Vector3(
-                    Random.Range(0f, 1f),
-                    Random.Range(0f, 1f),
+                    UnityEngine.Random.Range(0f, 1f),
+                    UnityEngine.Random.Range(0f, 1f),
                     -Manager.Instance.mainCam.transform.position.z
                 );
                 Vector3 randW = Manager.Instance.mainCam.ViewportToWorldPoint(randV);
@@ -399,7 +520,7 @@ public class GunManager : MonoBehaviour
     {
         if (!isAutoOn)
         {
-            autoButtonImage.color = Color.blue;
+            autoButtonImage.color = new Color32(200, 255, 0, 255);
             StartCoroutine(AutoRoutine());
         }
         else
@@ -416,7 +537,7 @@ public class GunManager : MonoBehaviour
         gunTransform.localPosition = gunSpawnPoints[randomPos].transform.position;
         Manager.Instance.playerUI.transform.localPosition = new Vector3(gunSpawnPoints[randomPos].uiPos, Manager.Instance.playerUI.transform.localPosition.y, Manager.Instance.playerUI.transform.localPosition.z);
         gunTransform.localEulerAngles = new Vector3(0f, 0f, 0f);
-        gunTransform.localScale = Vector3.one;
+        //gunTransform.localScale = Vector3.one;
         gunSpawnPoints[randomPos].booked = true;
     }
 }

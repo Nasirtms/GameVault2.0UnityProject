@@ -35,8 +35,8 @@ MonoBehaviour:
     background: {fileID: 1943774081, guid: d6fd9cc766b4d654d99629f65937b94c, type: 3}
   soundItems:
   - soundName: FruitParadise_Spin
-    audioClip: {fileID: 8300000, guid: 47850c209114a62498a2af26bc62f2a7, type: 3}
-    volume: 1
+    audioClip: {fileID: 8300000, guid: bb19bd18d65e73b4ea77d12b55c1a813, type: 3}
+    volume: 0.8
     pitch: 1
   - soundName: FruitParadise_Button
     audioClip: {fileID: 8300000, guid: bfa25d019b73ee745b2c34d6cf85b4b8, type: 3}
@@ -52,14 +52,18 @@ MonoBehaviour:
     pitch: 1
   - soundName: Win
     audioClip: {fileID: 8300000, guid: a525afb7f28551645a13152c431bd867, type: 3}
-    volume: 1
+    volume: 0.7
     pitch: 1
   - soundName: WinEnd
     audioClip: {fileID: 8300000, guid: c5e4e91a51046264797a7b07db9aee4a, type: 3}
-    volume: 1
+    volume: 0.8
     pitch: 1
   - soundName: FruitParadise_Decrease_Button
     audioClip: {fileID: 8300000, guid: 7572feacc2ff4914cb2da5e23f872896, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: 9634c35f5ed48824192d805df6018e68, type: 3}
     volume: 1
     pitch: 1
   spinSettings:

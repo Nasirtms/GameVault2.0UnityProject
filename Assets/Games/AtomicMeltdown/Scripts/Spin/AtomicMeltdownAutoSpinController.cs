@@ -1,14 +1,11 @@
 using UnityEngine;
 using System.Collections;
-
-
 public class AtomicMeltdownAutoSpinController : MonoBehaviour
 {
     #region Variables
 
     [Header("Settings")]
     [SerializeField] private float delayBetweenSpins = 1.5f;
-
 
     private bool firstAuto;
     private bool isAutoRunning = false;
@@ -19,6 +16,17 @@ public class AtomicMeltdownAutoSpinController : MonoBehaviour
 
     #endregion
 
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
+    #endregion
 
     #region Public References
 
@@ -63,11 +71,24 @@ public class AtomicMeltdownAutoSpinController : MonoBehaviour
                 break;
             }
 
-            AtomicMeltdownUIManager.Instance.PlaySpinMusic("Spin");
             float balance = UserManager.Instance.Coins;
 
-            if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) break;
+            if (AtomicMeltdownUIManager.Instance.textAnimationCoroutine != null)
+                StopCoroutine(AtomicMeltdownUIManager.Instance.textAnimationCoroutine);
 
+            if (AtomicMeltdownUIManager.Instance.winCoroutine != null)
+                StopCoroutine(AtomicMeltdownUIManager.Instance.winCoroutine);
+
+            if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount))
+            {
+                AtomicMeltdownUIManager.Instance.StopSpinMusic("Spin");
+                AtomicMeltdownUIManager.Instance.UpdateButtons("Default");
+                break;
+            }
+            if (AtomicMeltdownSlotMachine.Instance.isFreeGameReady)
+            {
+                break;
+            }
             SlotSpinService.Instance.Spin(betAmount);
 
             yield return new WaitUntil(() => AtomicMeltdownSlotMachine.Instance.isSpinAgain);
@@ -113,4 +134,18 @@ public class AtomicMeltdownAutoSpinController : MonoBehaviour
     }
 
     #endregion
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
+
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
 }

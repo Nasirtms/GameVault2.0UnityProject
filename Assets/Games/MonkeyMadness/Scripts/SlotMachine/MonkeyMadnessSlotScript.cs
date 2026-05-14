@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,8 @@ public class MonkeyMadnessSlotScript : MonoBehaviour
     [HideInInspector] public MonkeyMadnessSlotType type;
     [HideInInspector] public MonkeyMadnessSlotResource currentResource;
     [HideInInspector] public bool isResultSet = false;
-
+    //public Mask slotMask;
+    //public Mask slotGlowMask;
     // Components
     private MonkeyMadnessReelScript _parent;
     private Image _background;
@@ -48,7 +50,7 @@ public class MonkeyMadnessSlotScript : MonoBehaviour
     {
         get
         {
-            if (_background == null) _background = GetComponent<Image>();
+            if (_background == null) _background = transform.GetChild(1).GetComponent<Image>();
             return _background;
         }
     }
@@ -64,9 +66,8 @@ public class MonkeyMadnessSlotScript : MonoBehaviour
         this.index = index;
 
         _rectTransform = GetComponent<RectTransform>();
-        
-        glowImage.enabled = false;
-        glowImage.color = new Color(1f, 1f, 1f, 0.5f);
+
+        glowImage.gameObject.SetActive(false);
         
         GetRandom();
     }
@@ -112,32 +113,36 @@ public class MonkeyMadnessSlotScript : MonoBehaviour
     [ContextMenu("Play Glow")]
     public void PlayGlow()
     {
-        PlayFlickerAnimationOnce(1f);
+        PlayFlickerAnimation(1f);
     }
 
-    public void PlayFlickerAnimationOnce(float duration = 0.3f)
+    private Tween flickerTween;
+
+    public void PlayFlickerAnimation(float duration = 0.3f)
     {
-        if (glowImage == null || glowImage.sprite == null) return;
+        if (glowImage == null) return;
 
         StopFlickerAnimation();
 
-        flickerCoroutine = StartCoroutine(FlickerOnce(duration));
-    }
+        glowImage.gameObject.SetActive(true);
 
-    private IEnumerator FlickerOnce(float duration)
-    {
-        glowImage.enabled = true;
-        yield return new WaitForSeconds(duration);
-        glowImage.enabled = false;
+        flickerTween = glowImage
+            .DOFade(1f, duration)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetEase(Ease.Linear);
     }
 
     public void StopFlickerAnimation()
     {
-        if (flickerCoroutine != null)
-            StopCoroutine(flickerCoroutine);
+        if (flickerTween != null && flickerTween.IsActive())
+        {
+            flickerTween.Kill();
+        }
 
         if (glowImage != null)
-            glowImage.enabled = false;
+        {
+            glowImage.gameObject.SetActive(false);
+        }
     }
 
     #endregion

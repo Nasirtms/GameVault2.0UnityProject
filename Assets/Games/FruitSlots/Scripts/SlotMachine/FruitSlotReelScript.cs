@@ -83,10 +83,8 @@ public class FruitSlotReelScript : MonoBehaviour
     public int reelIndex;
     public void ApplyFinalResult(int reelIndex)
     {
-        Debug.Log("spinSymbolMatrix.Count " + FruitSlotMachine.Instance.spinSymbolMatrix.Count);
         if (reelIndex >= FruitSlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"? No spin data for reel {reelIndex}!");
             return;
         }
         //Debug.Log("GO Name : " + gameObject.name);
@@ -106,49 +104,22 @@ public class FruitSlotReelScript : MonoBehaviour
 
             if (res.HasValue)
             {
-                Debug.Log($"? Resource found: {res.Value.type}");
 
                 //FruitSlotMachine.Instance.isResultReceived = true;
 
                 if (_clampedDown)
                 {
                     row -= 1;
-
-                    Debug.Log("Slot Clamped on Reel: " + this._index + " row: " + row);
                 }
 
-                // 2?? Get the correct slot in the reel (we're using offset i + 1 as in original)
-                var slot = slots[row + 1]; // Make sure slots[1], [2], [3] are the visible ones
-
-                // 3?? Apply visual resource to the slot
+                var slot = slots[row + 1]; 
                 slot.SetType(res.Value);
-
-                // 4?? Assign payline number and border visibility from server symbol data
-                //slot.paylineNumber = symbolData.paylineNumber;
-                //slot.ToggleSlotBorder(symbolData.showBorder);
-
-                // 5?? Assign correct row and reel index for payline matching
                 slot.ReelIndex = reelIndex;
                 slot.RowIndex = rowIndex;
-
-                // 6?? Add to BorderSlots if it has a border for win display
-                //if (symbolData.showBorder && !FruitMarySlotMachine.Instance.BorderSlots.Contains(slot))
-                //{
-                //    FruitMarySlotMachine.Instance.BorderSlots.Add(slot);
-                //    slot.paylineNumberList.Clear();
-                //    slot.paylineNumberList.AddRange(symbolData.paylineNumbers);
-                //}
-            }
-            else
-            {
-                Debug.LogWarning($"?? No slot resource found for ID: {symbolData.id}");
             }
         }
 
-
         StopAllCoroutines();
-        // Apply hidden clone
-        //slots[0].SetType(slots[0].currentResource);
     }
 
     public void ResetShape()
@@ -159,7 +130,6 @@ public class FruitSlotReelScript : MonoBehaviour
             slot.isResultSet = false;
             slot.ToggleSlotBorder(false);
         }
-        //FruitMarySlotMachine.Instance.BorderSlots.Clear();
     }
 
     public void UpdateVerticalLayout(float spacing, int padding)
@@ -220,17 +190,6 @@ public class FruitSlotReelScript : MonoBehaviour
         _inClamp = true;
         _inSpin = false;
 
-        /*  if (finalResultSymbols != null && finalResultSymbols.Count >= 3)
-          {
-              for (int i = 0; i < 3; i++)
-              {
-                  var res = CrazySevenSlotMachine.GetResourceById(finalResultSymbols[i].id);
-                  //if (res != null)
-                  //slots[i + 1].SetType(res.Value);
-              }
-              //slots[0].SetType(slots[1].currentResource);
-          }*/
-
         var xPos = _rectTransform.anchoredPosition.x;
         var topPos = new Vector2(xPos, _spinSettings.topBoundary);
         var bottomPos = new Vector2(xPos, _spinSettings.bottomBoundary);
@@ -240,7 +199,6 @@ public class FruitSlotReelScript : MonoBehaviour
 
     public void ForceStop()
     {
-        Debug.Log("Force Stop : ");
         _forceStop = true;
     }
 
@@ -256,8 +214,6 @@ public class FruitSlotReelScript : MonoBehaviour
                 var res = slots[i - 1].currentResource;
                 slots[i].SetType(res);
             }
-
-            Debug.Log("Reel " + this._index + " Clamped Down");
         }
 
         FruitSlotUIManager.Instance.PlaySound("FruitSlot_ReelStop");
@@ -347,16 +303,10 @@ public class FruitSlotReelScript : MonoBehaviour
                         if (!FruitSlotMachine.Instance.isStopBtnPressed || !FruitSlotMachine.Instance.isResultReceived)
                         {
                             AssignUniqueRandomVisualsToReelSlots();
-
-
                         }
                     }
                 }
-                //slots[0].ShowRandomVisual();
-
             }
-
-
         }
     }
 

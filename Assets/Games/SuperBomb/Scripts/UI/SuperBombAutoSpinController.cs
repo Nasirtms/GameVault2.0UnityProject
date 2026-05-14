@@ -18,11 +18,15 @@ public class SuperBombAutoSpinController : MonoBehaviour
     #endregion
 
     #region Unity Methods
-
-    private void Start()
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
     #endregion
 
     #region Public References
@@ -97,7 +101,7 @@ public class SuperBombAutoSpinController : MonoBehaviour
                 break;
             }
 
-            Debug.Log("Has free game: " + SuperBombSlotMachine.Instance.isFreeGameReady);
+            //Debug.Log("Has free game: " + SuperBombSlotMachine.Instance.isFreeGameReady);
             if (SuperBombSlotMachine.Instance.isFreeGameReady)
                 break;
            
@@ -105,6 +109,7 @@ public class SuperBombAutoSpinController : MonoBehaviour
             {
                 yield return new WaitUntil(() => SuperBombSlotMachine.Instance.isPaylineCompleted);
                 yield return new WaitUntil(() => SuperBombUIManager.Instance.winAnimationCompleted);
+                yield return new WaitUntil(() => SuperBombSlotMachine.Instance.hasShowedTotalWin);
             }
             else
             {
@@ -140,6 +145,19 @@ public class SuperBombAutoSpinController : MonoBehaviour
             SuperBombSlotMachine.Instance.isFreeGameReady = false;
         }
     }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
 
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
 }

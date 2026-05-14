@@ -144,7 +144,6 @@ public class TenTimesWinsReelScript : MonoBehaviour
     {
         if (reelIndex >= TenTimesWinsSlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"❌ No spin data for reel {reelIndex}!");
             return;
         }
 
@@ -162,39 +161,19 @@ public class TenTimesWinsReelScript : MonoBehaviour
 
             if (res.HasValue)
             {
-                //TenTimesWinsSlotMachine.Instance.isResultReceived = true;
-
                 if (_clampedDown)
                 {
                     row -= 1;
-
-                    Debug.Log("Slot Clamped on Reel: " + this._index + " row: " + row);
                 }
 
                 var slot = slots[row + 1]; // Make sure slots[1], [2], [3] are the visible ones
 
                 slot.SetType(res.Value);
 
-                //slot.reelIndex = reelIndex;
-                //slot.rowIndex = rowIndex;
-
-                //if (symbolData.showBorder && !CleopatraSlotMachine.Instance.BorderSlots.Contains(slot))
-                //{
-                //    CleopatraSlotMachine.Instance.BorderSlots.Add(slot);
-
-                //    slot.paylineNumberList.Clear();
-                //    slot.paylineNumberList.AddRange(symbolData.paylineNumbers);
-                //}
-            }
-            else
-            {
-                Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
             }
         }
 
         StopAllCoroutines();
-        // Apply hidden clone
-        //slots[0].SetType(slots[0].currentResource);
     }
 
     public TenTimesWinsSlotType GetSlotType(int index)
@@ -247,12 +226,9 @@ public class TenTimesWinsReelScript : MonoBehaviour
                 var res = slots[i - 1].currentResource;
                 slots[i].SetType(res);
             }
-
-            Debug.Log("Reel " + this._index + " Clamped");
         }
         TenTimesWinsUIManager.Instance.PlaySound("ReelStop");
         OnSpinComplete?.Invoke(this._index);
-        //PlaySlotAnimations?.Invoke();
 
     }
 

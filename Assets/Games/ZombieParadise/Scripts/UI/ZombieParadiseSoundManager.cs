@@ -10,6 +10,7 @@ public class ZombieParadiseSoundManager : MonoBehaviour
 
     [SerializeField] private ZombieParadiseGameSettings soundData;
     [SerializeField] private AudioSource musicSource;
+    [SerializeField] private AudioSource spinMusicSource;
     [SerializeField] private AudioSource sfxSource;
     [SerializeField] private AudioSource reelStopSource;
     private bool isSoundMute = false;
@@ -26,11 +27,6 @@ public class ZombieParadiseSoundManager : MonoBehaviour
     {
         if (Instance != null) return;
         Instance = this;
-
-        if (musicSource == null || sfxSource == null)
-        {
-            Debug.LogError("Please assign both MusicSource and SFXSource in the SoundManager.");
-        }
     }
 
     #endregion
@@ -48,10 +44,6 @@ public class ZombieParadiseSoundManager : MonoBehaviour
             musicSource.loop = true;
             musicSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
     }
 
     public void StopMusic(string soundName)
@@ -62,9 +54,26 @@ public class ZombieParadiseSoundManager : MonoBehaviour
             musicSource.clip = sound.audioClip;
             musicSource.Stop();
         }
-        else
+    }
+    public void PlaySpinMusic(string soundName)
+    {
+        var sound = soundData.GetSound(soundName);
+        if (sound != null)
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            spinMusicSource.clip = sound.audioClip;
+            spinMusicSource.volume = sound.volume;
+            spinMusicSource.pitch = sound.pitch;
+            spinMusicSource.loop = true;
+            spinMusicSource.Play();
+        }
+    }
+    public void StopSpinMusic(string soundName)
+    {
+        var sound = soundData.GetSound(soundName);
+        if (sound != null)
+        {
+            spinMusicSource.clip = sound.audioClip;
+            spinMusicSource.Stop();
         }
     }
     public void PlayReelStopSFX(string soundName)
@@ -98,10 +107,6 @@ public class ZombieParadiseSoundManager : MonoBehaviour
                 sfxSource.pitch = sound.pitch;
                 sfxSource.loop = false;
                 sfxSource.PlayOneShot(sound.audioClip);
-            }
-            else
-            {
-                Debug.LogWarning($"SFX '{soundName}' not found.");
             }
         }
     }

@@ -21,19 +21,18 @@ public class DayOfDeadAutoSpinController : MonoBehaviour
     #endregion
 
     #region Unity Methods
-
-    private void Start()
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
     #endregion
 
     #region Public References
-
-    public void SetSpinCount(int count)
-    {
-        remainingSpins = count;
-    }
 
     public void StartAutoSpin(float betAmount)
     {
@@ -129,6 +128,19 @@ public class DayOfDeadAutoSpinController : MonoBehaviour
         isAutoRunning = false;
         cancelRequested = false;
     }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
 
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
 }

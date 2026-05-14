@@ -21,8 +21,8 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
     [ShowInInspector][ReadOnly] public SpinResult currentSpinResult;
 
     // State Variables
-    [HideInInspector] public bool InSpin = false;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin = false;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     public bool isSlotAnimationCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -30,7 +30,7 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
     public bool firstFreeSpin;
 
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool isFreeGameReady;
     [HideInInspector] public int freeSpinCount;
     [HideInInspector] public float freeSpinWinAmount;
@@ -266,7 +266,7 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
         SaharaRichesJackpotAnimator.Instance.isJackpotCompleted = true;
         SaharaRichesUIManager.Instance.winAnimationCompleted = true;
         cashCollectSlots.Clear();
-
+        SaharaRichesUIManager.Instance.PlaySpinMusic("Spin");
         ClearPaylines();
         SaharaRichesPaylineController.Instance.StopPaylines();
         SaharaRichesPaylineController.Instance.ClearPaylineData();
@@ -312,11 +312,10 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
     }
     #endregion
 
-
     #region Stop & Backend Result
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -342,7 +341,7 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
             {
                 SaharaRichesUIManager.Instance.UpdateButtons("Stop");
             }
-
+            SaharaRichesUIManager.Instance.StopSpinMusic("Spin");
             isSpinAgain = true;
             yield break;
         }
@@ -365,7 +364,7 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
                 isResultReceived = false;
                 reel.ForceStopSpin();
             }
-            if (!SaharaRichesAutoSpinController.isAutoSpinning && !isFreeGame && !currentSpinResult.isBonusGame)
+            if (!SaharaRichesAutoSpinController.isAutoSpinning && !isFreeGame)
             {
                 SaharaRichesUIManager.Instance.UpdateButtons("Stop");
             }
@@ -384,10 +383,6 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
         {
             StopCoroutine(spinCoroutine);
         }
-        //if (counterText == null)
-        //{
-        //    lockedSlots.Clear();
-        //}
 
         SaharaRichesReelScript slowReel;
         slowReel = null;
@@ -455,6 +450,7 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
         {
             reel.gameObject.SetActive(false);
         }
+        SaharaRichesUIManager.Instance.StopSpinMusic("Spin");
         ProcessSpinResult();
     }
     private void PlayReelSymbolEffect()
@@ -503,7 +499,7 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
+            //Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -553,7 +549,6 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
             isFreeSpinCollectionCompleted = false;
         }
 
-
         if (isFreeGame && winAmount > 0)
         {
             firstFreeSpin = false;
@@ -566,10 +561,9 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
             float betAmount = SaharaRichesUIManager.Instance.CurrentBet();
 
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
 
-        SaharaRichesUIManager.Instance.StopSpinMusic("Spin");
         SaharaRichesPaylineController.Instance.isJackotGame = currentSpinResult.isBonusGame;
         if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || cashCollectCount > 0 )
         {
@@ -607,12 +601,6 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
     }
     public void UpdateGameCoin()
     {
-        Debug.Log("GameBetServices.Instance: " + (GameBetServices.Instance == null));
-        Debug.Log("currentSpinResult: " + (currentSpinResult == null));
-
-        if (currentSpinResult != null)
-            Debug.Log("newBalance: " + currentSpinResult.newBalance);
-
         GameBetServices.Instance.UpdateCoins(currentSpinResult.newBalance);
     }
 
@@ -629,10 +617,6 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
         {
             SaharaRichesJackpotAnimator.Instance.StartJackpot();
             return;
-        }
-        else
-        {
-            Debug.LogError("❌ SaharaRichesJackpotAnimator.Instance is null! Make sure it's active in the scene.");
         }
     }
     #endregion
@@ -722,7 +706,6 @@ public class SaharaRichesSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.slotResources == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

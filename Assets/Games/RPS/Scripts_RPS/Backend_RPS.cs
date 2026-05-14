@@ -38,7 +38,7 @@ public class Backend_RPS : MonoBehaviour
     private IEnumerator SendRPSRequest(SerializableClasses.RPSRequest data)
     {
         string json = JsonUtility.ToJson(data);
-        Debug.Log("📤 Sending RPS request: " + json);
+        //Debug.Log("📤 Sending RPS request: " + json);
 
         byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
 
@@ -64,7 +64,7 @@ public class Backend_RPS : MonoBehaviour
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                Debug.Log("✅ RPS Response: " + downloadHandler.text);
+                //Debug.Log("✅ RPS Response: " + downloadHandler.text);
 
                 SerializableClasses.RPSResponse response =
                     JsonUtility.FromJson<SerializableClasses.RPSResponse>(downloadHandler.text);

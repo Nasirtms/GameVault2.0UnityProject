@@ -9,6 +9,15 @@ public class CashMachineReelScript : MonoBehaviour
 {
     #region Variables
 
+    public enum ReelDirection
+    {
+        Up = 1,
+        Down = -1
+    }
+
+    [SerializeField] private ReelDirection reelDirection = ReelDirection.Down;
+    private int direction => (int)reelDirection;
+
     // Machine Variables
     [Header("Slot Machine")]
     [SerializeField] private VerticalLayoutGroup verticalLayout;
@@ -150,16 +159,12 @@ public class CashMachineReelScript : MonoBehaviour
 
                 slot.SetType(res.Value);
             }
-            else
-            {
-                Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
-            }
         }
 
-        if (!CashMachineAutoSpinController.isAutoSpinning && !CashMachineSlotMachine.Instance.isFreeGameReady)
-        {
-            CashMachineUIManager.Instance.UpdateButtons("Stop");
-        }
+        //if (!CashMachineAutoSpinController.isAutoSpinning && !CashMachineSlotMachine.Instance.isFreeGameReady)
+        //{
+        //    CashMachineUIManager.Instance.UpdateButtons("Stop");
+        //}
 
         StopAllCoroutines();
     }
@@ -247,11 +252,6 @@ public class CashMachineReelScript : MonoBehaviour
                 slots[i].SetType(res);
             }
 
-            //var topSlot = CashMachineSlotMachine.GetResourceById("Empty");
-            //slots[0].SetType(topSlot.Value);
-            //slots[slots.Count - 1].SetType(topSlot.Value);
-
-            Debug.Log("Reel " + this._index + " Clamped Down");
         }
         CashMachineUIManager.Instance.PlaySound("ReelStop");
         OnSpinComplete?.Invoke(this._index);
@@ -323,28 +323,56 @@ public class CashMachineReelScript : MonoBehaviour
 
         if (_forceStop) Stop();
 
-        _rectTransform.Translate(Vector3.down * (_currentSpeed * Time.deltaTime));
+        _rectTransform.Translate(Vector3.up * direction * (_currentSpeed * Time.deltaTime));
         var currentPos = _rectTransform.anchoredPosition;
-        if (currentPos.y <= _spinSettings.bottomBoundary)
+        if (direction == -1 && currentPos.y <= _spinSettings.bottomBoundary)
         {
-            //reset pos
-            _yOffset = _spinSettings.bottomBoundary - currentPos.y;
-            _rectTransform.anchoredPosition = new Vector2(currentPos.x, _spinSettings.topBoundary + _yOffset);
-
-            if (_inSpin && allowSymbolChanges && finalResultSymbols == null)
-            {
-                //shift types
-                for (var i = slots.Count - 1; i > 0; i--)
-                {
-                    var res = slots[i - 1].currentResource;
-                    slots[i].SetType(res);
-                }
-
-                //generate new
-                //slots[0].GetRandom();
-                slots[0].SetType(GetNextGeneratedSymbol());
-            }
+            WrapToTop();
         }
+        else if (direction == 1 && currentPos.y >= _spinSettings.topBoundary)
+        {
+            WrapToBottom();
+        }
+    }
+
+    private void WrapToTop()
+    {
+        var currentPos = _rectTransform.anchoredPosition;
+        _yOffset = _spinSettings.bottomBoundary - currentPos.y;
+        _rectTransform.anchoredPosition =
+            new Vector2(currentPos.x, _spinSettings.topBoundary + _yOffset);
+
+        ShiftSymbolsForward();
+    }
+
+    private void WrapToBottom()
+    {
+        var currentPos = _rectTransform.anchoredPosition;
+        _yOffset = currentPos.y - _spinSettings.topBoundary;
+        _rectTransform.anchoredPosition =
+            new Vector2(currentPos.x, _spinSettings.bottomBoundary - _yOffset);
+
+        ShiftSymbolsBackward();
+    }
+
+    private void ShiftSymbolsForward()
+    {
+        for (int i = slots.Count - 1; i > 0; i--)
+            slots[i].SetType(slots[i - 1].currentResource);
+
+        slots[0].SetType(GetNextGeneratedSymbol());
+    }
+
+    private void ShiftSymbolsBackward()
+    {
+        for (int i = 0; i < slots.Count - 1; i++)
+            slots[i].SetType(slots[i + 1].currentResource);
+
+        slots[slots.Count - 1].SetType(GetNextGeneratedSymbol());
+    }
+    public void ReverseDirection(bool moveUp)
+    {
+        reelDirection = moveUp ? ReelDirection.Up : ReelDirection.Down;
     }
 
     #endregion

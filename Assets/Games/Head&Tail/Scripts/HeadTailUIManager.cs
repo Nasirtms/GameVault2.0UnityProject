@@ -1,4 +1,3 @@
-// Assets/Scripts/UI/UIManager.cs
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -9,8 +8,6 @@ using System.Collections;
 using UnityEngine.UIElements;
 using Button = UnityEngine.UI.Button;
 
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -19,6 +16,8 @@ namespace HeadTailGame
 {
     public class HeadTailUIManager : MonoBehaviour
     {
+
+        #region Variables
         public static HeadTailUIManager Instance;
 
         [Header("Buttons")]
@@ -44,6 +43,9 @@ namespace HeadTailGame
         public Button IncreaseBetButton => increaseBetButton;
         public Button DecreaseBetButton => decreaseBetButton;
 
+        #endregion
+
+        #region Unity Methods
         void Awake()
         {
             if (Instance != null)
@@ -76,6 +78,8 @@ namespace HeadTailGame
             if (tailsButton != null)
                 tailsButton.onClick.AddListener(HideWinAmountBanner);
 
+
+            ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
         }
         private void Start()
         {
@@ -87,6 +91,9 @@ namespace HeadTailGame
         {
             UserManager.Instance.UpdateGameCoins -= UpdateCoins;
         }
+        #endregion
+
+        #region UI Update
         public void UpdateCoins()
         {
             if (UserManager.Instance != null)
@@ -166,7 +173,7 @@ namespace HeadTailGame
             {
                 UserManager.Instance.StartUpdateCanAddCoin(true);
             }
-            SceneManager.LoadScene("Main");
+            SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
         }
         public void HideWinAmountBanner()
         {
@@ -184,5 +191,6 @@ namespace HeadTailGame
                 winAmountParent.SetActive(false);
             }
         }
+        #endregion
     }
 }

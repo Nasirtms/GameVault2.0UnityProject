@@ -96,6 +96,7 @@ public class FruitParadiseUIManager : GameBetServices
         SetupInputButtons();
 
         UserManager.Instance.UpdateGameCoins += UpdateCoins;
+        PlayMusic("BG");
     }
 
     private void OnDestroy()
@@ -159,7 +160,18 @@ public class FruitParadiseUIManager : GameBetServices
         if (!FruitParadiseSoundManager.Instance.IsMusicMute())
             FruitParadiseSoundManager.Instance.StopMusic(soundName);
     }
-
+    public void PlaySpinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!FruitParadiseSoundManager.Instance.IsSoundMute())
+            FruitParadiseSoundManager.Instance.PlaySpinMusic(soundName);
+    }
+    public void StopSpinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!FruitParadiseSoundManager.Instance.IsSoundMute())
+            FruitParadiseSoundManager.Instance.StopSpinMusic(soundName);
+    }
     private void PlayWinMusic(string soundName)
     {
         if (string.IsNullOrEmpty(soundName)) return;
@@ -235,7 +247,7 @@ public class FruitParadiseUIManager : GameBetServices
     private void ExitGame()
     {
         PlaySound("FruitParadise_Button");
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
     private void OpenRulesPopup()
     {
@@ -252,7 +264,6 @@ public class FruitParadiseUIManager : GameBetServices
 
         UpdateButtons("Spin");
         singleSpin = true;
-        PlaySound("FruitParadise_Spin");
 
         if (textAnimationCoroutine != null)
         {
@@ -271,6 +282,7 @@ public class FruitParadiseUIManager : GameBetServices
     private void OnClickStop()
     {
         PlaySound("FruitParadise_Button");
+        StopSpinMusic("FruitParadise_Spin");
         if (FruitParadiseSlotMachine.Instance.isFreeGame)
         {
             UpdateButtons("Free Spin");
@@ -370,6 +382,11 @@ public class FruitParadiseUIManager : GameBetServices
     #endregion
 
     #region Text Animation
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount, bool compound = false)
     {
         if (winAmount > 0)
@@ -426,13 +443,15 @@ public class FruitParadiseUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        textToAnimate.text = target.ToString("0.00");
+        //textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
         StopWinMusic("Win");
         PlaySound("WinEnd");
     }
@@ -444,16 +463,20 @@ public class FruitParadiseUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
 
         StopCoroutine(textAnimationCoroutine);
 

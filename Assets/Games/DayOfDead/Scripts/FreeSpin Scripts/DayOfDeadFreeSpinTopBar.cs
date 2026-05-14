@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class DayOfDeadFreeSpinTopBar : MonoBehaviour
 {
-    #region variables
+    #region Variables
 
     [Header("References")]
     [SerializeField] public GameObject topbarArea;   
@@ -17,9 +17,10 @@ public class DayOfDeadFreeSpinTopBar : MonoBehaviour
 
     public GameObject wildParticles;
     [Header("Layout")]
+    // this is done manually in unity
     [SerializeField] private float tokenSpacing = 1.7f;      // distance along X
-    [SerializeField] private float firstTokenX = -5.18f;   // X of index 0
-    [SerializeField] private float tokenY = 1f;
+    [SerializeField] private float firstTokenX = -5.37f;   // X of index 0
+    [SerializeField] private float tokenY = -0.3f;
 
     #endregion 
 
@@ -98,29 +99,29 @@ public class DayOfDeadFreeSpinTopBar : MonoBehaviour
         if (token == null) return;
 
         wildParticles.transform.position = token.transform.position;
-
-        Vector3 movePos = transform.InverseTransformPoint(targetPosition);
-        StartCoroutine(MoveAndResetParticles(movePos, onComplete));
+        Debug.Log("LovKumar Target Position : " + targetPosition);
+        StartCoroutine(MoveAndResetParticles(targetPosition, onComplete));
     }
 
     private IEnumerator MoveAndResetParticles(Vector3 targetLocalPosition, System.Action onComplete)
     {
-        Vector3 originalPosition = wildParticles.transform.localPosition;
-
+        Vector3 originalPosition = wildParticles.transform.position;
+        Debug.Log("LovKumar Particles Original Pos : " + originalPosition);
         wildParticles.SetActive(true);
         Sequence seq = DOTween.Sequence();
 
         seq.AppendInterval(0.25f)
            .Append(wildParticles.transform
-               .DOLocalMove(targetLocalPosition, 1f)
+               .DOLocalMove(targetLocalPosition, 0.8f)
                .SetEase(Ease.Linear))
-           .AppendInterval(0.75f)
+           .AppendInterval(1f)
            .OnComplete(() =>
            {
                wildParticles.SetActive(false);
-               wildParticles.transform.localPosition = originalPosition;
+               wildParticles.transform.position = originalPosition;
            });
         yield return seq.WaitForCompletion();
+        yield return new WaitForSeconds(0.5f);
         onComplete?.Invoke();
     }
 }

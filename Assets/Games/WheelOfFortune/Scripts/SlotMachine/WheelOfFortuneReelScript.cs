@@ -118,7 +118,7 @@ public class WheelOfFortuneReelScript : MonoBehaviour
     {
         if (reelIndex >= WheelOfFortuneSlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"❌ No spin data for reel {reelIndex}!");
+            //Debug.LogError($"❌ No spin data for reel {reelIndex}!");
             return;
         }
 
@@ -146,16 +146,11 @@ public class WheelOfFortuneReelScript : MonoBehaviour
                     {
                         row += 1;
                     }
-                    Debug.Log("Slot Clamped on Reel: " + this._index + " row: " + row);
                 }
 
                 var slot = slots[row + 2]; // Make sure slots[1], [2], [3] are the visible ones
 
                 slot.SetType(res.Value);
-            }
-            else
-            {
-                Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
             }
             //ApplyReelOffset();
         }
@@ -164,36 +159,26 @@ public class WheelOfFortuneReelScript : MonoBehaviour
 
         if (_clampedDown)
         {
-            Debug.Log($"In ClampDown Slot 1: { slots[1]}");
             if (slots[1].type == WheelOfFortuneSlotType.Empty)
             {
-                Debug.Log($"In ClampDown if Slot:1 is empty-> Slot 0:{slots[0]}");
-                Debug.Log($"In ClampDown if Slot:1 is empty-> Slot 4:{slots[4]}");
                 slots[0].GetRandom(true);
                 slots[4].GetRandom(true);
             }
             else
             {
-                Debug.Log($"In ClampDown Else Slot 0:{slots[0]}");
-                Debug.Log($"In ClampDown Else Slot 4:{slots[4]}");
                 slots[0].SetType(extraSlot.Value);
                 slots[4].SetType(extraSlot.Value);
             }
         }
         else
         {
-            Debug.Log($"Else Slot 2: {slots[2]}");
             if (slots[2].type == WheelOfFortuneSlotType.Empty)
             {
-                Debug.Log($"Else if Slot:2 is empty-> Slot 1:{slots[1]}");
-                Debug.Log($"Else if Slot:2 is empty-> Slot 5:{slots[5]}");
                 slots[1].GetRandom(true);
                 slots[5].GetRandom(true);
             }
             else
             {
-                Debug.Log($"Else -> Slot 1:{slots[1]}");
-                Debug.Log($"Else -> Slot 5:{slots[5]}");
                 slots[1].SetType(extraSlot.Value);
                 slots[5].SetType(extraSlot.Value);
             }
@@ -333,8 +318,6 @@ public class WheelOfFortuneReelScript : MonoBehaviour
 
                 slots[slots.Count - 1].SetType(WheelOfFortuneSlotMachine.GetResourceById("Empty").Value);
             }
-
-            Debug.Log("Reel " + this._index + " Clamped Down");
         }
     }
 

@@ -18,7 +18,7 @@ public class MainMenuUIManager : MonoBehaviour
     public string Username { get; private set; }
     public int avatarIndex { get; private set; }
     public float Coins { get; private set; }
-    public Sprite AvatarImage { get; private set; }
+    public Sprite AvatarImage;// { get; private set; }
     public string Bio { get; private set; }
 
     public bool isShowNotification = false;
@@ -40,6 +40,8 @@ public class MainMenuUIManager : MonoBehaviour
     public TextMeshProUGUI userCoinsText;
     public Sprite userAvatarDefaultImage;
     public Image userAvatar;
+    public bool useAvatarDummyImage = false;
+    public Sprite userAvatarDummyImage;
 
     [SerializeField] private RectTransform spinnerImage;
     [SerializeField] private float rotationSpeed = 180f;
@@ -51,6 +53,7 @@ public class MainMenuUIManager : MonoBehaviour
     public Button changePasswordButton;
     public Button settingButton;
     public Button spinWheelButton;
+    public Button feedbackButton;
 
     [Header("Avatar Change Button & Canvas")]
     public Button AvaarChangeLeftArrow_Btn;
@@ -69,15 +72,19 @@ public class MainMenuUIManager : MonoBehaviour
     public GameObject leaderboardPopup;
     public GameObject changePasswordPopup;
     public GameObject settingsPopup;
+    public FeedbackPanel feedbackPopup;
 
 
     [Header("Click effect")]
     public GameObject clickEffectPrefab;
     public float effectDuration = 0.3f;
+    public ParticleSystem mouseTrailParticle;
 
 
     private Tween tween;
     public UnityEvent OnUserDataUpdated = new UnityEvent();
+
+    public static event Action PopupShown;
 
     public event Action ToggleAvatarSelectButton;
 
@@ -96,8 +103,6 @@ public class MainMenuUIManager : MonoBehaviour
 
 
     }
-
-   
 
     bool setDefaultAvatarIcon;
     void Start()
@@ -188,10 +193,20 @@ public class MainMenuUIManager : MonoBehaviour
             SpawnEffectAtMousePosition("Click");
         }
 
-        if (Input.mouseScrollDelta.y != 0) // Scroll wheel moved
+        if (Input.GetMouseButton(0))
         {
-            SpawnEffectAtMousePosition("Scroll");
+            if (mouseTrailParticle != null)
+            {
+                Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                pos.z = 0;
+                mouseTrailParticle.transform.position = pos;
+            }
         }
+
+        //if (Input.mouseScrollDelta.y != 0) // Scroll wheel moved
+        //{
+        //    SpawnEffectAtMousePosition("Scroll");
+        //}
     }
 
     #region Loder
@@ -340,12 +355,11 @@ public class MainMenuUIManager : MonoBehaviour
     //public void SetUserData(string id, string username, int coins, string imgId, string bio)
     public void SetUserData()
     {
-
         UserID = UserManager.Instance._userGameId;
         Username = UserManager.Instance.Username;
         avatarIndex = UserManager.Instance.avatarIndex;
         Coins = UserManager.Instance.Coins;
-
+        Debug.Log("Coins : " + Coins);
         if (setDefaultAvatarIcon)
         {
             StartRotation();
@@ -355,6 +369,10 @@ public class MainMenuUIManager : MonoBehaviour
         else
         {
             StopRotation();
+            
+            if (useAvatarDummyImage)
+                UserManager.Instance.AvatarImage = userAvatarDummyImage;
+
             AvatarImage = UserManager.Instance.AvatarImage;
         }
         Bio = UserManager.Instance.Bio;
@@ -390,18 +408,20 @@ public class MainMenuUIManager : MonoBehaviour
         settingButton.onClick.AddListener(() => ShowPopup(settingsPopup));
         leaderboardButton.onClick.AddListener(() => StartCoroutine(OpenLeaderBoard()));
         changePasswordButton.onClick.AddListener(() => ShowPopup(changePasswordPopup));
+        feedbackButton.onClick.AddListener(() => feedbackPopup.gameObject.SetActive(true));
 
     }
 
     public void ProfileClick()
     {
-        GlobleSoundManager.Instance.PlaySFX("ProfileClick");
+        //GlobleSoundManager.Instance.PlaySFX("ProfileClick");
         ToggleAvatarSelectButton?.Invoke();
         ShowPopup(profilePopup);
     }
 
     IEnumerator OpenLeaderBoard()
     {
+        GlobleSoundManager.Instance.PlaySFX("Swipe");
         transform.GetComponent<LeaderboardPanelManager>().RemoveData();
         transform.GetComponent<LeaderboardPanelManager>().ResetRank();
         ShowPopup(leaderboardPopup);
@@ -416,12 +436,15 @@ public class MainMenuUIManager : MonoBehaviour
 
     public void ShowPopup(GameObject popup)
     {
+        GlobleSoundManager.Instance.PlaySFX("Swipe");
         //Debug.Log("Nasir ShowPopup ");
         ToggleMenuButtonsUI();
         CylindricalUIWarpSwipe.isDragable = false;
         popup.SetActive(true);
         //popup.transform.GetChild(0).DOScale(1f, 0.2f);
         DoTweenAnim(TweenType.Panel, popup.transform.GetChild(0).gameObject, 1f, 0.3f);
+
+        PopupShown?.Invoke();
     }
 
     public void HidePopup(GameObject popup)
@@ -444,6 +467,7 @@ public class MainMenuUIManager : MonoBehaviour
         leaderboardPopup.SetActive(false);
         changePasswordPopup.SetActive(false);
         settingsPopup.SetActive(false);
+        feedbackPopup.gameObject.SetActive(false);
         if (isDragable())
             CylindricalUIWarpSwipe.isDragable = true;
         else
@@ -470,11 +494,11 @@ public class MainMenuUIManager : MonoBehaviour
             case TweenType.Button:
                 obj.transform.localScale = Vector3.one * scale; // Reset to intended base scale
                 obj.transform.DOScale(scale * 0.9f, duration)
-                    .SetEase(Ease.InQuad)
+                    .SetEase(Ease.InQuad).SetUpdate(true)
                     .OnComplete(() =>
                     {
                         obj.transform.DOScale(scale, duration)
-                            .SetEase(Ease.OutQuad);
+                            .SetEase(Ease.OutQuad).SetUpdate(true);
                     });
                 break;
 
@@ -482,13 +506,13 @@ public class MainMenuUIManager : MonoBehaviour
                 obj.transform.localScale = Vector3.one * 0.5f;
 
                 obj.transform.DOScale(scale, duration * 1.2f)
-                    .SetEase(Ease.OutBack);
+                    .SetEase(Ease.OutBack).SetUpdate(true);
                 break;
 
             case TweenType.SpinWheel:
                 obj.transform.localScale = Vector3.one * 0.5f;
                 obj.transform.DOScale(scale, duration * 1.2f)
-                    .SetEase(Ease.OutBack);
+                    .SetEase(Ease.OutBack).SetUpdate(true);
                 break;
 
             case TweenType.None:

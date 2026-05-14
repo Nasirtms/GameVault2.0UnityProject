@@ -18,11 +18,15 @@ public class MonkeyMadnessAutoSpinController : MonoBehaviour
     #endregion
 
     #region Unity Methods
-
-    private void Start()
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
     #endregion
 
     #region Public References
@@ -61,12 +65,12 @@ public class MonkeyMadnessAutoSpinController : MonoBehaviour
             else
                 firstAuto = false;
 
-            MonkeyMadnessUIManager.Instance.winAnimationCompleted = true;
-            MonkeyMadnessUIManager.Instance.PlaySound("Spin");
             float balance = UserManager.Instance.Coins;
-
             if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) break;
 
+            MonkeyMadnessUIManager.Instance.winAnimationCompleted = true;
+            MonkeyMadnessUIManager.Instance.PlaySound("Spin");
+            
             if (MonkeyMadnessUIManager.Instance.textAnimationCoroutine != null)
                 StopCoroutine(MonkeyMadnessUIManager.Instance.textAnimationCoroutine);
 
@@ -104,6 +108,19 @@ public class MonkeyMadnessAutoSpinController : MonoBehaviour
         isAutoRunning = false;
         cancelRequested = false;
     }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
 
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
 }

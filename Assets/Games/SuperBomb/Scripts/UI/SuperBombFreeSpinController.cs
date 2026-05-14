@@ -16,6 +16,20 @@ public class SuperBombFreeSpinController : MonoBehaviour
     private bool firstSpin;
     private int paylinesToPlay;
 
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
+    #endregion
+
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
     #endregion
 
     #region Public References
@@ -24,11 +38,12 @@ public class SuperBombFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         freeSpinDone = 0;
 
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
 
     public void ResetFreeSpins()
@@ -69,13 +84,14 @@ public class SuperBombFreeSpinController : MonoBehaviour
             {
                 yield return new WaitForSeconds(delayBetweenSpins); // optional delay between spins
             }
-
+            if (cancelRequested) yield break;
             float betAmount = SuperBombUIManager.Instance.CurrentBet();
             SlotSpinService.Instance.Spin(betAmount);
 
 
             yield return new WaitUntil(() => SuperBombSlotMachine.Instance.isSpinAgain);
 
+            if (cancelRequested) yield break;
             //if (StarBurstSlotsSlotMachine.Instance.GetWinAmount() > 0)
             //{
             //    yield return new WaitUntil(() => StarBurstSlotsSlotMachine.Instance.isSlotAnimationCompleted);
@@ -102,6 +118,19 @@ public class SuperBombFreeSpinController : MonoBehaviour
         SuperBombUIManager.Instance.freeGameSpinCount = 0;
         Debug.Log("End free spins called");
         SuperBombFreeGameTransitionController.Instance.EndFreeSpinTransition();
+    }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
+
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        SuperBombUIManager.Instance.UpdateButtons("Base Game Transition");
     }
     #endregion
 }

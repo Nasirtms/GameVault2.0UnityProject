@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6045ccc9671b5949a529c66e0296d16, type: 3}
+  m_Name: StickyPiggy
+  m_EditorClassIdentifier: 
+  slotResources:
+  - slotType: 0
+    slotAnimationBool: A
+    slotTypeIndex: 0
+  - slotType: 1
+    slotAnimationBool: K
+    slotTypeIndex: 1
+  - slotType: 2
+    slotAnimationBool: Q
+    slotTypeIndex: 2
+  - slotType: 3
+    slotAnimationBool: J
+    slotTypeIndex: 3
+  - slotType: 4
+    slotAnimationBool: ten
+    slotTypeIndex: 4
+  - slotType: 5
+    slotAnimationBool: key
+    slotTypeIndex: 5
+  - slotType: 6
+    slotAnimationBool: news
+    slotTypeIndex: 6
+  - slotType: 7
+    slotAnimationBool: man
+    slotTypeIndex: 7
+  - slotType: 8
+    slotAnimationBool: woman
+    slotTypeIndex: 8
+  - slotType: 9
+    slotAnimationBool: boy
+    slotTypeIndex: 9
+  - slotType: 10
+    slotAnimationBool: girl
+    slotTypeIndex: 10
+  - slotType: 11
+    slotAnimationBool: bonus
+    slotTypeIndex: 11
+  - slotType: 12
+    slotAnimationBool: wild2
+    slotTypeIndex: 12
+  - slotType: 13
+    slotAnimationBool: wild3
+    slotTypeIndex: 13
+  soundItems:
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: c0e19a6394c3d0d4ea9ca12584b05444, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: c1176779ef64bf641876b3c01807acd5, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: ff3b69512cd85da499bef30aed092b2c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Bet
+    audioClip: {fileID: 8300000, guid: c59444a3d4a14084c965cb0f1c00b05a, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: d0fb3e375362c624c903dc46c71fe865, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinBg
+    audioClip: {fileID: 8300000, guid: 456c9d234da38324cb4a8489e9a7d579, type: 3}
+    volume: 0.3
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 63ee0edbaf74ce746869d49318317ee6, type: 3}
+    volume: 0.5
+    pitch: 1
+  spinSettings:
+    startSpin: 0
+    endSpin: 1
+    spinDirection: 0
+    SpinSpeed: 35
+    ReelStopDelay: 0.1
+    ReelStartDelay: 0.08
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    WindUpAmount: 0
+    WindUpDuration: 0
+    ClampDuration: 0
+  slotSettings:
+    MoveSpeed: 10
+    TopYPosition: 0.4
+    BottomYPosition: -0.06
+    MinSpinDuration: 1.5
+    MaxSpinDuration: 2.5
+    SymbolScaleX: 1
+    SymbolScaleY: 1

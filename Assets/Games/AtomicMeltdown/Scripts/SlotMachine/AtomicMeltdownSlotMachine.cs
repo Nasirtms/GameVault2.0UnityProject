@@ -35,8 +35,8 @@ public class AtomicMeltdownSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     [HideInInspector] public bool isPaylineCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -44,7 +44,7 @@ public class AtomicMeltdownSlotMachine : BaseSlotMachine
     private bool isSettingResult;
 
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool isFreeGameReady;
     [HideInInspector] public int freeSpinCount;
     [HideInInspector] public float freeSpinWinAmount;
@@ -259,6 +259,7 @@ public class AtomicMeltdownSlotMachine : BaseSlotMachine
             winAmount = 0f;
         }
 
+        AtomicMeltdownUIManager.Instance.PlaySpinMusic("Spin");
         StopAllCoroutines();
         AtomicMeltdownPaylineController.Instance.StopPaylineLoop();
         AtomicMeltdownPaylineController.Instance.ClearPaylineResults();
@@ -343,7 +344,7 @@ public class AtomicMeltdownSlotMachine : BaseSlotMachine
 
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 15f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -372,7 +373,7 @@ public class AtomicMeltdownSlotMachine : BaseSlotMachine
             }
             
             isSpinAgain = true;
-
+            AtomicMeltdownUIManager.Instance.StopSpinMusic("Spin");
             yield break;
         }
 
@@ -451,6 +452,7 @@ public class AtomicMeltdownSlotMachine : BaseSlotMachine
         if (isStopBtnPressed)
             StopButtonPressed();
 
+        AtomicMeltdownUIManager.Instance.StopSpinMusic("Spin");
         ProcessSpinResult();
     }
 
@@ -462,7 +464,7 @@ public class AtomicMeltdownSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
+            //Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -485,33 +487,8 @@ public class AtomicMeltdownSlotMachine : BaseSlotMachine
         else if (winAmount > 0f)
         {
             float betAmount = AtomicMeltdownUIManager.Instance.CurrentBet();
-
-            //if (winAmount >= (betAmount * 5000))
-            //{
-            //    AtomicMeltdownUIManager.Instance.PlayJackpotWinAnimation(winAmount);
-            //}
-            //else if (winAmount >= (betAmount * 500))
-            //{
-            //    AtomicMeltdownUIManager.Instance.PlaySuperWinAnimation(winAmount);
-            //}
-            //else if (winAmount >= (betAmount * 100))
-            //{
-            //    AtomicMeltdownUIManager.Instance.PlayMegaWinAnimation(winAmount);
-            //}
-            //else if (winAmount >= (betAmount * 50))
-            //{
-            //    AtomicMeltdownUIManager.Instance.PlayBigWinAnimation(winAmount);
-            //}
-            //else if (winAmount >= (betAmount * 10))
-            //{
-            //    AtomicMeltdownUIManager.Instance.PlayNiceWinAnimation(winAmount);
-            //}
-            //else
-            //{
-            //    AtomicMeltdownUIManager.Instance.UpdateWinAmount(winAmount, false);
-            //}
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
 
         if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0 || freeSpinCount > 0)
@@ -528,8 +505,10 @@ public class AtomicMeltdownSlotMachine : BaseSlotMachine
         {
             isPaylineCompleted = true;
         }
-
-        AtomicMeltdownUIManager.Instance.StopSpinMusic("Spin");
+        if (winAmount > 0f)
+        {
+            AtomicMeltdownUIManager.Instance.PlaySound("Win");
+        }
 
         InSpin = false;
         isSpinAgain = true;
@@ -547,7 +526,6 @@ public class AtomicMeltdownSlotMachine : BaseSlotMachine
             AtomicMeltdownUIManager.Instance.UpdateButtons("FreeSpin");
         }
     }
-
 
     public void UpdateGameCoin()
     {
@@ -578,7 +556,7 @@ public class AtomicMeltdownSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.resourcesList == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
+            //Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

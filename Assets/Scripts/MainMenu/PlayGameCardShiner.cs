@@ -11,7 +11,7 @@ public class PlayGameCardShiner : MonoBehaviour
 
     public void StartShineAnimation()
     {
-        Debug.Log("StartShineAnimation 1");
+        //Debug.Log("StartShineAnimation 1");
         PlayShineAnimation();
     }
 

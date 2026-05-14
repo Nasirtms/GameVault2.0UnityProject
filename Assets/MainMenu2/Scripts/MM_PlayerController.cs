@@ -8,6 +8,7 @@ namespace MainMenu
     public class MM_PlayerController : MonoBehaviour
     {
         public List<GameObject> playerAvatarsObjects;
+        public Sprite[] playerProfilePictures;
         public int currentPlayerIndex;
 
         public Animator animator;
@@ -135,6 +136,12 @@ namespace MainMenu
         void SetAvatarDirection(Vector3 targetPosition)
         {
             targetEulerAngles.y = targetPosition.x >= transform.position.x ? 0 : -180;
+            transform.localEulerAngles = targetEulerAngles;
+        }
+
+        public void SetAvatarDirection(bool right)
+        {
+            targetEulerAngles.y = right ? 0 : -180;
             transform.localEulerAngles = targetEulerAngles;
         }
 

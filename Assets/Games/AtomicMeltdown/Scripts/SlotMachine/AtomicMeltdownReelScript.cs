@@ -124,7 +124,7 @@ public class AtomicMeltdownReelScript : MonoBehaviour
     {
         if (reelIndex >= AtomicMeltdownSlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"❌ No spin data for reel {reelIndex}!");
+            //Debug.LogError($"❌ No spin data for reel {reelIndex}!");
             return;
         }
 
@@ -154,7 +154,7 @@ public class AtomicMeltdownReelScript : MonoBehaviour
                     {
                         row += 1;
                     }
-                    Debug.Log("Slot Clamped on Reel: " + this._index + " row: " + row);
+                    //Debug.Log("Slot Clamped on Reel: " + this._index + " row: " + row);
                 }
 
                 var slot = slots[row + 1]; // Make sure slots[1], [2], [3] are the visible ones
@@ -163,7 +163,7 @@ public class AtomicMeltdownReelScript : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
+                //Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
             }
         }
 
@@ -173,10 +173,7 @@ public class AtomicMeltdownReelScript : MonoBehaviour
         {
             slots[0].SetType(extraSlot.Value);
         }
-        //slots[0].SetType(extraSlot.Value);
-        //slots[0].SetType(AtomicMeltdownSlotMachine.CachedRealSymbols[Random.Range(0, AtomicMeltdownSlotMachine.CachedRealSymbols.Count)]);
         slots[slots.Count - 1].SetType(extraSlot.Value);
-        //slots[slots.Count - 1].SetType(AtomicMeltdownSlotMachine.CachedRealSymbols[Random.Range(0, AtomicMeltdownSlotMachine.CachedRealSymbols.Count)]);
 
         StopAllCoroutines();
     }
@@ -316,7 +313,7 @@ public class AtomicMeltdownReelScript : MonoBehaviour
                 slots[slots.Count - 1].SetType(AtomicMeltdownSlotMachine.GetResourceById("Empty").Value);
             }
 
-            Debug.Log("Reel " + this._index + " Clamped Down");
+            //Debug.Log("Reel " + this._index + " Clamped Down");
         }
         //AtomicMeltdownUIManager.Instance.PlaySound("ReelStop");
         //OnSpinComplete?.Invoke(this._index);
@@ -447,6 +444,5 @@ public class AtomicMeltdownReelScript : MonoBehaviour
             }
         }
     }
-
     #endregion
 }

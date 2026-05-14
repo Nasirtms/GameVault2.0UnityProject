@@ -20,11 +20,15 @@ public class ZombieParadiseAutoSpinController : MonoBehaviour
     #endregion
 
     #region Unity Methods
-
-    private void Start()
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
     #endregion
 
     #region Public References
@@ -64,7 +68,6 @@ public class ZombieParadiseAutoSpinController : MonoBehaviour
             {
                 firstAuto = false;
             }
-            ZombieParadiseUIManager.Instance.PlaySound("Spin");
             if (cancelRequested)
             {
                 StopAutoSpin();
@@ -119,6 +122,19 @@ public class ZombieParadiseAutoSpinController : MonoBehaviour
         isAutoRunning = false;
         cancelRequested = false;
     }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
 
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
 }

@@ -14,7 +14,20 @@ public class FruitSlotFreeSpinController : MonoBehaviour
     private int freeSpinDone = 0;
     private bool isFreeGame = false;
     private bool firstSpin;
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
+    #endregion
 
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
     #endregion
 
     #region Public References
@@ -23,11 +36,12 @@ public class FruitSlotFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         freeSpinDone = 0;
 
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
 
     public void ResetFreeSpins()
@@ -65,6 +79,7 @@ public class FruitSlotFreeSpinController : MonoBehaviour
 
         while (freeSpinDone < totalFreeSpins)
         {
+            Debug.Log("LovKumar FreeSpin Loop");
             if (firstSpin)
             {
                 firstSpin = false;
@@ -73,7 +88,7 @@ public class FruitSlotFreeSpinController : MonoBehaviour
             {
                 yield return new WaitForSeconds(delayBetweenSpins); // optional delay between spins
             }
-
+            if (cancelRequested) yield break;
             float betAmount = FruitSlotUIManager.Instance.CurrentBet();
             SlotSpinService.Instance.Spin(betAmount);
 
@@ -82,7 +97,7 @@ public class FruitSlotFreeSpinController : MonoBehaviour
             freeSpinDone++;
 
             yield return new WaitUntil(() => FruitSlotMachine.Instance.isSpinAgain);
-
+            if (cancelRequested) yield break;
             if (FruitSlotMachine.Instance.currentSpinResult != null)
             {
                 if (FruitSlotMachine.Instance.GetWinAmount() > 0)
@@ -105,6 +120,18 @@ public class FruitSlotFreeSpinController : MonoBehaviour
 
         FruitSlotGameTransitionController.Instance.EndFreeSpinTransition();
     }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
 
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        FruitSlotUIManager.Instance.UpdateButtons("Stop");
+    }
     #endregion
 }

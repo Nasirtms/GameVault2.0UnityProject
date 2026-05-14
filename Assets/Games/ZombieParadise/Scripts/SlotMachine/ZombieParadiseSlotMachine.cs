@@ -19,8 +19,8 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
     [ShowInInspector][ReadOnly] public ZombieParadiseSpinResult currentSpinResult;
 
     // State Variables
-    public bool InSpin = false;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //public bool InSpin = false;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     [HideInInspector] public bool isSlotAnimationCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -28,7 +28,7 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
     private bool _isSingleSpin;
 
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool isFreeGameReady;
     [HideInInspector] public int freeSpinCount;
     [HideInInspector] public float freeSpinWinAmount;
@@ -129,9 +129,9 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
                 freeSpinCount = fakeFreeSpins;
             }
         }
-
-        string json = JsonConvert.SerializeObject(currentSpinResult, Formatting.Indented);
-        LogLarge("SpinResult (parsed)", json);
+        Debug.Log("SpinResult (parsed):\n" + JsonConvert.SerializeObject(currentSpinResult, Formatting.Indented));
+        //string json = JsonConvert.SerializeObject(currentSpinResult, Formatting.Indented);
+        //LogLarge("SpinResult (parsed)", json);
 
 
         spinSymbolMatrix.Clear();
@@ -151,20 +151,18 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
 
 
 
-    void LogLarge(string prefix, string text, int chunkSize = 8000)
-    {
-        if (string.IsNullOrEmpty(text))
-        {
-            Debug.Log($"{prefix}: [empty]");
-            return;
-        }
+    //void LogLarge(string prefix, string text, int chunkSize = 8000)
+    //{
+    //    if (string.IsNullOrEmpty(text))
+    //    {
+    //        return;
+    //    }
 
-        for (int i = 0; i < text.Length; i += chunkSize)
-        {
-            string chunk = text.Substring(i, Mathf.Min(chunkSize, text.Length - i));
-            Debug.Log($"{prefix} (part {i / chunkSize + 1}):\n{chunk}");
-        }
-    }
+    //    for (int i = 0; i < text.Length; i += chunkSize)
+    //    {
+    //        string chunk = text.Substring(i, Mathf.Min(chunkSize, text.Length - i));
+    //    }
+    //}
 
     #endregion
 
@@ -206,7 +204,7 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
         ZombieParadiseUIManager.Instance.winAnimationCompleted = true;
         ZombieParadisePaylineController.Instance.StopPaylines();
         ZombieParadisePaylineController.Instance.ClearPaylineData();
-  
+        ZombieParadiseUIManager.Instance.PlaySpinMusic("Spin");
 
         if (settings.spinSettings.startSpin == ZombieParadiseSpinMode.SpinAll)
         {
@@ -253,7 +251,7 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
 
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -265,13 +263,28 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
 
         if (currentSpinResult == null)
         {
+            CasinoUIManager.Instance.ShowErrorCanvas(1, "Network Error");
             StopWithResult(); // fallback
+
+            if (isFreeGame)
+            {
+                ZombieParadiseFreeGameTransitionController.Instance.NetworkErrorFreeSpin();
+            }
+            else if (ZombieParadiseAutoSpinController.isAutoSpinning)
+            {
+                ZombieParadiseUIManager.Instance.CancelAutoSpin();
+            }
+            else
+            {
+                ZombieParadiseUIManager.Instance.UpdateButtons("Spin Stop");
+            }
+
+            isSpinAgain = true;
+            ZombieParadiseUIManager.Instance.StopSpinMusic("Spin");
             yield break;
         }
 
-        // Optional: small delay for visual pacing
         yield return new WaitForSeconds(0.5f);
-
         StopWithResult();
     }
 
@@ -358,6 +371,7 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
 
         // Force all reels to final position based on direction
         ForceAllReelsToFinalPosition();
+        ZombieParadiseUIManager.Instance.StopSpinMusic("Spin");
 
         ProcessSpinResult();
 
@@ -386,7 +400,6 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -398,7 +411,9 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
         {
             winAmount = currentSpinResult.totalWin;
         }
-
+        Debug.Log("winAmount : " + winAmount);
+        Debug.Log("currentSpinResult.totalWin : " + currentSpinResult.totalWin);
+        Debug.Log("newBalance : " + currentSpinResult.newBalance);
         if (isFreeGame && winAmount > 0)
         {
             firstFreeSpin = false;
@@ -409,7 +424,7 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
         else if (winAmount > 0)
         {
             float betAmount = ZombieParadiseUIManager.Instance.CurrentBet();
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
         }
 
@@ -434,6 +449,10 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
         // Spin complete
         InSpin = false;
         isSpinAgain = true;
+        if(winAmount > 0)
+        {
+            ZombieParadiseUIManager.Instance.PlaySound("Win");
+        }
 
         if (!ZombieParadiseAutoSpinController.isAutoSpinning && !isFreeGame)
         {
@@ -559,7 +578,6 @@ public class ZombieParadiseSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.slotResources == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

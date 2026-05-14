@@ -26,11 +26,6 @@ public class SaharaRichesSoundManager : MonoBehaviour
     {
         if (Instance != null) return;
         Instance = this;
-
-        if (musicSource == null || sfxSource == null)
-        {
-            Debug.LogError("Please assign both MusicSource and SFXSource in the SoundManager.");
-        }
     }
     public void PlayMusic(string soundName)
     {
@@ -43,10 +38,6 @@ public class SaharaRichesSoundManager : MonoBehaviour
             musicSource.loop = true;
             musicSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
     }
 
     public void StopMusic(string soundName)
@@ -56,10 +47,6 @@ public class SaharaRichesSoundManager : MonoBehaviour
         {
             musicSource.clip = sound.audioClip;
             musicSource.Stop();
-        }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
     public void SpinPlayMusic(string soundName)
@@ -73,10 +60,6 @@ public class SaharaRichesSoundManager : MonoBehaviour
             spinMusicSource.loop = true;
             spinMusicSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Spin Music '{soundName}' not found.");
-        }
     }
 
     public void SpinStopMusic(string soundName)
@@ -86,10 +69,6 @@ public class SaharaRichesSoundManager : MonoBehaviour
         {
             spinMusicSource.clip = sound.audioClip;
             spinMusicSource.Stop();
-        }
-        else
-        {
-            Debug.LogWarning($"Spin Music '{soundName}' not found.");
         }
     }
     public void PlaySFX(string soundName)
@@ -105,10 +84,6 @@ public class SaharaRichesSoundManager : MonoBehaviour
                 sfxSource.loop = false;
                 sfxSource.PlayOneShot(sound.audioClip);
             }
-            else
-            {
-                Debug.LogWarning($"SFX '{soundName}' not found.");
-            }
         }
     }
 
@@ -123,10 +98,6 @@ public class SaharaRichesSoundManager : MonoBehaviour
             winTextSource.loop = true;
             winTextSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Win Music '{soundName}' not found.");
-        }
     }
 
     public void StopWinText(string soundName)
@@ -136,10 +107,6 @@ public class SaharaRichesSoundManager : MonoBehaviour
         {
             winTextSource.clip = sound.audioClip;
             winTextSource.Stop();
-        }
-        else
-        {
-            Debug.LogWarning($"Win Music '{soundName}' not found.");
         }
     }
 

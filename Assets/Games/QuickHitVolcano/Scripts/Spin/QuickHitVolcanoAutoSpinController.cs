@@ -21,11 +21,14 @@ public class QuickHitVolcanoAutoSpinController : MonoBehaviour
     #endregion
 
     #region Unity Methods
-
-    private void Start()
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
-
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
     #endregion
 
     #region Public References
@@ -82,6 +85,8 @@ public class QuickHitVolcanoAutoSpinController : MonoBehaviour
                 StopCoroutine(QuickHitVolcanoUIManager.Instance.winCoroutine);
 
             SlotSpinService.Instance.Spin(betAmount);
+            if (QuickHitVolcanoUIManager.Instance.CurrentButtonSet() != "Spin")
+                QuickHitVolcanoUIManager.Instance.UpdateButtons("Spin");
 
             yield return new WaitUntil(() => QuickHitVolcanoSlotMachine.Instance.isSpinAgain);
 
@@ -118,6 +123,19 @@ public class QuickHitVolcanoAutoSpinController : MonoBehaviour
         isAutoRunning = false;
         cancelRequested = false;
     }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
 
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
 }

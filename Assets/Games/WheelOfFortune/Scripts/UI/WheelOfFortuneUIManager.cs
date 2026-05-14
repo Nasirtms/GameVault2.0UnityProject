@@ -157,7 +157,6 @@ public class WheelOfFortuneUIManager : GameBetServices
     #region Input Buttons
 
     #region Sound
-
     public void PlaySound(string soundName)
     {
         if (soundName == null || WheelOfFortuneSoundManager.Instance == null) return;
@@ -264,7 +263,7 @@ public class WheelOfFortuneUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -278,12 +277,11 @@ public class WheelOfFortuneUIManager : GameBetServices
     #region Spin Buttons
     public void OnClickSpin()
     {
-        UpdateButtons("Spin");
-        PlaySpinMusic("Spin");
-
         float betAmount = betController.GetCurrentBet();
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
 
+        UpdateButtons("Spin");
+        PlaySound("SpinButton");
         if (textAnimationCoroutine != null)
         {
             StopCoroutine(textAnimationCoroutine);
@@ -315,7 +313,6 @@ public class WheelOfFortuneUIManager : GameBetServices
         if (autoSpinController == null) return;
 
         UpdateButtons("Spin");
-        PlaySpinMusic("Spin");
 
         float betAmount = betController.GetCurrentBet();
 
@@ -401,16 +398,10 @@ public class WheelOfFortuneUIManager : GameBetServices
                 stopButton.ShowButton(true);
                 break;
 
-            case "Transition":
+            case "FreeSpin":
                 interactable = false;
                 spinButton.ShowButton(true);
                 stopButton.ShowButton(false);
-                break;
-
-            case "FreeSpin":
-                interactable = false;
-                spinButton.ShowButton(false);
-                stopButton.ShowButton(true);
                 break;
 
             case "WinAnimation":
@@ -439,7 +430,11 @@ public class WheelOfFortuneUIManager : GameBetServices
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount, bool compound)
     {
         if (winAmount > 0)
@@ -467,7 +462,7 @@ public class WheelOfFortuneUIManager : GameBetServices
         if (textAnimationCoroutine != null)
             StopCoroutine(textAnimationCoroutine);
 
-        PlaySound("Win");
+
         textAnimationCoroutine = StartCoroutine(AnimateToValue(winAmount, 1f, this.winAmount));
     }
 
@@ -485,12 +480,14 @@ public class WheelOfFortuneUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
-        textToAnimate.text = target.ToString("0.00");
+        //textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
     }
 
     private IEnumerator AnimateToValue(float target, float duration, TMP_Text textToAnimateOne, TMP_Text textToAnimateTwo)
@@ -501,16 +498,20 @@ public class WheelOfFortuneUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
+
 
             timer += Time.deltaTime;
             yield return null;
         }
-
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
 
         StopCoroutine(textAnimationCoroutine);
     }
@@ -583,7 +584,7 @@ public class WheelOfFortuneUIManager : GameBetServices
 
         if (WheelOfFortuneSlotMachine.Instance.isFreeGameReady)
         {
-            UpdateButtons("Transition");
+            UpdateButtons("FreeSpin");
         }
         else if (WheelOfFortuneAutoSpinController.isAutoSpinning)
         {
@@ -600,7 +601,10 @@ public class WheelOfFortuneUIManager : GameBetServices
     #endregion
 
     #region Helper Functions
-
+    public void CancelAutoSpin()
+    {
+        autoSpinController.CancelAutoSpin();
+    }
     public float CurrentBet()
     {
         return betController.GetCurrentBet();

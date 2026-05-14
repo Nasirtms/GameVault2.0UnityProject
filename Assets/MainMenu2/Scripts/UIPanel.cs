@@ -9,7 +9,7 @@ namespace MainMenu
     {
         public CanvasGroup panel;
 
-        public void OpenPanel(float transitionDuration)
+        public virtual void OpenPanel(float transitionDuration)
         {
             panel.gameObject.SetActive(true);
             panel.DOFade(1, transitionDuration).SetEase(Ease.OutSine);

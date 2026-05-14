@@ -6,42 +6,44 @@ using UnityEngine;
 public class WheelOfFortuneFreeSpinController : MonoBehaviour
 {
     #region Variables
-
+    [Header("Wheels")]
     [SerializeField] private RectTransform wheelTransform;
-    [SerializeField] private GameObject winImage;
+    [SerializeField] private RectTransform wheelTransform1;
 
-    //[SerializeField] private RectTransform wheelTransform2;
+    public Vector3 wheelStartRotation;
+    public Vector3 wheel1StartRotation;
+
+    [SerializeField] private GameObject winImage;
 
     public List<float> prizeValues = new List<float>
     {
         150f, 750f, 150f, 600f, 100f, 150f, 1000f, 2000f, 150f, 1500f, 500f, 300f, 250f, 500f, 150f, 2000f, 100f, 1000f, 250f, 500f, 200f, 5000f,
     };
 
-    [SerializeField] private float preSpinSpeed = 720f;
+    [Header("Spin Settings")]
+    [SerializeField] private float preSpinSpeed = 1020f;
     [SerializeField] private float preSpinTime = 0.7f;
-    [SerializeField] private float spinDuration = 5f;
+    [SerializeField] private float spinDuration = 4f;
     [SerializeField] private int fullRotations = 2;
-    [SerializeField] private int forcedPrizeIndex = -1;
+    [SerializeField] private float offset = 0f;
 
-    private float angleOffset = 7.5f;
     private bool isFreeGame = false;
     private bool isSpinning = false;
     private bool keepSpinning = false;
 
+    private Coroutine spinLoop;
     [SerializeField] private Animator lightsAnimator;
+    [SerializeField] public float baseAngle = 18;
+    public float baseAngle1 = 0;
+
     #endregion
 
-
-
-    private void Start()
-    {
-        for (int i = 0; i < prizeValues.Count; i++)
-        {
-            Debug.Log($"wheel index = {i} and multiplier value = {prizeValues[i]}");
-        }
-    }
-
     #region Public References
+    private void Awake()
+    {
+        wheelStartRotation = wheelTransform.localEulerAngles;
+        wheel1StartRotation = wheelTransform1.localEulerAngles;
+    }
     public void StartFreeSpins()
     {
         if (isFreeGame || isSpinning) return;
@@ -50,100 +52,86 @@ public class WheelOfFortuneFreeSpinController : MonoBehaviour
         winImage.SetActive(false);
         StartCoroutine(DoSpin());
     }
+    public void ResetWheelsToStart()
+    {
+        if (wheelTransform != null)
+        {
+            wheelTransform.DOKill(true);
+            wheelTransform.localEulerAngles = wheelStartRotation;
+        }
 
+        if (wheelTransform1 != null)
+        {
+            wheelTransform1.DOKill(true);
+            wheelTransform1.localEulerAngles = wheel1StartRotation;
+        }
+    }
     #endregion
 
     #region Free Spin
     private IEnumerator DoSpin()
     {
+        yield return new WaitForSeconds(2.8f);
         isSpinning = true;
-        yield return new WaitForSeconds(3.5f);
-
-        if (lightsAnimator != null)
-            lightsAnimator.SetBool("On", true);
 
         int segmentCount = prizeValues.Count;
         if (segmentCount == 0)
         {
-            Debug.LogError("No prize values configured for wheel.");
             isSpinning = false;
             yield break;
         }
 
-        int prizeIndex = forcedPrizeIndex;
+        int prizeIndex = WheelOfFortuneSlotMachine.Instance.freeSpinWinIndex;
         if (prizeIndex < 0 || prizeIndex >= segmentCount)
-        {
             prizeIndex = Random.Range(0, segmentCount);
-        }
 
-        //Coroutine spinLoop = StartCoroutine(SpinWhileWaiting());
-        //yield return new WaitForSeconds(preSpinTime);
-        //StopCoroutine(spinLoop);
-        Coroutine spinLoop = StartCoroutine(SpinWhileWaiting());
-        yield return new WaitForSeconds(preSpinTime);
+        float segmentAngle = -(360f / segmentCount);
 
-        // SAFE STOP — no more NullReference
-        keepSpinning = false;
+        // Reset to known state (IMPORTANT)
+        wheelTransform.localEulerAngles = Vector3.zero;
+        wheelTransform1.localEulerAngles = Vector3.zero;
 
-        float segmentAngle = 360f / segmentCount;
-        float targetSegmentAngle = (prizeIndex * segmentAngle + angleOffset) % 360f;
-        float currentAngle = wheelTransform.localEulerAngles.z % 360f;
+        float extraSpins = fullRotations; // keep your existing value
+        WheelOfFortuneUIManager.Instance.PlaySpinMusic("SpinWheel");
+        // SpinWheel-style target calculation
+        float targetRotation =
+            (extraSpins * 360f) +
+            (prizeIndex * segmentAngle) +
+            baseAngle +offset;
 
-        // Smallest signed angle from current to target
-        float deltaToTarget = Mathf.DeltaAngle(currentAngle, targetSegmentAngle);
-
-        // Force spin to go "forward" (clockwise-ish) and add some full spins
-        if (deltaToTarget > 0)
-            deltaToTarget -= 360f;
-
-        float totalSpinAngle = deltaToTarget - (fullRotations * 360f);
-        float finalAngle = currentAngle + totalSpinAngle;
+        float targetRotation1 =
+            (extraSpins * 360f) +
+            (prizeIndex * segmentAngle) +
+            baseAngle1;
 
         Tween spinTween = wheelTransform
-            .DORotate(new Vector3(0f, 0f, finalAngle), spinDuration, RotateMode.FastBeyond360)
+            .DORotate(new Vector3(0f, 0f, -targetRotation), spinDuration, RotateMode.FastBeyond360)
             .SetEase(Ease.OutCubic);
 
+        Tween spinTween1 = wheelTransform1
+            .DORotate(new Vector3(0f, 0f, -targetRotation1), spinDuration, RotateMode.FastBeyond360)
+            .SetEase(Ease.OutCubic)
+            .OnComplete(() =>
+            {
+                WheelOfFortuneUIManager.Instance.StopSpinMusic("SpinWheel");
+                WheelOfFortuneUIManager.Instance.PlaySound("Increase");
+
+            }); 
+
         yield return spinTween.WaitForCompletion();
+        yield return spinTween1.WaitForCompletion();
+
+        // HARD SNAP (casino wheels always do this)
+        wheelTransform.localEulerAngles = new Vector3(0f, 0f, -((prizeIndex * segmentAngle) + baseAngle)-offset);
+        wheelTransform1.localEulerAngles = new Vector3(0f, 0f, -((prizeIndex * segmentAngle) + baseAngle1));
+
         winImage.SetActive(true);
-        // Snap both wheels exactly to final segment
-
-        // Get prize
-        float prize = (prizeValues[prizeIndex] * WheelOfFortuneUIManager.Instance.CurrentBet()) / 5;
-        Debug.Log($"[FreeSpin] Landed on index {prizeIndex}, prize = {prize}");
-
-        // Store in your slot machine logic
-        WheelOfFortuneSlotMachine.Instance.freeSpinWinAmount += prize;
-
-        // Tiny delay so the result visually "settles"
-        yield return new WaitForSeconds(1f);
+        float prize = (prizeValues[prizeIndex] * WheelOfFortuneUIManager.Instance.CurrentBet()) / 5f;
+        WheelOfFortuneSlotMachine.Instance.freeSpinWinAmount = prize;
 
         isSpinning = false;
-
-        if (lightsAnimator != null)
-            lightsAnimator.SetBool("On", false);
-
         EndFreeSpin();
     }
-    private IEnumerator SpinWhileWaiting()
-    {
-        keepSpinning = true;
-
-        while (keepSpinning)
-        {
-            float angle = wheelTransform.localEulerAngles.z - preSpinSpeed * Time.deltaTime;
-            wheelTransform.localEulerAngles = new Vector3(0f, 0f, (angle + 360f) % 360f);
-            yield return null;
-        }
-    }
-    //private IEnumerator SpinWhileWaiting()
-    //{
-    //    while (true)
-    //    {
-    //        float angle = wheelTransform.localEulerAngles.z - preSpinSpeed * Time.deltaTime;
-    //        wheelTransform.localEulerAngles = new Vector3(0f, 0f, (angle + 360f) % 360f);
-    //        yield return null;
-    //    }
-    //}
     private void EndFreeSpin()
     {
         isFreeGame = false;

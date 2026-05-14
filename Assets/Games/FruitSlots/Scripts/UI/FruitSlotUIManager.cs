@@ -166,6 +166,18 @@ public class FruitSlotUIManager : GameBetServices
         if (!FruitSlotSoundManager.Instance.IsMusicMute())
             FruitSlotSoundManager.Instance.StopMusic(soundName);
     }
+    public void PlaySpinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!FruitSlotSoundManager.Instance.IsSoundMute())
+            FruitSlotSoundManager.Instance.PlaySpinMusic(soundName);
+    }
+    public void StopSpinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!FruitSlotSoundManager.Instance.IsSoundMute())
+            FruitSlotSoundManager.Instance.StopSpinMusic(soundName);
+    }
     private void StopWinMusic(string soundName)
     {
         if (string.IsNullOrEmpty(soundName)) return;
@@ -238,7 +250,7 @@ public class FruitSlotUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -258,7 +270,6 @@ public class FruitSlotUIManager : GameBetServices
 
         UpdateButtons("Spin");
         singleSpin = true;
-        PlaySound("FruitSlot_Spin");
 
         if (textAnimationCoroutine != null)
         {
@@ -278,6 +289,7 @@ public class FruitSlotUIManager : GameBetServices
     private void OnClickStop()
     {
         PlaySound("FruitSlot_Button");
+        StopSpinMusic("FruitSlot_Spin");
         if (FruitSlotMachine.Instance.isFreeGame)
         {
             UpdateButtons("Free Spin");
@@ -402,6 +414,11 @@ public class FruitSlotUIManager : GameBetServices
     }
 
     #region Text Animation
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount, bool compound = false)
     {
         if (winAmount > 0)
@@ -456,13 +473,15 @@ public class FruitSlotUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        textToAnimate.text = target.ToString("0.00");
+        //textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
         StopWinMusic("Win");
         PlaySound("WinEnd");
     }
@@ -475,19 +494,20 @@ public class FruitSlotUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
-
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
-
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
 
         StopCoroutine(textAnimationCoroutine);
-
     }
     #endregion
 

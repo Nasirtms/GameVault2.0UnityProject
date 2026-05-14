@@ -109,7 +109,8 @@ public class DayOfDeadReelScript : MonoBehaviour
 
                 var slot = slots[rowIndex + 1]; // Make sure slots[1], [2], [3], [4] are the visible ones
 
-                slot.SetType(res.Value);
+                //slot.SetType(res.Value);
+                slot.SetType(res.Value, true);
             }
             else
             {
@@ -224,7 +225,7 @@ public class DayOfDeadReelScript : MonoBehaviour
             {
                 ShiftSymbolsDown();
             }
-            if (DayOfDeadSlotMachine.Instance.isFreeGame)
+            if (DayOfDeadFreeSpinController.Instance.isFreeGame)
             {
                 DayOfDeadFreeGameTransitionController.Instance.MoveWildtoReel();
                 if (!freeSpinWildMoved)

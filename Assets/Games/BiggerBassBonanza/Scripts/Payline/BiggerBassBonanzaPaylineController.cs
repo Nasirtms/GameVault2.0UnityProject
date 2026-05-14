@@ -99,7 +99,7 @@ public class BiggerBassBonanzaPaylineController : MonoBehaviour
 
         if (activePaylines.Count == 0 && resultScatterCount < 3 && BiggerBassBonanzaSlotMachine.Instance.wildWorldPos.Count == 0)
         {
-            Debug.LogWarning("No valid paylines to display.");
+            //Debug.LogWarning("No valid paylines to display.");
             return;
         }
 
@@ -124,16 +124,7 @@ public class BiggerBassBonanzaPaylineController : MonoBehaviour
             scatterAnimation = null;
         }
 
-        foreach (var reel in BiggerBassBonanzaSlotMachine.Instance.reels)
-        {
-            foreach (var slot in reel.slots)
-            {
-                if (slot != null)
-                {
-                    slot.StopAnimation();
-                }
-            }
-        }
+        ResetAllSlotsAnimation();
     }
 
     private IEnumerator PlayPaylines()
@@ -204,19 +195,25 @@ public class BiggerBassBonanzaPaylineController : MonoBehaviour
         if (activePaylines.Count > 1)
         {
             // Clear borders & text for cycling mode
-            foreach (var reel in BiggerBassBonanzaSlotMachine.Instance.reels)
+            ResetAllSlotsAnimation();
+            yield return new WaitForSeconds(0.5f);
+        }
+
+    }
+
+    private void ResetAllSlotsAnimation()
+    {
+        foreach (var reel in BiggerBassBonanzaSlotMachine.Instance.reels)
+        {
+            foreach (var slot in reel.slots)
             {
-                foreach (var slot in reel.slots)
+                if (slot != null)
                 {
-                    if (slot != null)
-                    {
-                        slot.StopAnimation();
-                    }
+                    slot.StopAnimation();
                 }
             }
         }
     }
-
     private IEnumerator ScatterAnimation()
     {
         for (int x = 0; x < BiggerBassBonanzaSlotMachine.Instance.reels.Count; x++)

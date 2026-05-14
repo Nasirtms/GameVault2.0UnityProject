@@ -95,6 +95,8 @@ public class FlameComboFreeGameTransitionController : MonoBehaviour
         yield return new WaitForSeconds(1f);
         FlameComboUIManager.Instance.UpdateButtons("Free Spin");
         freeSpinController.StartFreeSpins();
+        FlameComboUIManager.Instance.StopMusic("BG");
+        FlameComboUIManager.Instance.PlayMusic("FreeSpinBG");
     }
 
     private IEnumerator EndFreeSpin()
@@ -102,17 +104,19 @@ public class FlameComboFreeGameTransitionController : MonoBehaviour
         freeSpinEndAnimator.gameObject.SetActive(true);
         yield return new WaitForSeconds(2f);
 
-        freeSpinsCountText.SetActive(false);
-        FlameComboUIManager.Instance.StartTitleLoop();
-
         FlameComboPaylineController.Instance.ClearPaylineData();
         FlameComboUIManager.Instance.UpdateButtons("Transition End");
+        FlameComboUIManager.Instance.StopMusic("FreeSpinBG");
+
         yield return new WaitForSeconds(2.5f);
+        freeSpinsCountText.SetActive(false);
+        FlameComboUIManager.Instance.StartTitleLoop();
         yield return MoveDoors();
         freeSpinStartAnimator.enabled = false;
         freeSpinStartAnimator.SetBool("freeSpin", false);
         freeGameFrame.SetActive(false);
 
+        FlameComboUIManager.Instance.PlayMusic("BG");
         yield return new WaitForSeconds(1f);
         freeSpinEndAnimator.enabled = true;
         freeSpinEndAnimator.SetBool("freeSpinEnd", true);
@@ -129,6 +133,7 @@ public class FlameComboFreeGameTransitionController : MonoBehaviour
         freeSpinEndAnimator.gameObject.transform.localScale = Vector3.zero;
         freeSpinEndAnimator.enabled = false;
 
+        FlameComboUIManager.Instance.UpdateButtons("Stop");
         FlameComboUIManager.Instance.spinButton.GetComponent<Button>().interactable = true;
     }
     private void WinAnimation()
@@ -138,7 +143,7 @@ public class FlameComboFreeGameTransitionController : MonoBehaviour
             float freeGameWin = FlameComboSlotMachine.Instance.freeSpinWinAmount;
             float betAmount = FlameComboUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, FlameComboSlotMachine.Instance.currentSpinResult.newBalance);
-            Invoke(nameof(FlameComboSlotMachine.Instance.UpdateGameCoin), 1f);
+            //Invoke(nameof(FlameComboSlotMachine.Instance.UpdateGameCoin), 1f);
         }
     }
     #endregion

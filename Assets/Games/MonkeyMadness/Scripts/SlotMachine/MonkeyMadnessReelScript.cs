@@ -88,6 +88,19 @@ public class MonkeyMadnessReelScript : MonoBehaviour
         {
             slots[i].Initialize(this, i);
         }
+
+        //for(int i = 0; i < slots.Count; i++)
+        //{
+        //    if(i == slots.Count - 1)
+        //    {
+        //        continue;
+        //    }
+        //    else
+        //    {
+        //        slots[i].slotMask.showMaskGraphic = true;
+        //        slots[i].slotGlowMask.showMaskGraphic = true;
+        //    }
+        //}
         _spinSettings = MonkeyMadnessSlotMachine.Instance.settings.spinSettings;
     }
 
@@ -122,7 +135,6 @@ public class MonkeyMadnessReelScript : MonoBehaviour
     {
         if (reelIndex >= MonkeyMadnessSlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"❌ No spin data for reel {reelIndex}!");
             return;
         }
 
@@ -140,22 +152,14 @@ public class MonkeyMadnessReelScript : MonoBehaviour
 
             if (res.HasValue)
             {
-                //MonkeyMadnessSlotMachine.Instance.isResultReceived = true;
-
                 if (_clampedDown)
                 {
                     row -= 1;
-
-                    Debug.Log("Slot Clamped on Reel: " + this._index + " row: " + row);
                 }
 
                 var slot = slots[row + 1]; // Make sure slots[1], [2], [3] are the visible ones
 
                 slot.SetType(res.Value);
-            }
-            else
-            {
-                Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
             }
         }
 
@@ -259,9 +263,6 @@ public class MonkeyMadnessReelScript : MonoBehaviour
 
             var topSlot = MonkeyMadnessSlotMachine.GetResourceById("Empty");
             slots[0].SetType(topSlot.Value);
-            //slots[slots.Count - 1].SetType(topSlot.Value);
-
-            Debug.Log("Reel " + this._index + " Clamped Down");
         }
         MonkeyMadnessUIManager.Instance.PlaySound("ReelStop");
         OnSpinComplete?.Invoke(this._index);
@@ -291,17 +292,6 @@ public class MonkeyMadnessReelScript : MonoBehaviour
             {
                 ApplyFinalResult(this._index);
             }
-
-            //if (_currentSpeed > (_spinSettings.speedRange.x / 2)) _currentSpeed -= _acceleration;
-            //_rectTransform.anchoredPosition = Vector3.LerpUnclamped(_rectTransform.anchoredPosition, _targetPos,
-            //    _currentSpeed * Time.deltaTime);
-
-            //if (Vector3.Distance(_rectTransform.anchoredPosition, _targetPos) < _spinSettings.minClamp)
-            //{
-            //    _rectTransform.anchoredPosition = _targetPos;
-            //    _inClamp = false;
-            //    OnClampComplete();
-            //}
             _rectTransform.anchoredPosition = _targetPos;
             _inClamp = false;
             OnClampComplete();
@@ -361,8 +351,6 @@ public class MonkeyMadnessReelScript : MonoBehaviour
                     slots[i].SetType(res);
                 }
 
-                //generate new
-                //slots[0].GetRandom();
                 slots[0].SetType(GetNextGeneratedSymbol());
             }
         }

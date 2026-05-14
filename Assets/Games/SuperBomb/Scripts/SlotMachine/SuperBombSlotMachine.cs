@@ -1,9 +1,12 @@
-﻿using Newtonsoft.Json;
+using DG.Tweening;
+using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 //using Sirenix.OdinInspector.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -48,8 +51,8 @@ public class SuperBombSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     [HideInInspector] public bool isPaylineCompleted;
     [HideInInspector] public bool isSlotAnimationCompleted;
@@ -57,9 +60,10 @@ public class SuperBombSlotMachine : BaseSlotMachine
     private bool _isSingleSpin;
     private bool _firstAutoSpin = true;
     private bool isSettingResult;
+    public bool hasShowedTotalWin;
 
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool makeFreeGameReady = false;
     [HideInInspector] public bool isFreeSpinWhenNoPayline = false;
     [HideInInspector] public bool isFreeGameReady;
@@ -254,10 +258,10 @@ public class SuperBombSlotMachine : BaseSlotMachine
 
         for (int i = 0; i < hasWildOnReel.Length; i++)
         {
-            Debug.Log($"Deepak Reel {i + 1} has Wild: {hasWildOnReel[i]}");
+            //Debug.Log($"Deepak Reel {i + 1} has Wild: {hasWildOnReel[i]}");
         }
 
-        Debug.Log("Deepak Chawla 2 has free spins: " + freeSpinCount);
+        //Debug.Log("Deepak Chawla 2 has free spins: " + freeSpinCount);
         if (testMode)
         {
             freeSpinCount = 2;
@@ -271,7 +275,7 @@ public class SuperBombSlotMachine : BaseSlotMachine
             freeSpinCount = currentSpinResult.freeSpinCount;
         }
         //freeSpinCount = currentSpinResult.freeSpinCount;
-        Debug.Log("Deepak Chawla 3 has free spins: " + freeSpinCount);
+        //Debug.Log("Deepak Chawla 3 has free spins: " + freeSpinCount);
 
         if (testMode)
         {
@@ -313,7 +317,7 @@ public class SuperBombSlotMachine : BaseSlotMachine
         (reels.Count > 2 && hasWildOnReel[2]) ||
         (reels.Count > 3 && hasWildOnReel[3]);
 
-        Debug.Log($"Deepak Free Spin Trigger via Wild: {trigger}");
+        //Debug.Log($"Deepak Free Spin Trigger via Wild: {trigger}");
 
         if (!isFreeGame)
         {
@@ -322,12 +326,12 @@ public class SuperBombSlotMachine : BaseSlotMachine
                 hasFreeSpinTriggerViaWild = true;
                 for (int i = 0; i < triggerReelsMask.Length; i++)
                 {
-                    Debug.Log($"Deepak has trigger reel mask on reel {triggerReelsMask[i]}");
+                    //Debug.Log($"Deepak has trigger reel mask on reel {triggerReelsMask[i]}");
                 }
                 Array.Clear(triggerReelsMask, 0, triggerReelsMask.Length);
                 for (int i = 0; i < triggerReelsMask.Length; i++)
                 {
-                    Debug.Log($"Deepak 1 has trigger reel mask on reel {triggerReelsMask[i]}");
+                    //Debug.Log($"Deepak 1 has trigger reel mask on reel {triggerReelsMask[i]}");
                 }
                 if (reels.Count > 1 && hasWildOnReel[1]) { triggerReelsMask[1] = true; lockedReels[1] = true; }
                 if (reels.Count > 2 && hasWildOnReel[2]) { triggerReelsMask[2] = true; lockedReels[2] = true; }
@@ -336,7 +340,7 @@ public class SuperBombSlotMachine : BaseSlotMachine
                 makeFreeGameReady = true;
                 for (int i = 0; i < triggerReelsMask.Length; i++)
                 {
-                    Debug.Log($"Deepak 2 has trigger reel mask on reel {triggerReelsMask[i]}");
+                    //Debug.Log($"Deepak 2 has trigger reel mask on reel {triggerReelsMask[i]}");
                 }
             }
             else
@@ -415,11 +419,12 @@ public class SuperBombSlotMachine : BaseSlotMachine
         SuperBombPaylineController.Instance.ClearPaylineData();
         winAmount = 0;
         freeSpinCount = 0;
-        Debug.Log("Deepak Chawla 1 has free spins: " + freeSpinCount);
+        //Debug.Log("Deepak Chawla 1 has free spins: " + freeSpinCount);
         isSettingResult = false;
         isStopBtnPressed = false;
         currentSpinResult = null;
         isPaylineCompleted = false;
+        hasShowedTotalWin = false;
         isSlotAnimationCompleted = false;
         isSpinAgain = false;
         InSpin = true;
@@ -498,7 +503,7 @@ public class SuperBombSlotMachine : BaseSlotMachine
 
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -512,6 +517,16 @@ public class SuperBombSlotMachine : BaseSlotMachine
         {
             CasinoUIManager.Instance.ShowErrorCanvas(1, "Network Error");
             StopWithResult(); // fallback
+            if (SuperBombAutoSpinController.isAutoSpinning)
+            {
+                SuperBombUIManager.Instance.CancelAutoSpin();
+            }
+            else
+            {
+                SuperBombUIManager.Instance.UpdateButtons("Single Stop");
+            }
+            SuperBombUIManager.Instance.StopSpinMusic("ReelSpin");
+
             yield break;
         }
 
@@ -635,14 +650,17 @@ public class SuperBombSlotMachine : BaseSlotMachine
         {
             float betAmount = SuperBombUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            UpdateGameCoin ();
         }
 
         if(currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0)
         {
             foreach(var payline in currentSpinResult.paylineWins)
             {
-                SuperBombPaylineResult result = new SuperBombPaylineResult(payline.paylineIndex, payline.count, float.Parse(payline.winAmount), payline.IsLeft);
+                //SuperBombPaylineResult result = new SuperBombPaylineResult(payline.paylineIndex, payline.count, float.Parse(payline.winAmount), payline.IsLeft);
+                float win = float.Parse(payline.winAmount, System.Globalization.CultureInfo.InvariantCulture);
+                //Debug.Log("Win : "  + win);
+                SuperBombPaylineResult result = new SuperBombPaylineResult(payline.paylineIndex, payline.count, win, payline.IsLeft);
                 SuperBombPaylineController.Instance.AddPaylineData(result);
             }
 
@@ -661,7 +679,7 @@ public class SuperBombSlotMachine : BaseSlotMachine
         {
             isPaylineCompleted = true;
 
-            Debug.Log("Deepak Chawla 4 has free spins: " + freeSpinCount);
+            //Debug.Log("Deepak Chawla 4 has free spins: " + freeSpinCount);
 
 
             if (isPaylineCompleted && freeSpinCount > 0 && isFreeGameReady)
@@ -714,7 +732,7 @@ public class SuperBombSlotMachine : BaseSlotMachine
             {
                 if (slot != null)
                 {
-                    slot.HidePaylineWin();
+                    //slot.HidePaylineWin();
                 }
             }
         }
@@ -848,6 +866,41 @@ public class SuperBombSlotMachine : BaseSlotMachine
         hasFreeSpinTriggerViaWild = false;
         pendingFreeSpinCount = 0;
     }
+
+    public IEnumerator ShowTotalWins()
+    {
+        var obj = SuperBombUIManager.Instance.totalWinObject;
+        var txt = SuperBombUIManager.Instance.totalWinObject.transform.GetChild(0).GetComponent<TMP_Text>();
+
+        txt.text = ToText(GetWinAmount());
+
+        obj.SetActive(true);
+
+        obj.transform.DOScale(1.1f, 0.4f).SetEase(Ease.OutBack);
+        yield return new WaitForSeconds(0.9f);
+        obj.transform.DOScale(0f, 0.2f).SetEase(Ease.InBack);
+        obj.SetActive(false);
+        yield return new WaitForSeconds(0.7f);
+        hasShowedTotalWin = true;
+    }
+
+    string ToText(float amount)
+    {
+        float floored = (float)(System.Math.Floor(amount * 100f) / 100f);
+        string s = floored.ToString("0.00");
+        StringBuilder sb = new StringBuilder();
+
+        foreach (char c in s)
+        {
+            if (c == '.')
+                sb.Append("<sprite=10>");
+            else
+                sb.Append($"<sprite={c - '0'}>");
+        }
+
+        return sb.ToString();
+    }
+
     #endregion
 }
 /* all that a human carry is eitehr hatred or affection */

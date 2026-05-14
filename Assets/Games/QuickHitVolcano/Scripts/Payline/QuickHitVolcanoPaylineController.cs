@@ -135,13 +135,13 @@ public class QuickHitVolcanoPaylineController : MonoBehaviour
 
     private IEnumerator PlayPaylines()
     {
-        if (QuickHitVolcanoSlotMachine.Instance.isFreeGame)
+        if (QuickHitVolcanoSlotMachine.Instance.isFreeGame || QuickHitVolcanoAutoSpinController.isAutoSpinning)
         {
-            flickerDelay = 2f;
+            flickerDelay = 1.5f;
         }
         else
         {
-            flickerDelay = 3f;
+            flickerDelay = 2f;
         }
 
         yield return new WaitForSeconds(0.75f);

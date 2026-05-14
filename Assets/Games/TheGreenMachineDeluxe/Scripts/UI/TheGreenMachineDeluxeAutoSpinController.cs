@@ -19,11 +19,15 @@ public class TheGreenMachineDeluxeAutoSpinController : MonoBehaviour
     #endregion
 
     #region Unity Methods
-
-    private void Start()
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
     #endregion
 
     #region Public References
@@ -61,7 +65,6 @@ public class TheGreenMachineDeluxeAutoSpinController : MonoBehaviour
             else
             {
                 firstAuto = false;
-                TheGreenMachineDeluxeUIManager.Instance.PlayMusic("ReelSpin");
             }
 
             if (cancelRequested)
@@ -99,10 +102,6 @@ public class TheGreenMachineDeluxeAutoSpinController : MonoBehaviour
                 yield return new WaitUntil(() => TheGreenMachineDeluxeSlotMachine.Instance.isSlotAnimationCompleted);
                 yield return new WaitUntil(() => TheGreenMachineDeluxeUIManager.Instance.winAnimationCompleted);
             }
-            //else
-            //{
-            //    TheGreenMachineDeluxeUIManager.Instance.winAnimationCompleted = true;
-            //}
         }
 
         StopAutoSpin();
@@ -122,6 +121,19 @@ public class TheGreenMachineDeluxeAutoSpinController : MonoBehaviour
         isAutoRunning = false;
         cancelRequested = false;
     }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
 
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
 }

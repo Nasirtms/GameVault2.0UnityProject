@@ -260,7 +260,7 @@ public class BiggerBassBonanzaUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -312,13 +312,11 @@ public class BiggerBassBonanzaUIManager : GameBetServices
 
     private void OnClickAuto()
     {
-
         if (autoSpinController == null) return;
         increaseBetButton.interactable = false;
         decreaseBetButton.interactable = false;
 
         float betAmount = betController.GetCurrentBet();
-
         autoSpinController.StartAutoSpin(betAmount);
 
         if (textAnimationCoroutine != null)
@@ -331,7 +329,7 @@ public class BiggerBassBonanzaUIManager : GameBetServices
             StopCoroutine(winCoroutine);
         }
 
-        UpdateButtons("Auto Spin");
+        //UpdateButtons("Auto Spin");
     }
 
     private void OnClickCancel()
@@ -433,7 +431,11 @@ public class BiggerBassBonanzaUIManager : GameBetServices
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount, bool compound = false)
     {
         if (winAmount > 0)
@@ -485,13 +487,14 @@ public class BiggerBassBonanzaUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
-
-        textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
+        //textToAnimate.text = target.ToString("0.00");
         StopWinMusic("Win");
         PlaySound("WinEnd");
     }
@@ -504,16 +507,19 @@ public class BiggerBassBonanzaUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
-
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
 
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
 
         StopCoroutine(textAnimationCoroutine);
     }

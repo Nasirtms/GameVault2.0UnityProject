@@ -170,6 +170,18 @@ public class ZombieParadiseUIManager : GameBetServices
         if (!ZombieParadiseSoundManager.Instance.IsMusicMute())
             ZombieParadiseSoundManager.Instance.StopMusic(soundName);
     }
+    public void PlaySpinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!ZombieParadiseSoundManager.Instance.IsSoundMute())
+            ZombieParadiseSoundManager.Instance.PlaySpinMusic(soundName);
+    }
+    public void StopSpinMusic(string soundName)
+    {
+        if (string.IsNullOrEmpty(soundName)) return;
+        if (!ZombieParadiseSoundManager.Instance.IsSoundMute())
+            ZombieParadiseSoundManager.Instance.StopSpinMusic(soundName);
+    }
     private void SoundActive(bool soundActive)
     {
         ZombieParadiseSoundManager.Instance.MuteSFX(!soundActive);
@@ -240,7 +252,7 @@ public class ZombieParadiseUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -259,7 +271,7 @@ public class ZombieParadiseUIManager : GameBetServices
         float betAmount = betController.GetCurrentBet();
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
 
-        PlaySound("Spin");
+        PlaySpinMusic("Spin");
 
         if (textAnimationCoroutine != null)
         {
@@ -297,8 +309,6 @@ public class ZombieParadiseUIManager : GameBetServices
     public void OnHoldSpin()
     {
         if (autoSpinController == null) return;
-
-        PlaySound("Spin");
 
         float betAmount = betController.GetCurrentBet();
         autoSpinController.StartAutoSpin(betAmount);
@@ -379,7 +389,11 @@ public class ZombieParadiseUIManager : GameBetServices
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 1000f) / 1000f;
+        return floored.ToString("0.000");
+    }
     public void UpdateWinAmount(float winAmount, bool compound = false)
     {
         if (winAmount > 0)
@@ -430,13 +444,15 @@ public class ZombieParadiseUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        textToAnimate.text = target.ToString("0.00");
+        //textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
     }
 
     private IEnumerator AnimateToValue(float target, float duration, TMP_Text textToAnimateOne, TMP_Text textToAnimateTwo)
@@ -447,16 +463,18 @@ public class ZombieParadiseUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
-
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
-
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
 
         StopCoroutine(textAnimationCoroutine);
     }
@@ -542,6 +560,9 @@ public class ZombieParadiseUIManager : GameBetServices
     {
         stopButton.GetButtonComponent().interactable = state;
     }
-
+    public void CancelAutoSpin()
+    {
+        autoSpinController.CancelAutoSpin();
+    }
     #endregion
 }

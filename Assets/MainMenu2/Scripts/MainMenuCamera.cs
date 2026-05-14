@@ -56,21 +56,27 @@ namespace MainMenu
                 transform.position = new Vector3(Mathf.Clamp(Mathf.Lerp(transform.position.x, camTarget.x, Time.deltaTime * followDamping), boundsMinMax.x, boundsMinMax.y), transform.position.y, transform.position.z);
 
                 //if (Mathf.Abs(transform.position.x - camTarget.x) < 0.01f)
-                //if (Mathf.Abs(transform.position.x - camTarget.x) > 0f)
-                //{
-                //    reachedTarget = false;
-                //}
-                //else
-                //{
-                //    reachedTarget = true;
-                //}
-                if (Mathf.Abs(transform.position.x - camTarget.x) < .1f)
+                if (MainMenuManager.instance.movingWithButtons)
                 {
-                    reachedTarget = true;
+                    if (Mathf.Abs(transform.position.x - camTarget.x) > 0f)
+                    {
+                        reachedTarget = false;
+                    }
+                    else
+                    {
+                        reachedTarget = true;
+                    }
                 }
                 else
                 {
-                    reachedTarget = false;
+                    if (Mathf.Abs(transform.position.x - camTarget.x) < .1f)
+                    {
+                        reachedTarget = true;
+                    }
+                    else
+                    {
+                        reachedTarget = false;
+                    }
                 }
 
                 if (reachedTarget)

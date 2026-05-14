@@ -229,14 +229,14 @@ public class DayOfDeadUIManager : GameBetServices
     private void IncreaseBetAmount()
     {
         if (betController == null) return;
-        PlaySound("Button");
+        PlaySound("Bet");
         betController.IncreaseChipValue();
     }
 
     private void DecreaseBetAmount()
     {
         if (betController == null) return;
-        PlaySound("Button");
+        PlaySound("Bet");
         betController.DecreaseChipValue();
     }
 
@@ -248,7 +248,7 @@ public class DayOfDeadUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -278,7 +278,7 @@ public class DayOfDeadUIManager : GameBetServices
         {
             StopCoroutine(winCoroutine);
         }
-        //PlaySound("Spin");
+        PlaySound("Bet");
 
         UpdateButtons("Single Start");
         SlotSpinService.Instance.Spin(betAmount);
@@ -286,8 +286,8 @@ public class DayOfDeadUIManager : GameBetServices
 
     private void OnClickStop()
     {
-        //PlaySound("Button");
-        
+        PlaySound("Bet");
+
         DayOfDeadSlotMachine.Instance.isStopBtnPressed = true;
         DayOfDeadSlotMachine.Instance.StopWithResult();
 
@@ -299,9 +299,8 @@ public class DayOfDeadUIManager : GameBetServices
 
     private void OnClickAuto()
     {
-        //PlaySound("Button");
+        PlaySound("Bet");
         float betAmount = betController.GetCurrentBet();
-        if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
         if (DayOfDeadSlotMachine.Instance.isRespinActive)
             return;
         autoSpinController.StartAutoSpin(betAmount);
@@ -312,7 +311,7 @@ public class DayOfDeadUIManager : GameBetServices
         if (DayOfDeadSlotMachine.Instance.isRespinActive)
             return;
         if (autoSpinController == null) return;
-        //PlaySound("Button");
+        PlaySound("Button");
         autoSpinController.CancelAutoSpin();
 
         autoButton.ShowButton(true);
@@ -456,7 +455,11 @@ public class DayOfDeadUIManager : GameBetServices
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount, bool compound = false)
     {
         if (winAmount > 0)
@@ -508,13 +511,13 @@ public class DayOfDeadUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
-
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
-
-        textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
+        //textToAnimate.text = target.ToString("0.00");
         //StopWinMusic("Win");
         //PlaySound("WinEnd");
     }
@@ -527,17 +530,19 @@ public class DayOfDeadUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
-
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
 
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
-
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
         StopCoroutine(textAnimationCoroutine);
     }
 

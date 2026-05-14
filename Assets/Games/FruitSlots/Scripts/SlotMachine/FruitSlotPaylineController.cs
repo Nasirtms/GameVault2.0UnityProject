@@ -119,14 +119,13 @@ public class FruitSlotPaylineController : MonoBehaviour
     public void ShowCollectedPaylines(int scatterCount)
     {
         resultScatterCount = scatterCount;
-        // If no wins, immediately mark complete so auto-spin can proceed
-        if (spinResult == null || spinResult.Count == 0)
+        if (spinResult == null || spinResult.Count == 0 && resultScatterCount < 6)
         {
             FruitSlotMachine.Instance.isPaylineCompleted = true;
             return;
         }
 
-        StartPaylineDisplay(spinResult); // <-- your existing private method
+        StartPaylineDisplay(spinResult); 
     }
 
     private void StopPaylineDisplay()
@@ -153,6 +152,7 @@ public class FruitSlotPaylineController : MonoBehaviour
         }
         if (resultScatterCount >= 6)
         {
+            //Debug.Log("LovKumar If Scatter");
             yield return ScatterAnimation();
         }
         if (activePaylines.Count == 1)
@@ -274,7 +274,7 @@ public class FruitSlotPaylineController : MonoBehaviour
         if (hasWildOnReel[1] && hasWildOnReel[2] && hasWildOnReel[3] && !hasWildOnReel[4]) wild_1_2_3.SetActive(true);
         if (!hasWildOnReel[1] && hasWildOnReel[2] && hasWildOnReel[3] && hasWildOnReel[4]) wild_2_3_4.SetActive(true);
         if (hasWildOnReel[1] && hasWildOnReel[2] && hasWildOnReel[3] && hasWildOnReel[4]) wild_3_4_5.SetActive(true);
-
+        //Debug.Log("LovKumar Scatter Condition");
         yield return new WaitForSeconds(3f);
         wild_1_2.SetActive(false);
         wild_2_3.SetActive(false);
@@ -284,6 +284,7 @@ public class FruitSlotPaylineController : MonoBehaviour
         wild_3_4_5.SetActive(false);
         if (FruitSlotMachine.Instance.freeSpinCount > 0 && !FruitSlotMachine.Instance.isFreeGame)
         {
+            //Debug.Log("LovKumar Scatter If Condition");
             FruitSlotMachine.Instance.firstFreeSpin = true;
             FruitSlotUIManager.Instance.UpdateButtons("Transition Start");
             FruitSlotGameTransitionController.Instance.StartFreeSpinTransition();

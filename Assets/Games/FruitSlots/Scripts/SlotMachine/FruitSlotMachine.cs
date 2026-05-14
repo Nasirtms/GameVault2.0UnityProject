@@ -40,11 +40,11 @@ public class FruitSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
-    [HideInInspector] public bool isSpinAgain = false;
+    //public bool InSpin;
+    //public bool isStopBtnPressed = false;
+    public bool isSpinAgain = false;
     public bool isPaylineCompleted;
-    [HideInInspector] public bool isResultReceived;
+    public bool isResultReceived;
     private bool _isSingleSpin;
     private bool isSettingResult;
 
@@ -53,12 +53,12 @@ public class FruitSlotMachine : BaseSlotMachine
     private bool firstAutoSpin = true;
 
     //Free Spin 
-    [HideInInspector] public bool isFreeGame;
-    [HideInInspector] public bool isFreeGameReady;
-    [HideInInspector] public int freeSpinCount;
-    [HideInInspector] public float freeSpinWinAmount;
-    [SerializeField] public int scatterCount;
-    [HideInInspector] public bool firstFreeSpin;
+    //public bool isFreeGame;
+    public bool isFreeGameReady;
+    public int freeSpinCount;
+    public float freeSpinWinAmount;
+    public int scatterCount;
+    public bool firstFreeSpin;
     #endregion
 
     #region Unity Methods
@@ -219,8 +219,6 @@ public class FruitSlotMachine : BaseSlotMachine
             spinSymbolMatrix.Add(symbols);
         }
 
-        Debug.Log($"✅ Loaded {spinSymbolMatrix.Count} reels from spin result.");
-
         FruitSlotUIManager.Instance.SetStopInteractable(true);
     }
     #endregion
@@ -237,6 +235,7 @@ public class FruitSlotMachine : BaseSlotMachine
             freeSpinWinAmount = 0;
             winAmount = 0f;
         }
+        FruitSlotUIManager.Instance.PlaySpinMusic("FruitSlot_Spin"); 
         FruitSlotPaylineController.Instance.ClearPaylineData();
         FruitSlotUIManager.Instance.SetStopInteractable(false);
         fruitSlotAutoSpinController.cancelRequested = false;
@@ -278,7 +277,7 @@ public class FruitSlotMachine : BaseSlotMachine
     #region Stop
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         while ((currentSpinResult == null || currentSpinResult.reels == null || currentSpinResult.reels.Count == 0) && elapsed < timeout)
@@ -301,9 +300,9 @@ public class FruitSlotMachine : BaseSlotMachine
             }
             else
             {
-                FruitSlotUIManager.Instance.UpdateButtons("Default");
+                FruitSlotUIManager.Instance.UpdateButtons("Stop");
             }
-
+            FruitSlotUIManager.Instance.StopSpinMusic("FruitSlot_Spin");
             isSpinAgain = true;
             yield break;
         }
@@ -367,7 +366,7 @@ public class FruitSlotMachine : BaseSlotMachine
 
         // 5️⃣ Wait until all reels are clamped
         //yield return new WaitUntil(() => reels.All(r => r.IsClamped()));
-
+        FruitSlotUIManager.Instance.StopSpinMusic("FruitSlot_Spin");
         ProcessSpinResult();
         InSpin = false;
         isSpinAgain = true;
@@ -382,7 +381,6 @@ public class FruitSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -406,7 +404,7 @@ public class FruitSlotMachine : BaseSlotMachine
         {
             float betAmount = FruitSlotUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
         
         if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0 || scatterCount >= 6)
@@ -443,24 +441,19 @@ public class FruitSlotMachine : BaseSlotMachine
             FruitSlotUIManager.Instance.UpdateButtons("Free Spin");
         }
     }
-
-
     public void UpdateGameCoin()
     {
         if (currentSpinResult != null)
         {
             GameBetServices.Instance.UpdateCoins(currentSpinResult.newBalance);
         }
-        else
-        {
-            Debug.LogWarning("Got null in newBalance");
-        }
     }
     private void ShowPaylinesWrapper()
     {
-        var plc = FruitSlotPaylineController.Instance;
-        if (plc != null) plc.ShowCollectedPaylines(scatterCount);
-        else isPaylineCompleted = true;
+        FruitSlotPaylineController.Instance.ShowCollectedPaylines(scatterCount);
+        //var plc = FruitSlotPaylineController.Instance;
+        //if (plc != null) plc.ShowCollectedPaylines(scatterCount);
+        //else isPaylineCompleted = true;
     }
     #endregion
 
@@ -469,7 +462,6 @@ public class FruitSlotMachine : BaseSlotMachine
     public override void ClearPaylines() { }
 
     #endregion
-
 
     #region Slot Result Data
 
@@ -486,7 +478,6 @@ public class FruitSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.resourcesList == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

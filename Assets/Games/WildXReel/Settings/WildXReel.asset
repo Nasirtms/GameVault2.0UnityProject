@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a4403740f728f14c8d824a161d85fe3, type: 3}
+  m_Name: WildXReel
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    slotTypeIndex: 0
+  - type: 1
+    slotTypeIndex: 1
+  - type: 2
+    slotTypeIndex: 2
+  - type: 4
+    slotTypeIndex: 3
+  - type: 5
+    slotTypeIndex: 4
+  - type: 6
+    slotTypeIndex: 5
+  - type: 8
+    slotTypeIndex: 6
+  - type: 3
+    slotTypeIndex: 7
+  - type: 9
+    slotTypeIndex: 8
+  - type: 10
+    slotTypeIndex: 9
+  - type: 11
+    slotTypeIndex: 10
+  - type: 7
+    slotTypeIndex: 11
+  soundItems:
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: 8185757d611178441b73fad429ee61fa, type: 3}
+    volume: 0.4
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: 303370a2336b83c43a7f214eec632800, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Increase
+    audioClip: {fileID: 8300000, guid: 7297f911cf918b34d834176452c087ad, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Decrease
+    audioClip: {fileID: 8300000, guid: 7297f911cf918b34d834176452c087ad, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: 90c2a05d94a09434ab25986bff29a001, type: 3}
+    volume: 0.7
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 7246ecc4002aaa0458ad2b591484cc94, type: 3}
+    volume: 0.6
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.2, y: 0.3}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -269.76
+    bottomBoundary: -479.95
+    startSpeed: {x: 25, y: 30}
+    acceleration: {x: 1, y: 2}
+    speedRange: {x: 40, y: 50}
+  horizontalLayout: 340
+  verticalLayout: -160
+  paddingTop: -520
+  slotScale: 1

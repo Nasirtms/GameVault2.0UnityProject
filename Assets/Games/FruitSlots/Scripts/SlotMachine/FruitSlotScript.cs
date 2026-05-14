@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using Sequence = DG.Tweening.Sequence;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,6 +22,8 @@ public class FruitSlotScript : MonoBehaviour
     private Tween colorTween;
     private Image sr;
     private Transform child;
+    private Tween scaleTween;
+    private Transform child0;
     //private Image _background;
     private RectTransform _rectTransform;
     private FruitSlotReelScript _parent;
@@ -187,26 +189,36 @@ public class FruitSlotScript : MonoBehaviour
 
         child.gameObject.SetActive(true);
 
+        if (child0 == null)
+        {
+            child0 = transform.GetChild(0);
+        }
+
         if (sr == null)
             sr = child.GetComponent<Image>();
 
-        // Kill any existing tween
+        // Kill existing tweens
         colorTween?.Kill();
+        scaleTween?.Kill();
 
         float hue = 0f;
 
-        // 🔹 Adjust animation speed based on Free Spin state
         float currentDuration = FruitSlotMachine.Instance.isFreeGame ? duration * 0.15f : duration;
-        // 0.6x = 40% faster (tweak if needed, e.g., 0.5f for 2x speed)
 
         colorTween = DOTween.To(() => hue, x =>
         {
             hue = x;
-            Color newColor = Color.HSVToRGB(hue, 1f, 1f); // full saturation & brightness
+            Color newColor = Color.HSVToRGB(hue, 1f, 1f);
             sr.color = newColor;
         },
-        1f, currentDuration) // use adjusted duration
-        .SetLoops(-1, LoopType.Restart); // infinite loop
+        1f, currentDuration)
+        .SetLoops(-1, LoopType.Restart);
+
+        child0.localScale = Vector3.one;
+
+        scaleTween = child0.DOScale(0.7f, 0.4f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
     }
 
     public void StopAnimation()
@@ -214,9 +226,18 @@ public class FruitSlotScript : MonoBehaviour
         colorTween?.Kill();
         colorTween = null;
 
+        scaleTween?.Kill();
+        scaleTween = null;
+
         if (sr != null)
         {
             sr.color = new Color32(0x00, 0x7C, 0xFF, 0xFF);
+        }
+
+        if (child0 != null)
+        {
+            // smooth reset instead of snap
+            child0.DOScale(1f, 0.15f).SetEase(Ease.OutQuad);
         }
 
         if (child != null)

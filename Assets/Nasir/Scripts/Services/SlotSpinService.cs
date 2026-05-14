@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -10,7 +12,7 @@ public class SlotSpinService : MonoBehaviour
     public static SlotSpinService Instance { get; private set; }
     public string GameScenName = "";
 
-    private BaseSlotMachine currentSlotMachine;
+    public BaseSlotMachine currentSlotMachine;
     private string currentRequestId;
     //public bool isCoinUpdaterOrNot = false;
 
@@ -18,7 +20,8 @@ public class SlotSpinService : MonoBehaviour
     public bool is2FreSpin;
     public bool is3FreSpin;
     public bool is4FreSpin;
-    public bool isSaharaRiches;
+    public bool isNewSlotGame;//Any NewSlotGame Test(which don't have an api)
+    public float newBalance;
     private void Awake()
     {
         if (Instance == null)
@@ -33,6 +36,10 @@ public class SlotSpinService : MonoBehaviour
     {
         // Get the slot machine based on the current scene
         currentSlotMachine = GameSlotRegistry.GetMachine(SceneManagement.currentGameName);
+        Debug.Log("SlotSpinService.Instance.currentSlotMachine InSpin : " + currentSlotMachine.InSpin);
+
+
+
         ClickSessionManager.Instance?.ResetInactivityTimer();
         if (currentSlotMachine == null)
         {
@@ -48,7 +55,7 @@ public class SlotSpinService : MonoBehaviour
     private IEnumerator CallSlotSpinApi(float betAmount)
     {
         currentRequestId = Guid.NewGuid().ToString();
-        Debug.Log($"🎰 Calling Slot Spin API with betAmount: {betAmount}, requestId: {currentRequestId}");
+        //Debug.Log($"🎰 Calling Slot Spin API with betAmount: {betAmount}, requestId: {currentRequestId}");
 
         string sceneName = SceneManagement.currentGameName;
         var requestData = new object();
@@ -65,6 +72,7 @@ public class SlotSpinService : MonoBehaviour
                 };
                 Debug.Log("Line Multiplier : " + TenTimesWinsUIManager.Instance.gameObject.GetComponent<TenTimesWinsBetController>().GetCurrentMultiplier());
                 break;
+
             case "quickhitvolcano":
                 Debug.Log("Quick Hit Request Body: " + QuickHitVolcanoSlotMachine.Instance.isFreeGame);
                 requestData = new
@@ -75,6 +83,7 @@ public class SlotSpinService : MonoBehaviour
                     IsFreeSpin = QuickHitVolcanoSlotMachine.Instance.isFreeGame
                 };
                 break;
+
             case "cleopatra":
                 //Debug.Log("cleopatra Request Body: " + CleopatraSlotMachine.Instance.isFreeGame);
                 requestData = new
@@ -86,6 +95,7 @@ public class SlotSpinService : MonoBehaviour
                     //IsFreeSpin = true
                 };
                 break;
+
             case "doublejackpotbullseye":
                 Debug.Log("Bullseye Request Body: " + DoubleJackpotBullseyeSlotMachine.Instance.isFreeGame);
                 requestData = new
@@ -97,6 +107,7 @@ public class SlotSpinService : MonoBehaviour
                     //IsFreeSpin = true
                 };
                 break;
+
             case "biggerbassbonanza":
                 requestData = new
                 {
@@ -107,6 +118,7 @@ public class SlotSpinService : MonoBehaviour
                     wildMultiplier = BiggerBassBonanzaSlotMachine.Instance.wildMultipliers[BiggerBassBonanzaSlotMachine.Instance.retriggerCount]
                 };
                 break;
+
             case "vegas7":
                 requestData = new
                 {
@@ -119,6 +131,7 @@ public class SlotSpinService : MonoBehaviour
                     scatterMultiplier = VegasSevenSlotMachine.Instance.retriggerCount
                 };
                 break;
+
             case "fruitmary":
                 requestData = new
                 {
@@ -130,6 +143,7 @@ public class SlotSpinService : MonoBehaviour
                     forceWildPayline = FruitMarySlotMachine.Instance.forceWildPayline
                 };
                 break;
+
             case "fruitparadise":
                 requestData = new
                 {
@@ -139,6 +153,7 @@ public class SlotSpinService : MonoBehaviour
                     isFreeSpin = FruitParadiseSlotMachine.Instance.isFreeGame
                 };
                 break;
+
             case "atomicmeltdown":
                 requestData = new
                 {
@@ -148,6 +163,7 @@ public class SlotSpinService : MonoBehaviour
                     isFreeSpin = AtomicMeltdownSlotMachine.Instance.isFreeGame
                 };
                 break;
+
             case "crazy7":
                 requestData = new
                 {
@@ -157,6 +173,7 @@ public class SlotSpinService : MonoBehaviour
                     isFreeSpin = CrazySevenSlotMachine.Instance.isFreeGame
                 };
                 break;
+
             case "fruitslots":
                 requestData = new
                 {
@@ -166,6 +183,7 @@ public class SlotSpinService : MonoBehaviour
                     isFreeSpin = FruitSlotMachine.Instance.isFreeGame
                 };
                 break;
+
             case "piratesofthecaribbean":
                 requestData = new
                 {
@@ -175,6 +193,7 @@ public class SlotSpinService : MonoBehaviour
                     isFreeSpin = PiratesOfTheCaribbeanSlotMachine.Instance.isFreeGame
                 };
                 break;
+
             case "starburstslots":
                 requestData = new
                 {
@@ -190,6 +209,7 @@ public class SlotSpinService : MonoBehaviour
                     //IsFreeSpin = true
                 };
                 break;
+
             case "dayofdead":
                 requestData = new
                 {
@@ -213,6 +233,7 @@ public class SlotSpinService : MonoBehaviour
                     IsFreeSpin = TheGreenMachineDeluxeSlotMachine.Instance.isFreeGame
                 };
                 break;
+
             case "zombieparadise":
                 requestData = new
                 {
@@ -221,6 +242,19 @@ public class SlotSpinService : MonoBehaviour
                     requestId = currentRequestId,
                     gameId = SceneManagement.currentGameID,
                     IsFreeSpin = ZombieParadiseSlotMachine.Instance.isFreeGame
+                };
+                break;
+
+            case "goldgobblers":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    betAmount = betAmount,
+                    requestId = currentRequestId,
+                    IsFreeSpin = GoldGobblersSlotMachine.Instance.isFreeGame,
+                    red = GoldGobblersSlotMachine.Instance.hasRedFreeGameStarted,
+                    green = GoldGobblersSlotMachine.Instance.hasGreenFreeGameStarted,
+                    blue = GoldGobblersSlotMachine.Instance.hasBlueFreeGameStarted
                 };
                 break;
             case "saharariches":
@@ -237,6 +271,7 @@ public class SlotSpinService : MonoBehaviour
 
                 Debug.Log("Cash Collect Request Body: " + JsonUtility.ToJson(requestData, true));
                 break;
+
             case "goldendragon":
                 // Create the request data
                 requestData = new
@@ -248,11 +283,11 @@ public class SlotSpinService : MonoBehaviour
                     isFreeSpin = GoldenDragonSlotMachine.Instance.isFreeGame,
                     isMiniGame = GoldenDragonSlotMachine.Instance.isMiniGame,
                 };
-
-                Debug.Log("Cash Collect Request Body: " + JsonUtility.ToJson(requestData, true));
                 break;
-                case "pandafortune":
+
+            case "pandafortune":
                 int fs;
+                string freeSpinType;
                 if (PandaFortuneSlotMachine.Instance.isFreeGame && !PandaFortuneSlotMachine.Instance.firstFreeSpin)
                 {
                     fs = PandaFortuneSlotMachine.Instance.frozenIndexThisSpin;
@@ -265,6 +300,15 @@ public class SlotSpinService : MonoBehaviour
                 {
                     fs = -1;
                 }
+                if (PandaFortuneSlotMachine.Instance.isFreeGame)
+                {
+                    if (PandaFortuneSlotMachine.Instance.isFreeGameTwo) freeSpinType = "second";
+                    else freeSpinType = "first";
+                }
+                else
+                {
+                    freeSpinType = "";
+                }
                 requestData = new
                 {
                     gameId = SceneManagement.currentGameID,
@@ -272,11 +316,12 @@ public class SlotSpinService : MonoBehaviour
                     betAmount = betAmount,
                     IsFreeSpin = PandaFortuneSlotMachine.Instance.isFreeGame,
                     freeSpinCurrentSpin = fs,
-                    freeSpinType = "first",
+                    freeSpinType = freeSpinType,
                     frozenColumns = PandaFortuneSlotMachine.Instance.frozenColumns.ToArray(),
                     isfreespintwo = PandaFortuneSlotMachine.Instance.isFreeGameTwo
                 };
                 break;
+
             case "flamecombo":
                 requestData = new
                 {
@@ -286,7 +331,25 @@ public class SlotSpinService : MonoBehaviour
                     IsFreeSpin = FlameComboSlotMachine.Instance.isFreeGame,
                 };
                 break;
+
             case "superbomb":
+                List<int> lockedReels = new List<int>();
+                if (SuperBombSlotMachine.Instance.lockedReels[1])
+                {
+                    lockedReels.Add(2);
+                }
+                if (SuperBombSlotMachine.Instance.lockedReels[2])
+                {
+                    lockedReels.Add(3);
+                }
+                if (SuperBombSlotMachine.Instance.lockedReels[3])
+                {
+                    lockedReels.Add(4);
+                }
+                if (!SuperBombSlotMachine.Instance.lockedReels[3] && !SuperBombSlotMachine.Instance.lockedReels[2] && !SuperBombSlotMachine.Instance.lockedReels[1])
+                {
+                    lockedReels.Clear();
+                }
                 requestData = new
                 {
                     userId = UserManager.Instance.UserId,
@@ -294,11 +357,10 @@ public class SlotSpinService : MonoBehaviour
                     requestId = currentRequestId,
                     gameId = SceneManagement.currentGameID,
                     IsFreeSpin = SuperBombSlotMachine.Instance.isFreeGame,
-                    isReelTwoStopped = SuperBombSlotMachine.Instance.lockedReels[1],
-                    isReelThreeStopped = SuperBombSlotMachine.Instance.lockedReels[2],
-                    isReelFourStopped = SuperBombSlotMachine.Instance.lockedReels[3],
+                    LockedReels = lockedReels.ToArray()
                 };
                 break;
+
             case "imperialdiamond":
                 requestData = new
                 {
@@ -307,6 +369,7 @@ public class SlotSpinService : MonoBehaviour
                     betAmount = betAmount,
                 };
                 break;
+
             case "cashmachine":
                 requestData = new
                 {
@@ -314,7 +377,151 @@ public class SlotSpinService : MonoBehaviour
                     requestId = currentRequestId,
                     betAmount = betAmount,
                     IsFreeSpin = CashMachineSlotMachine.Instance.isFreeGame,
-                    isHighStake = !CashMachineSlotMachine.Instance.isHighStake
+                    isHighStake = !CashMachineSlotMachine.Instance.isHighStake,
+                    LockedReels = CashMachineSlotMachine.Instance.LockedReels.ToArray()
+
+                };
+                break;
+
+            case "comeoncash":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = ComeOnCashSlotMachine.Instance.isFreeGame,
+                    isHighStake = ComeOnCashSlotMachine.Instance.isHighStake,
+                    LockedReels = ComeOnCashSlotMachine.Instance.LockedReels.ToArray(),
+                    BonusGame = ComeOnCashSlotMachine.Instance.isBonusGame,
+                    IsTakeOffer = ComeOnCashSlotMachine.Instance.isTakeOffer
+                };
+                break;
+
+            case "goldrushgus":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = GoldRushGusSlotMachine.Instance.isFreeGame,
+                    freeSpinMultiplier = GoldRushGusSlotMachine.Instance.freeSpinMultiplier,
+                    respinReels = GoldRushGusSlotMachine.Instance.reSpinReels,
+                };
+                break;
+
+             case "cashvault":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = CashVaultSlotMachine.Instance.isFreeGame,
+                };
+                break;
+
+            case "stickypiggy":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = StickyPiggySlotMachine.Instance.isFreeGame,
+                    //stickyPiggyWilds = new List<string>()
+                };
+                break;
+            case "irishpotluck":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = IrishPotLuckSlotMachine.Instance.isFreeGame,
+                };
+                break;
+            case "wildxreel":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                };
+                break;
+            case "wildxtrio":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                };
+                break;
+            case "redhottripple":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = RedHotTrippleSlotMachine.Instance.isFreeGame,
+                };
+                break;
+
+            case "stinkinrich":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    betAmount = betAmount,
+                    requestId = currentRequestId,
+                    IsFreeSpin = StinkinRichSlotMachine.Instance.isFreeGame
+                };
+                break;
+            case "goldenwheel":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = GoldenWheelSlotMachine.Instance.isFreeGame,
+                    isHighStake = GoldenWheelSlotMachine.Instance.isHighStake
+                };
+                break;
+            case "lifeofluxury":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = LifeOfLuxurySlotMachine.Instance.isFreeGame,
+                    freeSpinState = new FreeSpinState
+                    {
+                        remainingSpins = LifeOfLuxurySlotMachine.Instance.remainingFreeSpins,
+                        lineMultiplier = LifeOfLuxurySlotMachine.Instance.freeSpinLineMultiplier
+                    }
+                };
+                break;
+            case "invadersplanetmoolah":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = InvadersPlanetMoolahSlotMachine.Instance.isFreeGame,
+                };
+                break;
+            case "wildbuffalo":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = WildBuffaloSlotMachine.Instance.isFreeGame,
+                };
+                break;
+            case "richlittlepiggies":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = RichLittlePiggiesSlotMachine.Instance.isFreeGame,
                 };
                 break;
             default:
@@ -341,7 +548,7 @@ public class SlotSpinService : MonoBehaviour
 
         ApiEndpoints.slotGameName = SceneManagement.currentGameName;
 
-        Debug.Log("Game Name: " + ApiEndpoints.slotGameName);
+        //Debug.Log("Game Name: " + ApiEndpoints.slotGameName);
         //using (UnityWebRequest www = new UnityWebRequest(ApiEndpoints.slotGameSpin, "POST"))
 
         string spinApiUrl;
@@ -362,17 +569,17 @@ public class SlotSpinService : MonoBehaviour
             spinApiUrl = ApiEndpoints.slotGameSpin;
         }
 
-        if (isSaharaRiches)
+        if (isNewSlotGame)
         {
-            spinApiUrl = ApiEndpoints.saharaRichesTest;
+            spinApiUrl = ApiEndpoints.newGameTest;
         }
         using (UnityWebRequest www = new UnityWebRequest(spinApiUrl, "POST"))
         {
             //Debug.Log("📤 Starting Slot Spin API Call...");
-            //Debug.Log("📡 Endpoint: " + ApiEndpoints.slotGameSpin);
+            Debug.Log("📡 Endpoint: " + ApiEndpoints.slotGameSpin);
             //Debug.Log("🔑 Current AuthToken: " + ApiEndpoints.AuthToken);
             Debug.Log("📦 Nasir_ Request Body: " + jsonData);
-            Debug.Log("🎯 Bet Amount: " + betAmount);
+            //Debug.Log("🎯 Bet Amount: " + betAmount);
 
             byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
             www.uploadHandler = new UploadHandlerRaw(bodyRaw);
@@ -411,9 +618,9 @@ public class SlotSpinService : MonoBehaviour
 
             string responseText = www.downloadHandler.text;
             SpinResult parsed = JsonUtility.FromJson<SpinResult>(responseText);
-
-            Debug.Log("✅ Response Received 1 : " + parsed);
-            Debug.Log("✅ New Balance : " + parsed.newBalance);
+            newBalance = parsed.newBalance;
+            //Debug.Log("✅ Response Received 1 : " + parsed);
+            //Debug.Log("✅ New Balance : " + parsed.newBalance);
             Debug.Log("✅ Nasir_ Response Received 3 : " + responseText);
 
             try
@@ -425,9 +632,25 @@ public class SlotSpinService : MonoBehaviour
                     CasinoUIManager.Instance.ShowErrorCanvas(1, "Empty server response");
                     yield break;
                 }
+                BaseSpinResult spinResult;
+                switch (sceneName.ToLowerInvariant())
+                {
+                    case "zombieparadise":
+                        spinResult = ParseResponseZombieParadise(responseText);
+                        break;
 
-                BaseSpinResult spinResult = sceneName.Equals("zombieparadise") ? ParseResponseZombieParadise(responseText) : ParseResponseNormal(responseText);
+                    case "goldgobblers":
+                        spinResult = ParseResponseGoldGobblers(responseText);
+                        break;
 
+                    case "cashvault":
+                        spinResult = ParseResponseCashVault(responseText);
+                        break;
+
+                    default:
+                        spinResult = ParseResponseNormal(responseText);
+                        break;
+                }
                 if (spinResult == null)
                 {
                     AddCurrentBetCoinIntoUserCoin();
@@ -451,19 +674,13 @@ public class SlotSpinService : MonoBehaviour
                     switch (sceneName)
                     {
                         case "zombieparadise":
-                            // no reels in ZombieParadiseSpinResult
                             break;
-
-                        //case "biggerbassbonanza":
-                        //    if (spinResult is BiggerBassBonanzaSpinResult normalSpin)
-                        //    {
-                        //        currentSlotMachine.spinSymbolMatrix = normalSpin.reels;
-                        //    }
-                        //    break;
+                        case "cashvault":
+                            break;
 
                         default:
                             if (spinResult is SpinResult normalSpin)
-                            {
+                            {                                                                                 
                                 currentSlotMachine.spinSymbolMatrix = normalSpin.reels;
                             }
                             break;
@@ -487,96 +704,24 @@ public class SlotSpinService : MonoBehaviour
             }
         }
     }
-
-    private void AddCurrentBetCoinIntoUserCoin()
+    [System.Serializable]
+    public class FreeSpinState
+    {
+        public int remainingSpins;
+        public int lineMultiplier;
+    }
+    public void AddCurrentBetCoinIntoUserCoin()
     {
         string gameName = SceneManagement.currentGameName;
 
-        if (currentSlotMachine.isFreeGame)
+        if (!gameName.Contains("headsntails"))
         {
-            Debug.Log("Network Error: Free Spin Reverted");
-            return;
+            if (currentSlotMachine.isFreeGame)
+            {
+                Debug.Log("Network Error: Free Spin Reverted");
+                return;
+            }
         }
-
-        /* switch (gameName)
-         {
-             case "cleopatra":
-                 if (currentSlotMachine.isFreeGame)
-                 {
-                     Debug.Log("Network Error: Free Spin Reverted");
-                     return;
-                 }
-                 break;
-             case "crazy7":
-                 if (CrazySevenSlotMachine.Instance.isFreeGame)
-                 {
-                     Debug.Log("Network Error: Free Spin Reverted");
-                     return;
-                 }
-                 break;
-             case "monkeymadness":
-                 break;
-             case "atomicmeltdown":
-                 if (AtomicMeltdownSlotMachine.Instance.isFreeGame)
-                 {
-                     Debug.Log("Network Error: Free Spin Reverted");
-                     return;
-                 }
-                 break;
-             case "tentimeswins":
-                 break;
-             case "quickhitvolcano":
-                 if (QuickHitVolcanoSlotMachine.Instance.isFreeGame)
-                 {
-                     Debug.Log("Network Error: Free Spin Reverted");
-                     return;
-                 }
-                 break;
-             case "fruitslots":
-                 if (FruitSlotMachine.Instance.isFreeGame)
-                 {
-                     Debug.Log("Network Error: Free Spin Reverted");
-                     return;
-                 }
-                 break;
-             case "thegreenmachinedeluxe":
-                 if (TheGreenMachineDeluxeSlotMachine.Instance.isFreeGame)
-                 {
-                     Debug.Log("Network Error: Free Spin Reverted");
-                     return;
-                 }
-                 break;
-             case "piratesofthecaribbean":
-                 if (PiratesOfTheCaribbeanSlotMachine.Instance.isFreeGame)
-                 {
-                     Debug.Log("Network Error: Free Spin Reverted");
-                     return;
-                 }
-                 break;
-             case "fruitparadise":
-                 if (FruitParadiseSlotMachine.Instance.isFreeGame)
-                 {
-                     Debug.Log("Network Error: Free Spin Reverted");
-                     return;
-                 }
-                 break;
-             case "doublejackpotbullseye":
-                 if (DoubleJackpotBullseyeSlotMachine.Instance.isFreeGame)
-                 {
-                     Debug.Log("Network Error: Free Spin Reverted");
-                     return;
-                 }
-                 break;
-             case "saharariches":
-                 if (SaharaRichesSlotMachine.Instance.isFreeGame)
-                 {
-                     Debug.Log("Network Error: Free Spin Reverted");
-                     return;
-                 }
-                 break;
-             default:
-                 break;
-         }*/
 
         var userManager = UserManager.Instance;
         float coin = userManager.currentBetAmount + userManager.Coins;
@@ -593,5 +738,13 @@ public class SlotSpinService : MonoBehaviour
     private ZombieParadiseSpinResult ParseResponseZombieParadise(string responseText)
     {
         return JsonConvert.DeserializeObject<ZombieParadiseSpinResult>(responseText);
+    }
+    private GoldGobblersSpinResult ParseResponseGoldGobblers(string responseText)
+    {
+        return JsonConvert.DeserializeObject<GoldGobblersSpinResult>(responseText);
+    }
+    private CashVaultSpinResult ParseResponseCashVault(string responseText)
+    {
+        return JsonConvert.DeserializeObject<CashVaultSpinResult>(responseText);
     }
 }

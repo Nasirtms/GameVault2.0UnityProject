@@ -152,7 +152,7 @@ public class DoubleJackpotBullseyeReelScript : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
+                //Debug.LogWarning($"⚠️ No slot resource found for ID: {symbolData.id}");
             }
         }
 
@@ -258,7 +258,7 @@ public class DoubleJackpotBullseyeReelScript : MonoBehaviour
             slots[0].SetType(topSlot.Value);
             //slots[slots.Count - 1].SetType(topSlot.Value);
 
-            Debug.Log("Reel " + this._index + " Clamped Down");
+            //Debug.Log("Reel " + this._index + " Clamped Down");
         }
         DoubleJackpotBullseyeUIManager.Instance.PlaySound("ReelStop");
         OnSpinComplete?.Invoke(this._index);

@@ -50,10 +50,6 @@ public class TenTimesWinsSoundManager : MonoBehaviour
             musicSource.loop = true;
             musicSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
     }
 
 
@@ -72,10 +68,6 @@ public class TenTimesWinsSoundManager : MonoBehaviour
         {
             musicSource.clip = sound.audioClip;
             musicSource.Stop();
-        }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
     public void PlayReelStopSFX(string soundName)
@@ -108,14 +100,9 @@ public class TenTimesWinsSoundManager : MonoBehaviour
         var sound = soundData.GetSound(soundName);
         if (sound != null)
         {
-            Debug.Log("sound found");
             sfxSource.volume = sound.volume;
             sfxSource.pitch = sound.pitch;
             sfxSource.PlayOneShot(sound.audioClip);
-        }
-        else
-        {
-            Debug.LogWarning($"SFX not found.");
         }
 
     }

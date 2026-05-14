@@ -35,8 +35,8 @@ public class QuickHitVolcanoSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     [HideInInspector] public bool isSlotAnimationCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -45,7 +45,7 @@ public class QuickHitVolcanoSlotMachine : BaseSlotMachine
     private bool isSettingResult;
 
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool isFreeGameReady;
     [HideInInspector] public bool extraFreeGame;
     [HideInInspector] public int freeSpinCount;
@@ -256,7 +256,7 @@ public class QuickHitVolcanoSlotMachine : BaseSlotMachine
                     quickHitCount++;
                 }
 
-                Debug.Log("Symbol ID: " + symbol.id);
+                //Debug.Log("Symbol ID: " + symbol.id);
             }
             spinSymbolMatrix.Add(symbols);
         }
@@ -283,7 +283,7 @@ public class QuickHitVolcanoSlotMachine : BaseSlotMachine
         StopAllCoroutines();
         QuickHitVolcanoPaylineController.Instance.StopPaylines();
         QuickHitVolcanoPaylineController.Instance.ClearPaylineData();
-
+        QuickHitVolcanoUIManager.Instance.PlaySpinMusic("Spin");
         // Reset Variables and Functions State
         extraFreeGame = false;
         isSettingResult = false;
@@ -345,30 +345,9 @@ public class QuickHitVolcanoSlotMachine : BaseSlotMachine
 
     #region Stop
 
-    //private void OnReelSpinComplete(int index)
-    //{
-    //    if (settings.spinSettings.endSpin == QuickHitVolcanoSpinType.Single && index == reels.Count - 1)
-    //    {
-    //        InSpin = false;
-    //    }
-    //    else if (settings.spinSettings.endSpin == QuickHitVolcanoSpinType.All)
-    //    {
-    //        InSpin = false;
-    //    }
-
-    //    if (index == reels.Count - 1 && !QuickHitVolcanoAutoSpinController.isAutoSpinning)
-    //    {
-    //        if (!isFreeGame)
-    //        {
-    //            QuickHitVolcanoUIManager.Instance.UpdateButtons("Default");
-    //        }
-    //        _firstAutoSpin = true;
-    //    }
-    //}
-
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -394,7 +373,7 @@ public class QuickHitVolcanoSlotMachine : BaseSlotMachine
             {
                 QuickHitVolcanoUIManager.Instance.UpdateButtons("Default");
             }
-
+            QuickHitVolcanoUIManager.Instance.StopSpinMusic("Spin");
             isSpinAgain = true;
             yield break;
         }
@@ -466,16 +445,8 @@ public class QuickHitVolcanoSlotMachine : BaseSlotMachine
             StopButtonPressed();
 
         QuickHitVolcanoUIManager.Instance.SetStopInteractable(false);
-
+        QuickHitVolcanoUIManager.Instance.StopSpinMusic("Spin");
         ProcessSpinResult();
-
-        //InSpin = false;
-        //isSpinAgain = true;
-
-        //if (!QuickHitVolcanoAutoSpinController.isAutoSpinning)
-        //{
-        //    QuickHitVolcanoUIManager.Instance.UpdateButtons("Spin Stop");
-        //}
     }
     [Header("Forced Prize")]
     public bool forcedWin;
@@ -484,7 +455,7 @@ public class QuickHitVolcanoSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
+            //Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -509,10 +480,10 @@ public class QuickHitVolcanoSlotMachine : BaseSlotMachine
             float betAmount = QuickHitVolcanoUIManager.Instance.CurrentBet();
 
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
 
-        Debug.Log("Quick Hit Count: " + quickHitCount);
+        //Debug.Log("Quick Hit Count: " + quickHitCount);
 
         if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || scatterCount >= 3 || quickHitCount >= 3)
         {
@@ -573,7 +544,7 @@ public class QuickHitVolcanoSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.resourcesList == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
+            //Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

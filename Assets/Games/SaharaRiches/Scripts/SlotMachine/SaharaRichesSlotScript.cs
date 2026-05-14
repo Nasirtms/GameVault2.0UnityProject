@@ -9,11 +9,10 @@ using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 public class SaharaRichesSlotScript : MonoBehaviour
 {
-    public int reelIndex;
-    public int slotIndex;
-
     #region Variables
 
+    public int reelIndex;
+    public int slotIndex;
     // Slot Resource
     [HideInInspector] public SaharaRichesSlotType slotType;
     [HideInInspector] public SaharaRichesSlotResource currentResource;
@@ -188,7 +187,6 @@ public class SaharaRichesSlotScript : MonoBehaviour
     public void MoveBox(Vector3 targetPosition)
     {
         Vector3 movePos = transform.InverseTransformPoint(targetPosition);
-        Debug.Log("movePos" + movePos);
         StartCoroutine(MoveAndResetBox(movePos));
     }
 
@@ -225,7 +223,6 @@ public class SaharaRichesSlotScript : MonoBehaviour
     {
         Vector3 originalPosition = PriceBox.transform.localPosition;
         Vector3 originalScale = PriceBox.transform.localScale;
-        Debug.Log("originalPosition PriceBox : " + originalPosition);
 
         PriceBox.SetActive(true);
 

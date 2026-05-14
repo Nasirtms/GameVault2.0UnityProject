@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dab8e21461a69c4490abea5c459145a, type: 3}
+  m_Name: WildXTrio
+  m_EditorClassIdentifier: 
+  slotResources:
+  - slotType: 0
+    slotAnimationBool: 
+    slotTypeIndex: 0
+  - slotType: 1
+    slotAnimationBool: seven
+    slotTypeIndex: 1
+  - slotType: 2
+    slotAnimationBool: singlebar
+    slotTypeIndex: 2
+  - slotType: 3
+    slotAnimationBool: doublebar
+    slotTypeIndex: 3
+  - slotType: 4
+    slotAnimationBool: tripplebar
+    slotTypeIndex: 4
+  - slotType: 5
+    slotAnimationBool: jackpot
+    slotTypeIndex: 5
+  - slotType: 6
+    slotAnimationBool: wildx1
+    slotTypeIndex: 6
+  - slotType: 7
+    slotAnimationBool: wildx3
+    slotTypeIndex: 7
+  - slotType: 8
+    slotAnimationBool: wildx6
+    slotTypeIndex: 8
+  - slotType: 9
+    slotAnimationBool: wildx9
+    slotTypeIndex: 9
+  soundItems:
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: d694f0662f4e8434d88413e66b45dc20, type: 3}
+    volume: 0.5
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: 58a1fa49c450c65469ba34e4c4868c89, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Increase
+    audioClip: {fileID: 8300000, guid: 857441640199305498a8db1c8edde09b, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Decrease
+    audioClip: {fileID: 8300000, guid: 857441640199305498a8db1c8edde09b, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: bd8653b8dcc8e434793ba8dba7309b3d, type: 3}
+    volume: 0.6
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: 2dfd9a7dc88086c48acf447068432a28, type: 3}
+    volume: 0.75
+    pitch: 1
+  spinSettings:
+    startSpin: 0
+    endSpin: 1
+    spinDirection: 0
+    SpinSpeed: 40
+    ReelStopDelay: 0.1
+    ReelStartDelay: 0.1
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    spinClampFrequency: 0.05
+    SpinClampStrength: 5
+    WindUpAmount: 0.1
+    WindUpDuration: 0.2
+    ClampDuration: 2
+  slotSettings:
+    MoveSpeed: 10
+    TopYPosition: 0
+    BottomYPosition: -0.087
+    MinSpinDuration: 1.5
+    MaxSpinDuration: 2.5
+    SymbolScaleX: 1
+    SymbolScaleY: 1

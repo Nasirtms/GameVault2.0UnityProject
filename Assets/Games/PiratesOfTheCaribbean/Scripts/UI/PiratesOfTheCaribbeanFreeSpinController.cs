@@ -14,7 +14,20 @@ public class PiratesOfTheCaribbeanFreeSpinController : MonoBehaviour
     private int freeSpinDone = 0;
     private bool isFreeGame = false;
     private bool firstSpin;
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
+    #endregion
 
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
     #endregion
 
     #region Public References
@@ -23,11 +36,12 @@ public class PiratesOfTheCaribbeanFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         freeSpinDone = 0;
 
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
 
     public void ResetFreeSpins()
@@ -73,7 +87,7 @@ public class PiratesOfTheCaribbeanFreeSpinController : MonoBehaviour
             {
                 yield return new WaitForSeconds(delayBetweenSpins); // optional delay between spins
             }
-
+            if (cancelRequested) yield break;
             float betAmount = PiratesOfTheCaribbeanUIManager.Instance.CurrentBet();
             SlotSpinService.Instance.Spin(betAmount);
 
@@ -82,7 +96,7 @@ public class PiratesOfTheCaribbeanFreeSpinController : MonoBehaviour
             freeSpinDone++;
 
             yield return new WaitUntil(() => PiratesOfTheCaribbeanSlotMachine.Instance.isSpinAgain);
-
+            if (cancelRequested) yield break;
             if (PiratesOfTheCaribbeanSlotMachine.Instance.currentSpinResult != null)
             {
                 if (PiratesOfTheCaribbeanSlotMachine.Instance.GetWinAmount() > 0)
@@ -105,6 +119,18 @@ public class PiratesOfTheCaribbeanFreeSpinController : MonoBehaviour
 
         PiratesOfTheCaribbeanFreeGameTransitionController.Instance.EndFreeSpinTransition();
     }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
 
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        PiratesOfTheCaribbeanUIManager.Instance.UpdateButtons("Free Spin End");
+    }
     #endregion
 }

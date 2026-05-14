@@ -58,14 +58,26 @@ MonoBehaviour:
   - slotType: 13
     slotAnimationBool: FreeGameWild
     slotTypeIndex: 14
-  soundItems: []
+  soundItems:
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: 714fe78909798f141bc4e569e9aa2377, type: 3}
+    volume: 0.5
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: c5c6a72218c418d4181f05e01b3d2028, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Bet
+    audioClip: {fileID: 8300000, guid: a21ee7dd229762447bb262447c5449d4, type: 3}
+    volume: 1
+    pitch: 1
   spinSettings:
     startSpin: 1
     endSpin: 1
     spinDirection: 0
     SpinSpeed: 30
     ReelStopDelay: 0.2
-    ReelStartDelay: 0.1
+    ReelStartDelay: 0.07
     SlowDownDuration: 0.5
     ClampToTopPosition: 1
     spinClampFrequency: 0.05

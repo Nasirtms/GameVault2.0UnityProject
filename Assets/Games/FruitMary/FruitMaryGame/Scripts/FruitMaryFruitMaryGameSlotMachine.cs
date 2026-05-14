@@ -98,7 +98,7 @@ public class FruitMaryFruitMaryGameSlotMachine : MonoBehaviour
 
         FruitMaryUIManager.Instance.SetStopInteractable(true);
 
-        Debug.Log($"✅ Loaded {spinSymbolMatrix.Count} reels from spin result.");
+        //Debug.Log($"✅ Loaded {spinSymbolMatrix.Count} reels from spin result.");
     }
 
     #endregion
@@ -116,7 +116,7 @@ public class FruitMaryFruitMaryGameSlotMachine : MonoBehaviour
         InSpin = true;
         horizontalLayout.enabled = false;
 
-        FruitMaryFruitMaryGameManager.Instance.DcreaseFreeSpinCount();
+        FruitMaryFruitMaryGameManager.Instance.DecreaseFreeSpinCount();
 
         _acceleration = settings.spinSettings.useSameAcceleration
             ? FruitMaryGameExtension.GetRandomValue(settings.spinSettings.acceleration)
@@ -176,17 +176,13 @@ public class FruitMaryFruitMaryGameSlotMachine : MonoBehaviour
         if (InSpin == false) { return; }
         if (currentSpinResult == null || currentSpinResult.reels == null || currentSpinResult.reels.Count == 0)
         {
-            Debug.Log("StopReel : Stop 1 ");
+            //Debug.Log("StopReel : Stop 1 ");
             InSpin = false;
             foreach (var reel in reels)
             {
                 reel.ForceStop();
             }
             UpdateMatrix();
-            if (!FruitMaryAutoSpinController.isAutoSpinning)
-            {
-                //FruitMaryUIManager.Instance.SetSpinInProgress(false);
-            }
             return;
         }
 
@@ -215,7 +211,7 @@ public class FruitMaryFruitMaryGameSlotMachine : MonoBehaviour
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
+            //Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -227,13 +223,13 @@ public class FruitMaryFruitMaryGameSlotMachine : MonoBehaviour
 
     #endregion
 
-    #region Helper Functions
+   #region Helper Functions
 
     public static FruitMaryFruitMaryGameSlotResource? GetResourceById(string id)
     {
         if (Instance.settings == null || Instance.settings.slotResources == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
+            //Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

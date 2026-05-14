@@ -38,8 +38,8 @@ public class FruitParadiseSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     [HideInInspector] public bool isPaylineCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -47,7 +47,7 @@ public class FruitParadiseSlotMachine : BaseSlotMachine
     private bool isSettingResult;
 
     //Free Spin 
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool isFreeGameReady;
     [HideInInspector] public int freeSpinCount;
     [HideInInspector] public float freeSpinWinAmount;
@@ -206,7 +206,6 @@ public class FruitParadiseSlotMachine : BaseSlotMachine
         }
        
         Debug.Log("📩 SpinResult (parsed):\n" + JsonConvert.SerializeObject(currentSpinResult, Formatting.Indented));
-        Debug.Log($" New Balance : {currentSpinResult}");
         spinSymbolMatrix.Clear();
 
         foreach (var reelList in currentSpinResult.reels)
@@ -238,7 +237,7 @@ public class FruitParadiseSlotMachine : BaseSlotMachine
         FruitParadiseUIManager.Instance.SetStopInteractable(false);
 
         //FruitParadiseUIManager.Instance.winAmount.text = "0.00";
-
+        FruitParadiseUIManager.Instance.PlaySpinMusic("FruitParadise_Spin"); 
         fruitParadiseAutoSpinController.cancelRequested = false;
         freeSpinCount = 0;
         scatterCount = 0;
@@ -321,7 +320,7 @@ public class FruitParadiseSlotMachine : BaseSlotMachine
     //}
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         while ((currentSpinResult == null || currentSpinResult.reels == null || currentSpinResult.reels.Count == 0) && elapsed < timeout)
@@ -332,6 +331,7 @@ public class FruitParadiseSlotMachine : BaseSlotMachine
 
         if (currentSpinResult == null || currentSpinResult.reels == null || currentSpinResult.reels.Count == 0)
         {
+            CasinoUIManager.Instance.ShowErrorCanvas(1, "Network Error");
             StopWithResult();
             if (isFreeGame)
             {
@@ -343,9 +343,9 @@ public class FruitParadiseSlotMachine : BaseSlotMachine
             }
             else
             {
-                FruitParadiseUIManager.Instance.UpdateButtons("Default");
+                FruitParadiseUIManager.Instance.UpdateButtons("Stop");
             }
-
+            FruitParadiseUIManager.Instance.StopSpinMusic("FruitParadise_Spin");
             isSpinAgain = true;
             yield break;
         }
@@ -405,6 +405,7 @@ public class FruitParadiseSlotMachine : BaseSlotMachine
         if (isStopBtnPressed)
             StopButtonPressed();
 
+        FruitParadiseUIManager.Instance.StopSpinMusic("FruitParadise_Spin");
         ProcessSpinResult();
 
         InSpin = false;
@@ -419,7 +420,6 @@ public class FruitParadiseSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -442,7 +442,7 @@ public class FruitParadiseSlotMachine : BaseSlotMachine
         {
             float betAmount = FruitParadiseUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
 
         if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0 || scatterCount >= 3)
@@ -478,7 +478,6 @@ public class FruitParadiseSlotMachine : BaseSlotMachine
             FruitParadiseUIManager.Instance.UpdateButtons("Free Spin");
         }
     }
-
 
     public void UpdateGameCoin()
     {

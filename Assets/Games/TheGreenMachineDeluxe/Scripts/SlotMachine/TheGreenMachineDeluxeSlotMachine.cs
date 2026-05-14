@@ -1,13 +1,11 @@
 ﻿using Newtonsoft.Json;
 using Sirenix.OdinInspector;
-//using Sirenix.OdinInspector.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static TheGreenMachineDeluxeSlotScript;
 
 public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
 {
@@ -43,8 +41,8 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     [HideInInspector] public bool isSlotAnimationCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -53,7 +51,7 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
     private bool isSettingResult;
 
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool isFreeGameReady;
     [HideInInspector] public int freeSpinCount;
     [HideInInspector] public float freeSpinWinAmount;
@@ -94,11 +92,7 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
 
         // Update Settings
         UpdateSettings();
-
-        // Initialize Variables
         InSpin = false;
-        //isFreeGameReady = false;
-        //isFreeGame = false;
 
         InitializeResourceProbabilities();
     }
@@ -123,8 +117,6 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
         {
             _timeCounter += Time.deltaTime;
         }
-
-
     }
 
     private void OnDestroy()
@@ -218,19 +210,20 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
             currentSpinResult = normalSpin;
         }
 
-        if (currentSpinResult.freeSpinCount > 0 || fakefreespins > 0)
+        if (currentSpinResult.isFreeSpin)
         {
             if (!isFreeGame)
                 isFreeGameReady = true;
 
             freeSpinCount = currentSpinResult.freeSpinCount;
-            if (fakefreespins > 0)
-            {
-                freeSpinCount = fakefreespins;
-            }
-            //TheGreenMachineDeluxeUIManager.Instance.freeGameSpinCount += freeSpinCount;
         }
+        if (fakefreespins > 0)
+        {
+            if (!isFreeGame)
+                isFreeGameReady = true;
 
+            freeSpinCount = fakefreespins;
+        }
         Debug.Log("SpinResult (parsed):\n" + JsonConvert.SerializeObject(currentSpinResult, Formatting.Indented));
 
         spinSymbolMatrix.Clear();
@@ -267,8 +260,11 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
             freeSpinWinAmount = 0;
         }
 
-
-        //SlotSpinService.Instance.isCoinUpdaterOrNot = false;
+        if (TheGreenMachineDeluxeUIManager.Instance.winCoroutine != null)
+        {
+            StopCoroutine(TheGreenMachineDeluxeUIManager.Instance.winCoroutine);
+        }
+        TheGreenMachineDeluxeUIManager.Instance.PlaySpinMusic("ReelSpin");
 
         // Reset Variables and Functions State
         winAmount = 0;
@@ -282,7 +278,7 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
         horizontalLayout.enabled = false;
         _reelsCount = reels.Count;
         ClearPaylines();
-
+        TheGreenMachineDeluxeUIManager.Instance.winAnimationCompleted = true;
         TheGreenMachineDeluxeUIManager.Instance.SetStopInteractable(false);
 
         // Getting Spin Settings
@@ -343,18 +339,12 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
         if (index == reels.Count - 1 && !TheGreenMachineDeluxeAutoSpinController.isAutoSpinning && !isFreeGame)
         {
             TheGreenMachineDeluxeUIManager.Instance.UpdateButtons("Single Stop");
-            //TheGreenMachineDeluxeUIManager.Instance.StopMusic("ReelSpin");
-            if (!TheGreenMachineDeluxeAutoSpinController.isAutoSpinning)
-            {
-                TheGreenMachineDeluxeUIManager.Instance.StopMusic("ReelSpin");
-                //TheGreenMachineDeluxeSoundManager.Instance.StopMusic("ReelSpin");
-            }
         }
     }
 
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -380,7 +370,7 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
             {
                 TheGreenMachineDeluxeUIManager.Instance.UpdateButtons("Single Stop");
             }
-
+            TheGreenMachineDeluxeUIManager.Instance.StopSpinMusic("ReelSpin");
             isSpinAgain = true;
             yield break;
         }
@@ -452,16 +442,9 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
             StopButtonPressed();
 
         TheGreenMachineDeluxeUIManager.Instance.SetStopInteractable(false);
-
+        TheGreenMachineDeluxeUIManager.Instance.StopSpinMusic("ReelSpin");
         ProcessSpinResult();
 
-        //InSpin = false;
-
-        //if (!TheGreenMachineDeluxeAutoSpinController.isAutoSpinning && !isFreeGame)
-        //{
-        //    TheGreenMachineDeluxeUIManager.Instance.UpdateButtons("Single Stop");
-        //    //TheGreenMachineDeluxeSoundManager.Instance.StopMusic("Spin1");
-        //}
     }
     [Header("Forced Prize")]
     public bool forcedWin;
@@ -471,7 +454,6 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -493,7 +475,8 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
         else if (winAmount > 0)
         {
             float betAmount = TheGreenMachineDeluxeUIManager.Instance.CurrentBet();
-            Invoke(nameof(UpdateGameCoin), 1f);
+            TheGreenMachineDeluxeUIManager.Instance.UpdateWinAmount(winAmount, false);
+            UpdateGameCoin();
         }
 
         if (winAmount > 0)
@@ -513,7 +496,7 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
             TheGreenMachineDeluxeUIManager.Instance.UpdateButtons("Single Stop");
         }
 
-        if (freeSpinCount > 0 && !isFreeGame)
+        if (isFreeGameReady)
         {
             TheGreenMachineDeluxeUIManager.Instance.UpdateButtons("Free Game Transition");
         }
@@ -525,7 +508,8 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
     #endregion
 
     #region Slot Animation
-
+    public bool forcedAnimation;
+    public int forcedWinIndex;
     private void PlaySlotAnimations()
     {
         if (reels == null || reels.Count == 0)
@@ -551,34 +535,52 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
                 if (slot == null) continue;
 
                 slot.StartAnimation();
-                //if (i == 2)
-                //{
-                //    slot.type = TheGreenMachineDeluxeSlotType.MEGA; 
-                //}
-                switch (slot.type)
+
+                if (forcedAnimation)
                 {
-                    case TheGreenMachineDeluxeSlotType.MINI:
-                        ui?.PlayNiceWinAnimation(winAmount);
-                        break;
+                    slot.category = TheGreenMachineDeluxeSlotCategory.Jackpot;
+                    if (forcedWinIndex == 1) slot.type = TheGreenMachineDeluxeSlotType.MINI;
+                    else if (forcedWinIndex == 2) slot.type = TheGreenMachineDeluxeSlotType.MINOR;
+                    else if (forcedWinIndex == 3) slot.type = TheGreenMachineDeluxeSlotType.MAJOR;
+                    else if (forcedWinIndex == 4) slot.type = TheGreenMachineDeluxeSlotType.MEGA;
+                    else if (forcedWinIndex == 5) slot.type = TheGreenMachineDeluxeSlotType.GRAND;
+                }
 
-                    case TheGreenMachineDeluxeSlotType.MINOR:
-                        ui?.PlayBigWinAnimation(winAmount);
-                        break;
+                Debug.Log("LovKumar slot.type :  " + slot.type);
 
-                    case TheGreenMachineDeluxeSlotType.MAJOR:
-                        ui?.PlayMegaWinAnimation(winAmount);
-                        break;
+                if (slot.category == TheGreenMachineDeluxeSlotCategory.Jackpot) 
+                {
+                    Debug.Log("LovKumar slot.category : " + slot.category);
+                    switch (slot.type)
+                    {
+                        case TheGreenMachineDeluxeSlotType.MINI:
+                            Debug.Log("LovKumar case slot.type :  " + slot.type);
+                            ui?.PlayNiceWinAnimation(winAmount);
+                            break;
 
-                    case TheGreenMachineDeluxeSlotType.MEGA:
-                        ui?.PlaySuperWinAnimation(winAmount);
-                        break;
+                        case TheGreenMachineDeluxeSlotType.MINOR:
+                            Debug.Log("LovKumar case slot.type :  " + slot.type);
+                            ui?.PlayBigWinAnimation(winAmount);
+                            break;
 
-                    case TheGreenMachineDeluxeSlotType.GRAND:
-                        ui?.PlayJackpotWinAnimation(winAmount);
-                        break;
+                        case TheGreenMachineDeluxeSlotType.MAJOR:
+                            Debug.Log("LovKumar case slot.type :  " + slot.type);
+                            ui?.PlayMegaWinAnimation(winAmount);
+                            break;
 
-                    default:
-                        break;
+                        case TheGreenMachineDeluxeSlotType.MEGA:
+                            Debug.Log("LovKumar case slot.type :  " + slot.type);
+                            ui?.PlaySuperWinAnimation(winAmount);
+                            break;
+
+                        case TheGreenMachineDeluxeSlotType.GRAND:
+                            Debug.Log("LovKumar case slot.type :  " + slot.type);
+                            ui?.PlayJackpotWinAnimation(winAmount);
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
             }
         }
@@ -615,7 +617,7 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
         isSpinAgain = true;
         isSlotAnimationCompleted = true;
 
-        if (freeSpinCount > 0 || fakefreespins > 0 && !isFreeGame)
+        if ((freeSpinCount > 0 || fakefreespins > 0) && !isFreeGame)
         {
             firstFreeSpin = true;
             TheGreenMachineDeluxeUIManager.Instance.UpdateButtons("Free Game Transition");
@@ -675,7 +677,6 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.resourcesList == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 
@@ -735,11 +736,6 @@ public class TheGreenMachineDeluxeSlotMachine : BaseSlotMachine
     {
         return winAmount;
     }
-
-    //public void StopAllSlotAnimations()
-    //{
-    //    StopSlotAnimations();
-    //}
 
     #endregion
 }

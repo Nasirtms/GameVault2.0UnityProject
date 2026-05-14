@@ -18,6 +18,7 @@ public class WheelOfFortuneFreeGameTransitionController : MonoBehaviour
     private Vector2 spinWheelStartPos;
 
     private WheelOfFortuneFreeSpinController freeSpinController;
+    private bool transitionCompleted;
     #endregion
 
     #region Unity Methods
@@ -52,36 +53,30 @@ public class WheelOfFortuneFreeGameTransitionController : MonoBehaviour
     #endregion
 
     #region Game Transition
-
+    public Animator animator;
+    
     private IEnumerator StartFreeSpin()
     {
-        //yield return new WaitUntil(() => WheelOfFortuneUIManager.Instance.winAnimationCompleted);
-
-        yield return new WaitForSeconds(0.5f);
-
+        yield return new WaitForSeconds(1f);
+        freeSpinController.ResetWheelsToStart();
         WheelOfFortuneUIManager.Instance.StopTitleLoop();
         lookupImage.SetActive(true);
-
-        WheelOfFortunePaylineController.Instance.StopPaylineLoop();
-        WheelOfFortunePaylineController.Instance.ClearPaylineResults();
-
-        yield return new WaitForSeconds(0.5f);
+        animator = lookupImage.GetComponent<Animator>();
+        animator.enabled = true;
+        animator.SetBool("lookup", true);
+        WheelOfFortuneUIManager.Instance.PlaySound("Start");
+        yield return new WaitForSeconds(1f);
         AnimateTransitionDown();
 
         yield return new WaitForSeconds(1f);
-
         freeSpinController.StartFreeSpins();
     }
-
     private IEnumerator EndFreeSpin()
     {
-
         lookupImage.SetActive(false);
+        animator.SetBool("lookup", false);
+
         WheelOfFortuneUIManager.Instance.StartTitleLoop();
-
-        WheelOfFortunePaylineController.Instance.StopPaylineLoop();
-        WheelOfFortunePaylineController.Instance.ClearPaylineResults();
-
         yield return new WaitForSeconds(0.5f);
 
         if (WheelOfFortuneSlotMachine.Instance.freeSpinWinAmount > 0)
@@ -93,8 +88,12 @@ public class WheelOfFortuneFreeGameTransitionController : MonoBehaviour
             WheelOfFortuneUIManager.Instance.UpdateButtons("Default");
         }
         yield return new WaitUntil(() => WheelOfFortuneUIManager.Instance.winAnimationCompleted);
-        yield return new WaitForSeconds(2f);
+
         AnimateTransitionUp();
+        yield return new WaitUntil(() => transitionCompleted);
+
+        WheelOfFortuneUIManager.Instance.UpdateWinAmount(WheelOfFortuneSlotMachine.Instance.winAmount, true);
+        WheelOfFortuneSlotMachine.Instance.isFreeSpinRunning = false;
         WheelOfFortuneUIManager.Instance.UpdateButtons("Default");
     }
 
@@ -105,7 +104,7 @@ public class WheelOfFortuneFreeGameTransitionController : MonoBehaviour
             float freeGameWin = WheelOfFortuneSlotMachine.Instance.freeSpinWinAmount;
             float betAmount = WheelOfFortuneUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, WheelOfFortuneSlotMachine.Instance.currentSpinResult.newBalance);
-            Invoke(nameof(WheelOfFortuneSlotMachine.Instance.UpdateGameCoin), 1f);
+            //Invoke(nameof(WheelOfFortuneSlotMachine.Instance.UpdateGameCoin), 1f);
         }
     }
     private void AnimateTransitionDown()
@@ -124,6 +123,7 @@ public class WheelOfFortuneFreeGameTransitionController : MonoBehaviour
     }
     private void AnimateTransitionUp()
     {
+        transitionCompleted = false;
         Sequence seq = DOTween.Sequence();
 
         seq.Append(
@@ -135,6 +135,10 @@ public class WheelOfFortuneFreeGameTransitionController : MonoBehaviour
             spinWheel.DOAnchorPos(spinWheelStartPos, transitionDuration)
                      .SetEase(Ease.InOutSine)
         );
+        seq.OnComplete(() =>
+        {
+            transitionCompleted = true;
+        });
     }
     #endregion
 }

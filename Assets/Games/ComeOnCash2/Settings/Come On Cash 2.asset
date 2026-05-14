@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9604fa93865369f4ca7101e731aae8c7, type: 3}
+  m_Name: Come On Cash 2
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    icon: {fileID: -1851435169, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: 1429049237, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  - type: 1
+    icon: {fileID: 704163685, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: -1254400962, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  - type: 2
+    icon: {fileID: 1775239614, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: 978888515, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  - type: 5
+    icon: {fileID: 1672737804, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: 1443459631, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  - type: 4
+    icon: {fileID: -589358487, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: -766551680, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  - type: 3
+    icon: {fileID: 799575773, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: -1065725770, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  - type: 6
+    icon: {fileID: 794975417, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: 794975417, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  - type: 7
+    icon: {fileID: -2105373080, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: 1681267165, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  - type: 8
+    icon: {fileID: 1994491969, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: 1696059788, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  - type: 9
+    icon: {fileID: -1786108256, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: 1168883210, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  - type: 10
+    icon: {fileID: -1709433622, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: 1382722103, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  - type: 7
+    icon: {fileID: 2066980699, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+    paylineIcon: {fileID: 1672798370, guid: ae12f972b92c0b7448435da7e5497b0a, type: 3}
+  soundItems:
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: 53b187f5f0176844f999b53108093cd8, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Increase
+    audioClip: {fileID: 8300000, guid: 6dd729d9da623f7408a23ba08e2df8e7, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Decrease
+    audioClip: {fileID: 8300000, guid: 15e8087a4f11be4419b0c084c2390d96, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 598bc6fb86da9ba4daa0f5aef436f468, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: d849785d20ea52f4db522e19c6516adb, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Stop
+    audioClip: {fileID: 8300000, guid: c8671d49d317b5740a068ee1a01e15aa, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Play
+    audioClip: {fileID: 8300000, guid: 68257917b63040b4096cd44835668b82, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: d25ca9e558121be4f8f82c4960672ba5, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: 9ebd820afd29c264dbd10d16d202ec0f, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinPopup
+    audioClip: {fileID: 8300000, guid: a791fd4ef24cad24a8e1c085c57310a0, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinBackground
+    audioClip: {fileID: 8300000, guid: 5ff0ae3cf6265e04eae1dc4350a6184d, type: 3}
+    volume: 1
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.3, y: 0.3}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -200
+    bottomBoundary: -515
+    startSpeed: {x: 24, y: 28}
+    acceleration: {x: 1, y: 2}
+    speedRange: {x: 45, y: 50}
+  horizontalLayout: 388
+  verticalLayout: 106
+  paddingTop: -515
+  slotScale: 1

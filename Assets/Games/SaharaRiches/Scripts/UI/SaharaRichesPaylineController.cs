@@ -212,7 +212,6 @@ public class SaharaRichesPaylineController : MonoBehaviour
                 }
             }
         }
-
     }
 
     public void PaylineAnimationCompleted()
@@ -573,7 +572,8 @@ public class SaharaRichesPaylineEntry
         this.reelLimit = reelLimit;
         if (float.TryParse(winText, out float parsedValue))
         {
-            this.winText = parsedValue.ToString("F2");
+            float floored = Mathf.Floor(parsedValue * 100f) / 100f;
+            this.winText = floored.ToString("F2");
         }
         else
         {

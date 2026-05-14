@@ -117,7 +117,7 @@ public class FruitMarySlotScript : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"❌ Slot {gameObject.name} missing border reference!");
+            //Debug.LogWarning($"❌ Slot {gameObject.name} missing border reference!");
         }
     }
 

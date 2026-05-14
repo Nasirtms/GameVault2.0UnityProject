@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-
 using UnityEngine;
 
 public class BiggerBassBonanzaFreeSpinController : MonoBehaviour
@@ -16,6 +15,21 @@ public class BiggerBassBonanzaFreeSpinController : MonoBehaviour
     private bool isFreeGame = false;
     private bool firstSpin;
 
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
+    #endregion
+
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
+
     #endregion
 
     #region Public References
@@ -24,11 +38,12 @@ public class BiggerBassBonanzaFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         freeSpinDone = 0;
 
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
 
     public void ResetFreeSpins()
@@ -67,6 +82,7 @@ public class BiggerBassBonanzaFreeSpinController : MonoBehaviour
                 yield return new WaitForSeconds(delayBetweenSpins); // optional delay between spins
             }
 
+            if (cancelRequested) yield break;
             float betAmount = BiggerBassBonanzaUIManager.Instance.CurrentBet();
             SlotSpinService.Instance.Spin(betAmount);
 
@@ -74,8 +90,9 @@ public class BiggerBassBonanzaFreeSpinController : MonoBehaviour
 
             UpdateSpinCount();
 
-            yield return new WaitUntil(() => !BiggerBassBonanzaSlotMachine.Instance.inSpin);
+            yield return new WaitUntil(() => !BiggerBassBonanzaSlotMachine.Instance.InSpin);
 
+            if (cancelRequested) yield break;
             if (BiggerBassBonanzaSlotMachine.Instance.GetWinAmount() > 0)
             {
                 yield return new WaitUntil(() => BiggerBassBonanzaSlotMachine.Instance.isFishCollectionCompleted);
@@ -110,6 +127,18 @@ public class BiggerBassBonanzaFreeSpinController : MonoBehaviour
         
         isFreeGame = false;
     }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
 
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        BiggerBassBonanzaUIManager.Instance.UpdateButtons("Default");
+    }
     #endregion
 }

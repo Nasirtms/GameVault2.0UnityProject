@@ -22,15 +22,15 @@ public class BiggerBassBonanzaSlotMachine : BaseSlotMachine
     [ShowInInspector][ReadOnly] public BiggerBassBonanzaSpinResult currentSpinResult;
 
     // State Variables
-    [HideInInspector] public bool inSpin;
-    [HideInInspector] public bool isStopBtnPressed;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed;
     [HideInInspector] public bool isSlotAnimationCompleted;
     [HideInInspector] public bool isResultReceived;
     [HideInInspector] public bool firstFreeSpin;
     private bool applyingResult;
 
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool isFreeGameReady;
     [HideInInspector] public int freeSpinCount;
     [HideInInspector] public float freeSpinWinAmount;
@@ -76,7 +76,7 @@ public class BiggerBassBonanzaSlotMachine : BaseSlotMachine
 
     private void Start()
     {
-        inSpin = false;
+        InSpin = false;
         isStopBtnPressed = false;
 
         SpinResultController.Instance.OnSpinResultReceived += OnSpinResultReceived;
@@ -199,7 +199,7 @@ public class BiggerBassBonanzaSlotMachine : BaseSlotMachine
         scatterCount = 0;
         freeSpinCount = 0;
         currentSpinResult = null;
-        inSpin = true;
+        InSpin = true;
         applyingResult = false;
         isStopBtnPressed = false;
         isSlotAnimationCompleted = false;
@@ -271,7 +271,7 @@ public class BiggerBassBonanzaSlotMachine : BaseSlotMachine
 
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -312,10 +312,10 @@ public class BiggerBassBonanzaSlotMachine : BaseSlotMachine
 
     public void Stop()
     {
-        if (inSpin == false) { return; }
+        if (InSpin == false) { return; }
         if (currentSpinResult == null || currentSpinResult.reels == null || currentSpinResult.reels.Count == 0)
         {
-            inSpin = false;
+            InSpin = false;
             foreach (var reel in reels)
             {
                 isResultReceived = false;
@@ -366,7 +366,7 @@ public class BiggerBassBonanzaSlotMachine : BaseSlotMachine
                         break;
 
                     yield return new WaitForSeconds(settings.spinSettings.ReelStopDelay);
-
+                    BiggerBassBonanzaUIManager.Instance.PlaySound("ReelStop");
                     reels[i].ApplyFinalResult(i);
 
                     reels[i].StopSpin();
@@ -397,7 +397,7 @@ public class BiggerBassBonanzaSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
+            //Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -435,13 +435,12 @@ public class BiggerBassBonanzaSlotMachine : BaseSlotMachine
             firstFreeSpin = false;
             freeSpinWinAmount += winAmount;
             BiggerBassBonanzaUIManager.Instance.UpdateWinAmount(winAmount, true);
-            //Invoke(nameof(UpdateGameCoin), 1f);
         }
         else if (winAmount > 0)
         {
             float betAmount = BiggerBassBonanzaUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
 
         if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || scatterCount >= 3 || wildWorldPos.Count > 0)
@@ -465,7 +464,7 @@ public class BiggerBassBonanzaSlotMachine : BaseSlotMachine
             isSlotAnimationCompleted = true;
         }
 
-        inSpin = false;
+        InSpin = false;
         isStopBtnPressed = false;
 
         if (!BiggerBassBonanzaAutoSpinController.isAutoSpinning && !isFreeGame)
@@ -593,7 +592,7 @@ public class BiggerBassBonanzaSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.slotResources == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
+            //Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

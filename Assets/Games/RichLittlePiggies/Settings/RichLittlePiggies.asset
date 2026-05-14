@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a1d7d10a4c5f7a4cb37a9ff86333db2, type: 3}
+  m_Name: RichLittlePiggies
+  m_EditorClassIdentifier: 
+  slotResources:
+  - slotType: 0
+    slotAnimationBool: Wild
+    slotTypeIndex: 0
+  - slotType: 1
+    slotAnimationBool: PorkChop
+    slotTypeIndex: 1
+  - slotType: 2
+    slotAnimationBool: RichPig
+    slotTypeIndex: 2
+  - slotType: 3
+    slotAnimationBool: BluePiggy
+    slotTypeIndex: 3
+  - slotType: 4
+    slotAnimationBool: PiggyBank
+    slotTypeIndex: 4
+  - slotType: 5
+    slotAnimationBool: GoldBars
+    slotTypeIndex: 5
+  - slotType: 13
+    slotAnimationBool: RedCoin
+    slotTypeIndex: 6
+  - slotType: 12
+    slotAnimationBool: YellowCoin
+    slotTypeIndex: 7
+  - slotType: 11
+    slotAnimationBool: BlueCoin
+    slotTypeIndex: 8
+  - slotType: 6
+    slotAnimationBool: A
+    slotTypeIndex: 9
+  - slotType: 7
+    slotAnimationBool: K
+    slotTypeIndex: 10
+  - slotType: 8
+    slotAnimationBool: Q
+    slotTypeIndex: 11
+  - slotType: 9
+    slotAnimationBool: J
+    slotTypeIndex: 12
+  - slotType: 10
+    slotAnimationBool: Ten
+    slotTypeIndex: 13
+  soundItems: []
+  spinSettings:
+    startSpin: 0
+    endSpin: 1
+    spinDirection: 0
+    SpinSpeed: 30
+    ReelStopDelay: 0.5
+    ReelStartDelay: 0.75
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    spinClampFrequency: 0.05
+    SpinClampStrength: 0.2
+    WindUpAmount: 0.15
+    WindUpDuration: 0.4
+    ClampDuration: 0.5
+  slotSettings:
+    MoveSpeed: 5
+    TopYPosition: 0.3
+    BottomYPosition: -0.368
+    MinSpinDuration: 2.5
+    MaxSpinDuration: 3.5
+    SymbolScaleX: 1
+    SymbolScaleY: 1

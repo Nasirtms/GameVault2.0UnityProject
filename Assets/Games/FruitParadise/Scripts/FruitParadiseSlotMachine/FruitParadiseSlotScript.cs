@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using Sequence = DG.Tweening.Sequence;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,6 +20,8 @@ public class FruitParadiseSlotScript : MonoBehaviour
     private Tween colorTween;
     private Image sr;
     private Transform child;
+    private Tween scaleTween;
+    private Transform child0;
     private RectTransform _rectTransform;
     private FruitParadiseReelScript _parent;
 
@@ -153,19 +155,30 @@ public class FruitParadiseSlotScript : MonoBehaviour
 
         child.gameObject.SetActive(true);
 
+        if (child0 == null)
+        {
+            child0 = transform.GetChild(0);
+        }
+
         if (sr == null)
             sr = child.GetComponent<Image>();
 
         colorTween?.Kill();
+        scaleTween?.Kill();
 
+        // Reset scale before starting loop
+        child0.localScale = Vector3.one;
+
+        // 🔥 SCALE LOOP (pulse effect)
+        scaleTween = child0.DOScale(0.7f, 0.4f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+
+        // (your existing color tween untouched)
         float hue = 1f;
 
-        colorTween = DOTween.To(() => hue, x =>
-        {
-
-        },
-        1f, duration) // go from hue=0 → hue=1 (360° on color wheel)
-        .SetLoops(-1, LoopType.Restart);
+        colorTween = DOTween.To(() => hue, x => { }, 1f, duration)
+            .SetLoops(-1, LoopType.Restart);
     }
 
     public void StopAnimation()
@@ -173,11 +186,20 @@ public class FruitParadiseSlotScript : MonoBehaviour
         colorTween?.Kill();
         colorTween = null;
 
+        scaleTween?.Kill();
+        scaleTween = null;
+
         if (sr != null)
         {
             Color c = sr.color;
             c.a = 1f;
             sr.color = c;
+        }
+
+        if (child0 != null)
+        {
+            // 🔥 Smooth reset to scale = 1 (no snap)
+            child0.DOScale(1f, 0.15f).SetEase(Ease.OutQuad);
         }
 
         if (child != null)

@@ -65,9 +65,7 @@ public class UIManager_RPS : MonoBehaviour
     private int currentRuleIndex = 0;
     private void Start()
     {
-
         GameBetServices.Instance.SetActiveUI(this, BalanceText, UpdateCoins);
-
 
         OnToggleValueChanged(musicToggle.isOn);
         forceWinToggle.onValueChanged.AddListener(OnForceWinToggle);
@@ -105,6 +103,9 @@ public class UIManager_RPS : MonoBehaviour
         // start hidden
         cg.alpha = 0f;
         messageRoot.gameObject.SetActive(false);
+
+
+        ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
     }
     public void PlaySound(string soundName)
     {
@@ -266,7 +267,7 @@ public class UIManager_RPS : MonoBehaviour
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
     public void OnRulesButtonClicked()
     {

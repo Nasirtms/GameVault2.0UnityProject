@@ -7,6 +7,7 @@ public class SceneManagementViewer : MonoBehaviour
 
     [Header("Current Active Game")]
     [SerializeField] private SceneAccessType sceneAccessType;
+    [SerializeField] private BuildConfig buildConfig;
     [SerializeField] private string currentSceneName;
     [SerializeField] private string currentGameID;
 
@@ -73,6 +74,7 @@ public class SceneManagementViewer : MonoBehaviour
         ClearData();
 
         sceneAccessType = SceneManagement.sceneAccessType;
+        buildConfig = SceneManagement.buildConfig;
         currentSceneName = SceneManagement.currentGameName;
         currentGameID = SceneManagement.currentGameID;
 

@@ -35,8 +35,8 @@ public class MonkeyMadnessSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     [HideInInspector] public bool isPaylineCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -311,7 +311,7 @@ public class MonkeyMadnessSlotMachine : BaseSlotMachine
 
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -393,7 +393,6 @@ public class MonkeyMadnessSlotMachine : BaseSlotMachine
         {
             if (isStopBtnPressed)
             {
-                Debug.Log("StoppButtonPressed");
                 break;
             }
 
@@ -404,18 +403,9 @@ public class MonkeyMadnessSlotMachine : BaseSlotMachine
         if (isStopBtnPressed)
             StopButtonPressed();
 
-        MonkeyMadnessUIManager.Instance.SetStopInteractable(false);
+        //MonkeyMadnessUIManager.Instance.SetStopInteractable(false);
 
         ProcessSpinResult();
-
-        //InSpin = false;
-        //isSpinAgain = true;
-
-        //if (!MonkeyMadnessAutoSpinController.isAutoSpinning)
-        //{
-        //    MonkeyMadnessUIManager.Instance.UpdateButtons("Stop");
-            
-        //}
     }
     [Header("Forced Prize")]
     public bool forcedWin;
@@ -424,11 +414,8 @@ public class MonkeyMadnessSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
-
-        //winAmount = currentSpinResult.totalWin;
 
         if (forcedWin)
         {
@@ -443,7 +430,7 @@ public class MonkeyMadnessSlotMachine : BaseSlotMachine
         {
             float betAmount = MonkeyMadnessUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
 
         if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0)
@@ -463,6 +450,9 @@ public class MonkeyMadnessSlotMachine : BaseSlotMachine
 
         InSpin = false;
         isSpinAgain = true;
+
+        if (winAmount > 0f)
+            MonkeyMadnessUIManager.Instance.PlaySound("Win");
 
         if (!MonkeyMadnessAutoSpinController.isAutoSpinning)
         {
@@ -493,7 +483,7 @@ public class MonkeyMadnessSlotMachine : BaseSlotMachine
                 {
                     var slot = reel.slots[y + 1];
                     if (slot != null)
-                        slot.PlayFlickerAnimationOnce(flickerTime);
+                        slot.PlayFlickerAnimation(flickerTime);
                 }
             }
         }
@@ -536,7 +526,6 @@ public class MonkeyMadnessSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.resourcesList == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

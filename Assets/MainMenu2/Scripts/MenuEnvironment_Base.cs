@@ -27,6 +27,10 @@ namespace MainMenu
 
         public bool isActive;
 
+        //public int moveToEndButtonPressThreshold = 3;
+        protected int moveLeftButtonConsecutivePressCount = 0;
+        protected int moveRightButtonConsecutivePressCount = 0;
+
         private void OnEnable()
         {
             Initialize();
@@ -41,6 +45,8 @@ namespace MainMenu
 
         private void OnDisable()
         {
+            isActive = false;
+
             UIDragHandler.OnDragStartedEvemt -= DragStarted;
             UIDragHandler.OnDragEvent -= Dragged;
             UIDragHandler.OnClickedEvent -= Clicked;
@@ -177,7 +183,7 @@ namespace MainMenu
             MainMenuManager.instance.draggingwhileMovingWithButtons = false;
         }
 
-        void MoveLeftOnePage()
+        protected virtual void MoveLeftOnePage()
         {
             if (isGoingInside)
                 return;
@@ -195,7 +201,7 @@ namespace MainMenu
             MainMenuManager.instance.player.moveSpeed = MainMenuManager.instance.player.moveSpeedMinMax.x;
         }
 
-        void MoveRightOnePage()
+        protected virtual void MoveRightOnePage()
         {
             if (isGoingInside)
                 return;

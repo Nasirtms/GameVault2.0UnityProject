@@ -46,7 +46,7 @@ public class WipeAnimation : MonoBehaviour
     [ContextMenu("Test Wipe")]
     private void TestWipe() => PlayWipe();
 
-    public void PlayWipe(System.Action onComplete = null)
+    public virtual void PlayWipe(System.Action onComplete = null)
     {
         if (!target || !startPos || !endPos)
         {

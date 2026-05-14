@@ -164,7 +164,7 @@ public class PiratesOfTheCaribbeanFreeGameTransitionController : MonoBehaviour
             float betAmount = PiratesOfTheCaribbeanUIManager.Instance.CurrentBet();
 
             GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, PiratesOfTheCaribbeanSlotMachine.Instance.currentSpinResult.newBalance);
-            Invoke(nameof(PiratesOfTheCaribbeanSlotMachine.Instance.UpdateGameCoin), 1f);
+            //Invoke(nameof(PiratesOfTheCaribbeanSlotMachine.Instance.UpdateGameCoin), 1f);
             PiratesOfTheCaribbeanUIManager.Instance.UpdateButtons("Single Stop");
         }
     }

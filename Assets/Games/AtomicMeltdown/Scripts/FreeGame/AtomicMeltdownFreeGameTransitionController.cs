@@ -119,7 +119,8 @@ public class AtomicMeltdownFreeGameTransitionController : MonoBehaviour
         AtomicMeltdownPaylineController.Instance.ClearPaylineResults();
 
         paylines.SetActive(false);
-
+        AtomicMeltdownUIManager.Instance.StopMusic("BG");
+        AtomicMeltdownUIManager.Instance.PlaySound("FreeSpinStart");
         yield return MoveDoors();
 
         StartChains();
@@ -130,12 +131,10 @@ public class AtomicMeltdownFreeGameTransitionController : MonoBehaviour
 
         paylines.SetActive(true);
 
+        AtomicMeltdownUIManager.Instance.PlayMusic("FreeSpin");
         yield return new WaitForSeconds(1.5f);
 
-        freeSpinController.StartFreeSpins();
-
-        AtomicMeltdownUIManager.Instance.StopMusic("Background");
-        AtomicMeltdownUIManager.Instance.PlayMusic("FreeSpin");       
+        freeSpinController.StartFreeSpins();     
     }
 
     private IEnumerator EndFreeSpin()
@@ -146,8 +145,8 @@ public class AtomicMeltdownFreeGameTransitionController : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         AtomicMeltdownUIManager.Instance.StopMusic("FreeSpin");
-        AtomicMeltdownUIManager.Instance.PlayMusic("Background");
 
+        AtomicMeltdownUIManager.Instance.PlayMusic("BG");
         paylines.SetActive(false);
 
         yield return MoveDoors();
@@ -177,7 +176,7 @@ public class AtomicMeltdownFreeGameTransitionController : MonoBehaviour
             float freeGameWin = AtomicMeltdownSlotMachine.Instance.freeSpinWinAmount;
             float betAmount = AtomicMeltdownUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, AtomicMeltdownSlotMachine.Instance.currentSpinResult.newBalance);
-            Invoke(nameof(AtomicMeltdownSlotMachine.Instance.UpdateGameCoin), 1f);
+            //Invoke(nameof(AtomicMeltdownSlotMachine.Instance.UpdateGameCoin), 1f);
             AtomicMeltdownUIManager.Instance.UpdateButtons("Default");
         }
     }

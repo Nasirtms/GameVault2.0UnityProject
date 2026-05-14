@@ -28,7 +28,7 @@ public class SaharaRichesJackpotAnimator : MonoBehaviour
         jackpotPopup.SetActive(false);
     }
 
-    //[ContextMenu("Start Jackpot")]
+    [ContextMenu("Start Jackpot")]
     public void StartJackpot()
     {
         isJackpotCompleted = false;

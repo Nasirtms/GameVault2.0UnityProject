@@ -279,7 +279,7 @@ public class TenTimesWinsUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -295,12 +295,11 @@ public class TenTimesWinsUIManager : GameBetServices
 
     public void OnClickSpin()
     {
-        PlaySound("Spin_Button");
-        PlaySound("Spin1");
-
         float betAmount = betController.GetCurrentBet();
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
 
+        PlaySound("Spin_Button");
+        PlaySound("Spin1");
         hasStoppedSpinSound = false;
         hasStoppedReelStopSFX = false;
         reelsStopped = 0;
@@ -325,14 +324,6 @@ public class TenTimesWinsUIManager : GameBetServices
     private void OnClickStop()
     {
         PlaySound("Spin_Button");
-        //if (TenTimesWinsAutoSpinController.isAutoSpinning)
-        //{
-        //    OnClickAutoStop();
-        //    return;
-        //}
-        //else
-        //{
-        //}
         TenTimesWinsSlotMachine.Instance.isStopBtnPressed = true;
         if (TenTimesWinsAutoSpinController.isAutoSpinning)
         {
@@ -510,11 +501,15 @@ public class TenTimesWinsUIManager : GameBetServices
 
         currentButtonSet = type;
     }
-    
+
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount)
     {
         if (winAmount > 0)
@@ -556,13 +551,15 @@ public class TenTimesWinsUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        textToAnimate.text = target.ToString("0.00");
+        //textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
     }
 
     private IEnumerator AnimateToValue(float target, float duration, TMP_Text textToAnimateOne, TMP_Text textToAnimateTwo)
@@ -573,21 +570,22 @@ public class TenTimesWinsUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
-
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
 
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
-
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
         StopCoroutine(textAnimationCoroutine);
     }
     #endregion
-
 
     #region Helper Functions
 

@@ -35,6 +35,7 @@ public class PasswordChangeManager : MonoBehaviour
 
         var manager = transform.GetComponent<MainMenuUIManager>();
 
+        GlobleSoundManager.Instance.PlaySFX("Swipe");
         if (manager != null)
             manager.HidePopup(manager.changePasswordPopup);
     }
@@ -44,7 +45,7 @@ public class PasswordChangeManager : MonoBehaviour
         _oldPass = oldPass.text;
         _newPass = newPass.text;
         _confirmPass = confirmPass.text;
-
+        GlobleSoundManager.Instance.PlaySFX("ProfileClick");
         // ❌ Show error if any field is empty
         if (string.IsNullOrEmpty(_oldPass))
         {

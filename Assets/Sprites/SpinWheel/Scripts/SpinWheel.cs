@@ -148,7 +148,18 @@ public class SpinWheel : MonoBehaviour
         else if (prize == 0)
         {
             spinButton.interactable = false;
-            resultPanel.gameObject.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+            resultPanel.gameObject.transform.GetChild(0).gameObject.SetActive(false);
+            var img = resultPanel.gameObject.transform.GetComponent<Image>();
+            var c = img.color;
+            c.a = 0f;
+            img.color = c;
+            resultPanel.SetActive(true);
+            MainMenuUIManager.Instance.DoTweenAnim(MainMenuUIManager.TweenType.SpinWheel, resultpopup.transform.gameObject, 1f, 0.5f);
+        }
+        else
+        {
+            spinButton.interactable = false;
+            resultPanel.gameObject.transform.GetChild(0).gameObject.SetActive(false);
             var img = resultPanel.gameObject.transform.GetComponent<Image>();
             var c = img.color;
             c.a = 0f;
@@ -269,6 +280,7 @@ public class SpinWheel : MonoBehaviour
     {
         if(!isSpinning)
         {
+            GlobleSoundManager.Instance.PlaySFX("Swipe");
             Destroy(gameObject);
         }
         

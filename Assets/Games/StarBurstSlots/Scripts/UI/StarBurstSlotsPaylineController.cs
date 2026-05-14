@@ -188,6 +188,11 @@ public class StarBurstSlotsPaylineController : MonoBehaviour
     {
         int index = 0;
         int maxIndex = activePaylines.Count;
+        if (!dontShowComboVfxInSpin)
+        {
+            StarBurstSlotsUIManager.Instance.ShowComboVfx(maxIndex);
+            StarBurstSlotsUIManager.Instance.hasShowenComboVfx = true;
+        }
         while (true)
         {
             if (activePaylines == null || activePaylines.Count == 0)
@@ -281,11 +286,7 @@ public class StarBurstSlotsPaylineController : MonoBehaviour
 
             yield return new WaitForSeconds(1.8f);
 
-            if(index + 1 == maxIndex && !dontShowComboVfxInSpin)
-            {
-                StarBurstSlotsUIManager.Instance.ShowComboVfx(maxIndex);
-                StarBurstSlotsUIManager.Instance.hasShowenComboVfx = true;
-            }
+
 
             if (StarBurstSlotsAutoSpinController.isAutoSpinning || StarBurstSlotsSlotMachine.Instance.isFreeGameReady)
             {

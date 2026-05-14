@@ -30,7 +30,7 @@ public class AtomicMeltdownSoundManager : MonoBehaviour
 
         if (musicSource == null || sfxSource == null)
         {
-            Debug.LogError("Please assign both MusicSource and SFXSource in the SoundManager.");
+            //Debug.LogError("Please assign both MusicSource and SFXSource in the SoundManager.");
         }
     }
 
@@ -51,7 +51,7 @@ public class AtomicMeltdownSoundManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            //Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
 
@@ -65,7 +65,7 @@ public class AtomicMeltdownSoundManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            //Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
     public void PlaySpinMusic(string soundName)
@@ -81,7 +81,7 @@ public class AtomicMeltdownSoundManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            //Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
     public void StopSpinMusic(string soundName)
@@ -94,7 +94,7 @@ public class AtomicMeltdownSoundManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            //Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
     public void PlaySFX(string soundName)
@@ -112,7 +112,7 @@ public class AtomicMeltdownSoundManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"SFX '{soundName}' not found.");
+                //Debug.LogWarning($"SFX '{soundName}' not found.");
             }
         }
     }
@@ -130,7 +130,7 @@ public class AtomicMeltdownSoundManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            //Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
 
@@ -144,7 +144,7 @@ public class AtomicMeltdownSoundManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Music '{soundName}' not found.");
+            //Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
 

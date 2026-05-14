@@ -67,13 +67,11 @@ public class FruitSlotSpinButton : MonoBehaviour, IPointerDownHandler, IPointerU
     private void OnPress()
     {
         FruitSlotUIManager.Instance.OnClickSpin();
-        Debug.Log("Pressed");
 
     }
     private void OnLongPress()
     {
         FruitSlotUIManager.Instance.OnHoldSpin();
-        Debug.Log("Long Pressed");
     }
 }
 

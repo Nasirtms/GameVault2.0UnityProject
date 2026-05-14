@@ -180,6 +180,7 @@ namespace MainMenu
 
             avatarDisplayCurrent_RI.color = Color.white;
             currentIndex = index;
+            UpdateAvatar();
         }
 
         private void UpdateAvatar()
@@ -190,12 +191,22 @@ namespace MainMenu
             }
             SavedAvatarIndex = currentIndex;
             mm_PlayerController.SetCurrentPlayer(currentIndex);
+
+            UserManager.Instance.SetAvatarDownloadedImage(mm_PlayerController.playerProfilePictures[mm_PlayerController.currentPlayerIndex]);
+            MainMenuUIManager.Instance.SetUserData();
+        }
+
+        public void UpdateAvatar_Silent()
+        {
+            UpdateAvatar();
+            StartCoroutine(UpdateUserProfile(currentIndex, false));
         }
 
         private void CloseSettingPanel()
         {
             currentIndex = SavedAvatarIndex;
             UpdateAvatar();
+            GlobleSoundManager.Instance.PlaySFX("Swipe");
             MainMenuUIManager.Instance.HidePopup(MainMenuUIManager.Instance.settingsPopup);
         }
 
@@ -204,9 +215,10 @@ namespace MainMenu
             StartCoroutine(UpdateUserProfile(currentIndex));
         }
 
-        public IEnumerator UpdateUserProfile(int index = 0)
+        public IEnumerator UpdateUserProfile(int index = 0, bool showAlert = true)
         {
-            CasinoUIManager.Instance.ShowErrorCanvas(0, "Updating profile...");
+            if (showAlert)
+                CasinoUIManager.Instance.ShowErrorCanvas(0, "Updating profile...");
 
             // ?? Create JSON body
             string jsonBody = JsonUtility.ToJson(new ProfileImageUpdateRequest
@@ -250,12 +262,19 @@ namespace MainMenu
                 Debug.Log("? Profile updated successfully.");
                 HandleAvatarSelectBtn();
                 SavedAvatarIndex = currentIndex;
-                CasinoUIManager.Instance.ShowErrorCanvas(1, "User Information Modified Successfully");
+                if (UserManager.Instance != null) 
+                {
+                    UserManager.Instance.avatarIndex = SavedAvatarIndex;
+                }
+                GlobleSoundManager.Instance.PlaySFX("ProfileClick");
+                if (showAlert)
+                    CasinoUIManager.Instance.ShowErrorCanvas(1, "User Information Modified Successfully");
             }
             else
             {
                 Debug.LogError($"? Update failed. Code: {request.responseCode}, Error: {request.error}");
-                CasinoUIManager.Instance.ShowErrorCanvas(1, "Update failed");
+                if (showAlert)
+                    CasinoUIManager.Instance.ShowErrorCanvas(1, "Update failed");
             }
         }
 

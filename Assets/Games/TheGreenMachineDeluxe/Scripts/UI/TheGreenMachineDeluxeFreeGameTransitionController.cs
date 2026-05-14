@@ -72,9 +72,9 @@ public class TheGreenMachineDeluxeFreeGameTransitionController : MonoBehaviour
     private IEnumerator StartFreeSpin()
     {
         yield return new WaitForSeconds(1f);
-
+        TheGreenMachineDeluxeUIManager.Instance.StopMusic("BG");
         TheGreenMachineDeluxeUIManager.Instance.PlaySound("GameTransition");
-
+        yield return new WaitUntil(() => TheGreenMachineDeluxeUIManager.Instance.winAnimationCompleted);
         yield return new WaitForSeconds(0.5f);
 
         PlayCashParticles();
@@ -103,6 +103,7 @@ public class TheGreenMachineDeluxeFreeGameTransitionController : MonoBehaviour
     private IEnumerator EndFreeSpin()
     {
         TheGreenMachineDeluxeUIManager.Instance.StopMusic("FreeSpin");
+
         TheGreenMachineDeluxeUIManager.Instance.PlaySound("GameTransition");
 
         yield return new WaitForSeconds(0.5f);
@@ -114,7 +115,7 @@ public class TheGreenMachineDeluxeFreeGameTransitionController : MonoBehaviour
         HideBackground();
 
         yield return new WaitForSeconds(0.5f);
-
+        TheGreenMachineDeluxeUIManager.Instance.PlayMusic("BG");
         topBarJackpotImage.SetActive(true);
         freeSpinsCountText.SetActive(false);
 
@@ -138,7 +139,7 @@ public class TheGreenMachineDeluxeFreeGameTransitionController : MonoBehaviour
             float freeGameWin = TheGreenMachineDeluxeSlotMachine.Instance.freeSpinWinAmount;
             float betAmount = TheGreenMachineDeluxeUIManager.Instance.CurrentBet();
 
-            GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, TheGreenMachineDeluxeSlotMachine.Instance.currentSpinResult.newBalance);
+            //GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, TheGreenMachineDeluxeSlotMachine.Instance.currentSpinResult.newBalance);
             Invoke(nameof(TheGreenMachineDeluxeSlotMachine.Instance.UpdateGameCoin), 1f);
 
             TheGreenMachineDeluxeUIManager.Instance.UpdateButtons("Base Game Transition");

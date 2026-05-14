@@ -30,6 +30,9 @@ public class UserManager : MonoBehaviour
     public float Coins { get;  set; }
     public string AvatarUrl { get; set; }
 
+    public bool IsFeedback { get; set; }
+    public bool HasSetAvatarOnce { get; set; }
+
     public string userType;
     public Sprite AvatarImage { get; set; }
 
@@ -44,35 +47,37 @@ public class UserManager : MonoBehaviour
     public Sprite[] avatarSprites;
     public string[] avatarIds; // e.g. "avatar_1", "avatar_2", etc.
     private Dictionary<string, Sprite> avatarMap;
+
+    public float feedbackPopupShowTime = 300;
+    private float feedbackShowTimer = 0;
+    private bool feedbackTimeReached = false;
+
+    public static Action<float> OnCoinsUpdate;
+
     public string FormatCoins(double coins)
     {
-        double truncated;
         if (coins >= 1_000_000_000)
         {
-            truncated = Math.Truncate(coins / 1_000_000_000 * 100) / 100;
-            return truncated.ToString("0.00") + "B";
+            double value = Math.Floor((coins / 1_000_000_000) * 100) / 100;
+            return value.ToString("0.00") + "B";
         }
-        else if (coins >= 1_000_000)
+
+        if (coins >= 1_000_000)
         {
-            truncated = Math.Truncate(coins / 1_000_000 * 100) / 100;
-            return truncated.ToString("0.00") + "M";
+            double value = Math.Floor((coins / 1_000_000) * 100) / 100;
+            return value.ToString("0.00") + "M";
         }
-        else if (coins >= 1_000)
+
+        if (coins >= 1_000)
         {
-            truncated = Math.Truncate(coins / 1_000 * 100) / 100;
-            return truncated.ToString("0.00") + "K";
+            double value = Math.Floor((coins / 1_000) * 100) / 100;
+            return value.ToString("0.00") + "K";
         }
-        else if (coins < 1 && coins > 0)
-        {
-            truncated = Math.Truncate(coins * 100000000) / 100000000; 
-            return truncated.ToString("0.########");
-        }
-        else
-        {
-            truncated = Math.Truncate(coins * 100) / 100;
-            return truncated.ToString("0.##");
-        }
+
+        // Below 1000 → show exact
+        return coins.ToString("0.00");
     }
+
     private float userCurrentCoin;
     public bool useCanGetCoinFromDB;
 
@@ -88,6 +93,39 @@ public class UserManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         BuildAvatarMap();
+    }
+
+    private void Update()
+    {
+        if (!feedbackTimeReached)
+        {
+            feedbackShowTimer += Time.deltaTime;
+            if (feedbackShowTimer >= feedbackPopupShowTime)
+            {
+                feedbackTimeReached = true;
+                StopCoroutine("ShowFeedbackPopup");
+                StartCoroutine("ShowFeedbackPopup");
+            }
+        }
+    }
+
+    IEnumerator ShowFeedbackPopup()
+    {
+        yield return new WaitUntil(() => MainMenuUIManager.Instance != null);
+
+        if (!IsFeedback)
+        {
+            MainMenuUIManager.Instance.feedbackPopup.gameObject.SetActive(true);
+
+
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
+
+            yield return new WaitUntil(() => !MainMenuUIManager.Instance.feedbackPopup.isActive);
+
+            feedbackShowTimer = 0;
+            feedbackTimeReached = false;
+        }
     }
 
     public void SetAvatarDownloadedImage(Sprite avatarSprite)
@@ -106,7 +144,7 @@ public class UserManager : MonoBehaviour
         }
     }
 
-    public void SetUserData(string id, string username, string email, float coins, string avatarUrl, string userGameId,int _avatarIndex, string _usertype, string _sessionID, string bio = "")
+    public void SetUserData(string id, string username, string email, float coins, string avatarUrl, string userGameId, int _avatarIndex, string _usertype, string _sessionID, string bio = "", bool isFeedback = false, bool hasSetAvatarOnce = false)
     {
         UserId = id;
         Username = username;
@@ -119,14 +157,18 @@ public class UserManager : MonoBehaviour
         _userGameId = userGameId;
         userType = _usertype;
         sessionId = _sessionID;
+        IsFeedback = isFeedback;
+        HasSetAvatarOnce = hasSetAvatarOnce;
         StartUpdateCanAddCoin(true);
     }
 
 
     public void UpdateCoins(float newAmount)
     {
-        Coins = newAmount;
+        Coins =  newAmount;
+        Debug.Log("Coins : " +  Coins);
         userCurrentCoin = newAmount;
+
         if (MainMenuUIManager.Instance != null)
         {
             MainMenuUIManager.Instance.SetUserData();
@@ -195,8 +237,8 @@ public class UserManager : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log("✅ CanAddCoin updated successfully!");
-            Debug.Log(request.downloadHandler.text);
+            //Debug.Log("✅ CanAddCoin updated successfully!");
+            //Debug.Log(request.downloadHandler.text);
 
             CanAddCoinResponse response = JsonUtility.FromJson<CanAddCoinResponse>(request.downloadHandler.text);
             if (response.success)
@@ -248,13 +290,15 @@ public class UserManager : MonoBehaviour
         bool flag = sendCountToGetWinDataList ? true : false;
         string finalUrl = $"{ApiEndpoints.UserProfile}?isCount100={sendCountToGetWinDataList.ToString().ToLower()}";
 
+        Debug.Log("profile api call: " + finalUrl);
+
         UnityWebRequest request = new UnityWebRequest(finalUrl, "GET");
         request.downloadHandler = new DownloadHandlerBuffer();
 
         foreach (var header in ApiEndpoints.GetAuthHeaders())
             request.SetRequestHeader(header.Key, header.Value);
 
-        Debug.Log($"Nasir Profile : {finalUrl}");
+        //Debug.Log($"Nasir Profile : {finalUrl}");
         yield return request.SendWebRequest();
 
         if (request.responseCode == 401)
@@ -265,8 +309,10 @@ public class UserManager : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log("✅ Nasir Profile received successfully (profile-only):");
-            Debug.Log(request.downloadHandler.text);
+            //Debug.Log("✅ Nasir Profile received successfully (profile-only):");
+            //Debug.Log(request.downloadHandler.text);
+
+            Debug.Log("profile api response: " + request.downloadHandler.text);
 
             var response = JsonUtility.FromJson<UserProfileResponse>(request.downloadHandler.text);
 
@@ -280,6 +326,8 @@ public class UserManager : MonoBehaviour
 
             // Update local and UI
             Coins = response.user.coinBalance;
+            IsFeedback = response.user.isFeedback;
+            HasSetAvatarOnce = response.user.hasSetAvatarOnce;
             MainMenuUIManager.Instance?.SetUserData();
             updateUserCoinIntoCurrentGame();
         }

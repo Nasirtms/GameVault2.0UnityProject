@@ -4,22 +4,31 @@ using UnityEngine;
 
 public class FruitMaryAutoSpinController : MonoBehaviour
 {
+    #region Variables
+
     [Header("Settings")]
     [SerializeField] private float delayBetweenSpins = 1.5f;
-
-
     public bool isAutoRunning = false;
     public bool cancelRequested = false;
     private Coroutine autoSpinRoutine;
-
     public static bool isAutoSpinning = false;
-
     public bool IsAutoRunning => isAutoRunning;
 
-    private void Start()
+    #endregion
+
+    #region Unity Methods
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
+    #endregion
+
+    #region Public References
     public void StartAutoSpin(float betAmount)
     {
         if (isAutoRunning || FruitMarySlotMachine.Instance.InSpin)
@@ -45,13 +54,13 @@ public class FruitMaryAutoSpinController : MonoBehaviour
 
         StopAutoSpin();
     }
+    #endregion
 
+    #region Auto Spin
     private IEnumerator AutoSpinLoop(float betAmount)
     {
         while (!cancelRequested)
         {
-            FruitMaryUIManager.Instance.PlaySound("Spin");
-
             float balance = UserManager.Instance.Coins;
             FruitMaryUIManager.Instance.winAnimationCompleted = true;
             if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) break;
@@ -63,14 +72,12 @@ public class FruitMaryAutoSpinController : MonoBehaviour
                 StopCoroutine(FruitMaryUIManager.Instance.winCoroutine);
 
             SlotSpinService.Instance.Spin(betAmount);
-
+            FruitMaryUIManager.Instance.PlaySound("Spin");
             if (cancelRequested) break;
 
             yield return new WaitUntil(() => !FruitMarySlotMachine.Instance.InSpin);
 
-            if (FruitMarySlotMachine.Instance.isFreeGameReady)
-                break;
-            if (FruitMarySlotMachine.Instance.isFruitMaryGameReady)
+            if (FruitMarySlotMachine.Instance.isFreeGameReady || FruitMarySlotMachine.Instance.isFruitMaryGameReady)
                 break;
 
             if (FruitMarySlotMachine.Instance.GetWinAmount() > 0)
@@ -94,4 +101,19 @@ public class FruitMaryAutoSpinController : MonoBehaviour
             FruitMaryUIManager.Instance.UpdateButtons("Stop");
         }
     }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
+
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
+    #endregion
 }

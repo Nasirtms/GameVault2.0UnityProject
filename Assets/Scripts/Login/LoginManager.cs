@@ -41,6 +41,10 @@ public class LoginManager : MonoBehaviour
     [SerializeField] private string actualPassword = "";
     [SerializeField] private bool autofillMasked = false;
 
+    [Header("Loading UI")]
+    [SerializeField] private MainMenu.UILoadingPanel loadingPanel;
+    private bool isLoadingMainMenu;
+
     #endregion
 
     #region Private Fields
@@ -64,6 +68,8 @@ public class LoginManager : MonoBehaviour
     {
         DoTweenAnim(TweenType.Login, login, 1.1f, 0.3f);
         loginButton.onClick.AddListener(HandleLogin);
+        emailInput.onSubmit.AddListener((str) => HandleLogin());
+        passwordInput.onSubmit.AddListener((str) => HandleLogin());
         //forgotPasswordButton.onClick.AddListener(HandleForgotPassword);
 
         passwordInput.contentType = TMP_InputField.ContentType.Password;
@@ -74,6 +80,11 @@ public class LoginManager : MonoBehaviour
 
     private void Update()
     {
+        if (isLoadingMainMenu)
+        {
+            loadingPanel.SetLoadingBarValue(Mathf.Lerp(loadingPanel.GetLoadingBarValue(), MainMenuAddressableHandler.TotalProgress, Time.unscaledDeltaTime * 3));
+        }
+
 #if UNITY_ANDROID
         if (Input.GetKeyDown(KeyCode.Escape))
             LogoutPopup();
@@ -143,11 +154,11 @@ public class LoginManager : MonoBehaviour
             }
         }
 
-        if (!(hasNumber && hasLetter))
-        {
-            ShowError("Use both letters and numbers.");
-            return false;
-        }
+        //if (!(hasNumber && hasLetter))
+        //{
+        //    ShowError("Use both letters and numbers.");
+        //    return false;
+        //}
 
         return true;
     }
@@ -244,7 +255,7 @@ public class LoginManager : MonoBehaviour
         var loginData = new SerializableClasses.LoginRequest { email = email, password = password };
         string jsonData = JsonConvert.SerializeObject(loginData);
 
-        using (UnityWebRequest www = new UnityWebRequest(ApiEndpoints.Login, "POST"))
+        /*using (UnityWebRequest www = new UnityWebRequest(ApiEndpoints.Login, "POST"))
         {
             www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
             www.downloadHandler = new DownloadHandlerBuffer();
@@ -264,9 +275,9 @@ public class LoginManager : MonoBehaviour
                     PlayerPrefs.SetString("FreeSpinNextUtcTicks", nextUtc.Ticks.ToString());
                     PlayerPrefs.Save();
                 }
-                Debug.Log($"String Time: {loginResponse.user.nextSpinTime} | Current Time Login: {DateTime.Parse(loginResponse.user.nextSpinTime)} | Adjust Time: {nextUtc}");
-                Debug.Log("Login Text: " + www.downloadHandler.text);
-                Debug.Log("Login Response (parsed):\n" + JsonConvert.SerializeObject(loginResponse, Formatting.Indented));
+                //Debug.Log($"String Time: {loginResponse.user.nextSpinTime} | Current Time Login: {DateTime.Parse(loginResponse.user.nextSpinTime)} | Adjust Time: {nextUtc}");
+                //Debug.Log("Login Text: " + www.downloadHandler.text);
+                //Debug.Log("Login Response (parsed):\n" + JsonConvert.SerializeObject(loginResponse, Formatting.Indented));
                 if (loginResponse?.user == null || string.IsNullOrEmpty(loginResponse.user.id))
                 {
                     ShowError("Invalid response format");
@@ -288,6 +299,69 @@ public class LoginManager : MonoBehaviour
                 ApiEndpoints.updateTokenIntoJSFile();
                 LoginSuccess();
                 StartCoroutine(GetMainMenuData());
+            }
+            catch (Exception ex)
+            {
+                ShowError("Network Error");
+                JSInputHandler.OnLoginField();
+                Debug.LogError($"Login parse error: {ex.Message}");
+            }
+        }*/
+
+        using (UnityWebRequest www = new UnityWebRequest(ApiEndpoints.Login, "POST"))
+        {
+            www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
+            www.downloadHandler = new DownloadHandlerBuffer();
+            www.SetRequestHeader("Content-Type", "application/json");
+
+            yield return www.SendWebRequest();
+
+            if (HasNetworkError(www)) yield break;
+
+            try
+            {
+                string responseText = www.downloadHandler.text;
+
+                // Check for region-block response (200 OK with only "message", no "user")
+                var regionBlock = JsonConvert.DeserializeObject<RegionBlockResponse>(responseText);
+                if (regionBlock != null && !string.IsNullOrEmpty(regionBlock.message) &&
+                    (responseText.Contains("user") == false || responseText.IndexOf("\"user\"") < 0))
+                {
+                    ShowError(regionBlock.message);
+                    yield break;
+                }
+
+                loginResponse = JsonConvert.DeserializeObject<SerializableClasses.LoginResponseWrapper>(responseText);
+                DateTime nextUtc;
+                if (DateTime.TryParse(loginResponse.user.nextSpinTime, null,
+                    System.Globalization.DateTimeStyles.AdjustToUniversal, out nextUtc))
+                {
+                    PlayerPrefs.SetString("FreeSpinNextUtcTicks", nextUtc.Ticks.ToString());
+                    PlayerPrefs.Save();
+                }
+                if (loginResponse?.user == null || string.IsNullOrEmpty(loginResponse.user.id))
+                {
+                    ShowError("Invalid response format");
+                    yield break;
+                }
+                if (!loginResponse.user.isActive)
+                {
+                    ShowError("User is not active");
+                    yield break;
+                }
+                JSInputHandler.OnLoginSuccess(ApiEndpoints.AuthToken);
+                loginResponse.user.EnsureDefaults();
+                ApiEndpoints.AuthToken = loginResponse.user.token;
+                ApiEndpoints.RefreshToken = loginResponse.user.refreshToken;
+                PlayerPrefs.SetString("userId", loginResponse.user.id);
+                PlayerPrefs.SetString("profileImageUrl", loginResponse.user.avatarUrl);
+                UserManager.Instance.isLoginProcess = true;
+                SceneManagement.profile_iconUrls.AddRange(loginResponse.available_avatars.Select(a => a.image_url));
+                ApiEndpoints.updateTokenIntoJSFile();
+                LoginSuccess();
+                StartCoroutine(GetMainMenuData());
+                UserSessionSocketManager.GetOrFind();
+                UserSessionSocketManager.Instance.ReConnectUserSessionSocket();
             }
             catch (Exception ex)
             {
@@ -354,14 +428,14 @@ public class LoginManager : MonoBehaviour
                 SceneManagement.evntMassage = firstEvent.description;
 
                 isGetEventData = true;
-                ApplySceneData();
+                
             }
             else
             {
                 Debug.LogWarning("No event data found.");
                 isGetEventData = false;
             }
-
+            ApplySceneData();
         });
     }
 
@@ -396,21 +470,26 @@ public class LoginManager : MonoBehaviour
             loginResponse.user.avatarIndex,
             loginResponse.user.role,
             loginResponse.user.sessionId,
-            loginResponse.user.bio
+            loginResponse.user.bio,
+            loginResponse.user.isFeedback,
+            loginResponse.user.hasSetAvatarOnce
         );
-        InitializeSessionManagement();
+        //InitializeSessionManagement();
     }
 
     void LoadMainScene()
     {
         CasinoUIManager.Instance.ShowErrorCanvas(2, "");
-        Invoke(nameof(LoadScene), 0.5f);
+        Invoke(nameof(LoadScene), 0.3f);
+        loadingPanel.OpenPanel(0.3f);
+        isLoadingMainMenu = true;
     }
 
     private void LoadScene()
     {
         UserManager.Instance?.StartUpdateCanAddCoin(true);
-        SceneManager.LoadScene("Main");
+        MainMenuAddressableHandler.LoadMainMenu();
+        //SceneManager.LoadScene("Main");
     }
 
     #endregion
@@ -444,7 +523,25 @@ public class LoginManager : MonoBehaviour
         }
         else if(www.result == UnityWebRequest.Result.ProtocolError)
         {
-            ShowError("Incorrect Password");
+            switch (www.responseCode)
+            {
+                case 400:
+                    ShowError("Invalid login request.");
+                    break;
+                case 401:
+                    ShowError("Incorrect Username or Password.");
+                    break;
+                case 500:
+                    ShowError("Server Error. Please try again later.");
+                    break;
+                case 503:
+                    ShowError("Server Error. Please try again later.");
+                    break;
+                default:
+                    ShowError("Network Error.");
+                    break;
+            }
+            //ShowError("Incorrect Password");
             Debug.LogError(www.error);
             return true;
         }
@@ -487,4 +584,11 @@ public class LoginManager : MonoBehaviour
     }
 
     #endregion
+}
+
+
+[System.Serializable]
+public class RegionBlockResponse
+{
+    public string message;
 }

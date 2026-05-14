@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 786809546c4aa0a4489eec8878ff14fd, type: 3}
+  m_Name: Golden Wheel
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    icon: {fileID: -740188003, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+    paylineIcon: {fileID: 200449081, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+  - type: 1
+    icon: {fileID: 240686154, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+    paylineIcon: {fileID: -198151963, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+  - type: 2
+    icon: {fileID: 1089469648, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+    paylineIcon: {fileID: 1031138580, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+  - type: 3
+    icon: {fileID: -85445910, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+    paylineIcon: {fileID: -1532638215, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+  - type: 4
+    icon: {fileID: -1938860597, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+    paylineIcon: {fileID: 1920637216, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+  - type: 5
+    icon: {fileID: -1657962366, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+    paylineIcon: {fileID: 810145015, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+  - type: 6
+    icon: {fileID: -1151238417, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+    paylineIcon: {fileID: -1151238417, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+  - type: 7
+    icon: {fileID: -1887065568, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+    paylineIcon: {fileID: -1112791808, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+  - type: 8
+    icon: {fileID: -1056587263, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+    paylineIcon: {fileID: -1056587263, guid: e60b5e6b74754be40a63889b8d558d92, type: 3}
+  soundItems:
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: d93e34659d345b24b8107a5b17a10abe, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Increase
+    audioClip: {fileID: 8300000, guid: 4dd403b1a37711c4d9a2c3f53608bb53, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Decrease
+    audioClip: {fileID: 8300000, guid: dd94e1a09c1f2f04aba03b02e5080d8c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: bffd9cc88ec5f3942b0edcdf387eb189, type: 3}
+    volume: 0.5
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 9cdf7da9f8f55304f93eb075bce10394, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Stop
+    audioClip: {fileID: 8300000, guid: a62a27fc0aba2bf4c9668699444ec553, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Play
+    audioClip: {fileID: 8300000, guid: 228edd6fd8bc27545b8b5e05529ab9f7, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Background
+    audioClip: {fileID: 8300000, guid: 9115a48cfe3649c48bef62c9cc9b6f78, type: 3}
+    volume: 0.5
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: d9af8614fa16bb14dba6ea0dc5104bf5, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinPopup
+    audioClip: {fileID: 8300000, guid: fb3b313d8eaade548b445e58e7e770f6, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinBackground
+    audioClip: {fileID: 8300000, guid: 219ac8e1f219adb42a6c7d36f442ab0f, type: 3}
+    volume: 0.6
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.3, y: 0.3}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -200
+    bottomBoundary: -515
+    startSpeed: {x: 24, y: 28}
+    acceleration: {x: 1, y: 2}
+    speedRange: {x: 45, y: 50}
+  horizontalLayout: 405
+  verticalLayout: 106
+  paddingTop: -515
+  slotScale: 1

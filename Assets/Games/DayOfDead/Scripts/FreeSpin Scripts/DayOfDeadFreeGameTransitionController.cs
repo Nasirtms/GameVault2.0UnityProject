@@ -70,12 +70,14 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
 
     private IEnumerator StartFreeSpin()
     {
+        yield return new WaitUntil(() => DayOfDeadSlotMachine.Instance.isSlotAnimationCompleted);
         yield return new WaitUntil(() => DayOfDeadUIManager.Instance.winAnimationCompleted);
-        yield return new WaitForSeconds(2f);
-        DayOfDeadPaylineController.Instance.StopPaylines();
-        DayOfDeadPaylineController.Instance.ClearPaylineData();
+        //yield return new WaitForSeconds(2f);
+
         //PiratesOfTheCaribbeanUIManager.Instance.PlaySound("FreeSpinPop");
         PopupAnimation(freeSpinStartFrame, 1f, 1f, true);
+        DayOfDeadPaylineController.Instance.StopPaylines();
+        DayOfDeadPaylineController.Instance.ClearPaylineData();
         freeSpinController.topbar.topbarArea.SetActive(true);
         ShowBackground();
         yield return new WaitForSeconds(1.5f);
@@ -102,18 +104,15 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
         //DayOfDeadUIManager.Instance.PlaySound("FreeSpinPop");
         //DayOfDeadUIManager.Instance.PlayMusic("Background");
 
-        yield return new WaitForSeconds(1.5f);
+        //yield return new WaitForSeconds(1.5f);
 
-        HideBackground();
-
-        yield return new WaitForSeconds(2f);
-
+        yield return new WaitForSeconds(1f);
         DayOfDeadUIManager.Instance.UpdateButtons("Free Spin End");
         //PiratesOfTheCaribbeanUIManager.Instance.PlaySound("FreeSpinWin");
         PopupAnimation(freeSpinWinFrame, 1f, 1f, true);
 
         yield return new WaitForSeconds(1f);
-
+        HideBackground();
         DayOfDeadUIManager.Instance.TextAnimation(DayOfDeadSlotMachine.Instance.freeSpinWinAmount, 2.5f, freeSpinWinText);
 
         yield return new WaitForSeconds(3.5f);
@@ -143,7 +142,7 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
             float betAmount = DayOfDeadUIManager.Instance.CurrentBet();
 
             GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, DayOfDeadSlotMachine.Instance.currentSpinResult.newBalance);
-            Invoke(nameof(DayOfDeadSlotMachine.Instance.UpdateGameCoin), 1f);
+            //Invoke(nameof(DayOfDeadSlotMachine.Instance.UpdateGameCoin), 1f);
 
             DayOfDeadUIManager.Instance.UpdateButtons("Single Stop");
         }
@@ -153,7 +152,7 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
     {
         obj.transform.parent.parent.gameObject.SetActive(state);
 
-        obj.transform.localScale = Vector3.one * 0.05f;
+        obj.transform.localScale = Vector3.one * 0.02f;
 
         obj.transform.DOScale(scale, duration * 1.2f)
             .SetEase(Ease.OutBack);

@@ -9,11 +9,9 @@ public class BiggerBassBonanzaBetController : MonoBehaviour
     [Header("Chip & Bet Settings")]
     [SerializeField]
     private float[] betValues = new float[] {
-        0.10f, 0.50f, 1.00f, 2.00f,
-        3.00f, 4.00f, 5.00f, 6.00f,
-        7.00f, 8.00f, 9.00f, 10.00f,
-        15.00f, 20.00f
-
+        0.24f, 0.72f, 1.20f, 2.40f,
+        3.60f, 4.80f, 6.00f, 7.20f,
+        8.40f, 9.60f, 10.80f, 12.00f
     };
     private int currentIndex = 0;
 

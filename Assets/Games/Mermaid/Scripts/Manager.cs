@@ -42,7 +42,7 @@ public class Manager : MonoBehaviour
     [SerializeField] private Transform wallsParent;
 
     private Coroutine lockCoroutine;
-    public float[] betOptions = { 0.1f, 0.2f, 0.3f, 0.5f, 0.9f, 1f, 2f, 3f, 4f, 5f, 10f };
+    public float[] betOptions = { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.9f, 1f, 2f, 3f, 4f, 5f, 10f };
     [HideInInspector] public int betIndex = 0;
     [HideInInspector] public Camera mainCam;
     private float minX, maxX, minY, maxY;
@@ -52,6 +52,7 @@ public class Manager : MonoBehaviour
     public static float currentBetAmoun = 0f;
     public static float totalFishWinAmountPerInterval = 0f;
     public static float totalBetAmountPerInterval = 0f;
+    public static Dictionary<string, float> fishKilledListPerInterval = new Dictionary<string, float>();
     public static double targetRTBFromBackend = 0f;
     public static Action onHealthMultiplier;
 
@@ -65,7 +66,37 @@ public class Manager : MonoBehaviour
         DOTween.Init();
         fishManager = GetComponent<FishManager>();
 
+        ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
     }
+
+    void UpdateBalanceFromUserManager(float newBalance)
+    {
+        //if (UserManager.Instance != null)
+        //{
+            //balance = UserManager.Instance.Coins;
+            balance = newBalance;
+            UpdateBalanceUI();
+        //}
+    }
+
+    private void OnEnable()
+    {
+        UnitySessionManager.OnForcedLogout += ForcedLogoutTriggered;
+        //UserManager.OnCoinsUpdate += UpdateBalanceFromUserManager;
+    }
+
+    private void OnDisable()
+    {
+        UnitySessionManager.OnForcedLogout -= ForcedLogoutTriggered;
+        //UserManager.OnCoinsUpdate -= UpdateBalanceFromUserManager;
+    }
+
+    void ForcedLogoutTriggered()
+    {
+        Debug.Log("Mermaid Game: Forced Logout Triggered");
+        Time.timeScale = 0;
+    }
+
     private void Start()
     {
         wave.GetComponent<Animator>().Play("wave");
@@ -84,18 +115,28 @@ public class Manager : MonoBehaviour
         UpdateBalanceUI();
         totalFishWinAmountPerInterval = 0.0f;
         totalBetAmountPerInterval = 0.0f;
+        fishKilledListPerInterval.Clear();
 
-        Invoke(nameof(MoveFishForwardAndCloseLoading), 1);
+        //Invoke(nameof(MoveFishForwardAndCloseLoading), 1);
         StartCoroutine(nameof(MoveFishForwardAndCloseLoading));
+
+        if (InternetWatchdog.Instance != null)
+            InternetWatchdog.Instance.isWatchdogActive = true;
     }
 
     IEnumerator MoveFishForwardAndCloseLoading()
     {
+        float audioListenerVolumeTemp = AudioListener.volume;
+        AudioListener.volume = 0;
+
         yield return new WaitUntil(() => FishManager.Instance.ActiveFishCount > 0);
+        loadingPanel.OpenPanel(.5f, 4);
         yield return new WaitForSeconds(4);
 
         FishManager.Instance.MoveAllFishForward(60 * 10);
         loadingPanel.ClosePanel(.5f);
+
+        AudioListener.volume = audioListenerVolumeTemp;
     }
 
     //public void CloseFishesPanel()
@@ -105,6 +146,8 @@ public class Manager : MonoBehaviour
 
     public void UpdateBalanceUI()
     {
+        UserManager.Instance.Coins = balance;
+
         if (balanceText != null)
         {
             float truncated = Mathf.Floor(balance * 10f) / 10f;
@@ -166,10 +209,31 @@ public class Manager : MonoBehaviour
     {
         if (UserManager.Instance != null)
         {
+            UserManager.Instance.Coins = balance;
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+
+        //ApiHandler.instance?.GameExited(SceneManagement.currentGameID);
+
+        LoadMainMenuScene();
+        //SceneManager.LoadScene("Main");
     }
+
+    void LoadMainMenuScene()
+    {
+        StopCoroutine(nameof(LoadMainMenuScene_Coroutine));
+        StartCoroutine(nameof(LoadMainMenuScene_Coroutine));
+    }
+
+    IEnumerator LoadMainMenuScene_Coroutine()
+    {
+        loadingPanel.OpenPanel(.3f, .5f);
+
+        yield return new WaitForSeconds(.5f);
+
+        SceneManagement.GoBackToMainMenu(false);
+    }
+
     private void ComputeScreenBounds()
     {
         float zDist = -mainCam.transform.position.z;

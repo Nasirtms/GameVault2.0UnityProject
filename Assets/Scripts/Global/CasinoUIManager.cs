@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,6 +51,27 @@ public class CasinoUIManager : MonoBehaviour
                 break;
             case 2:
                 errorCanvas.GetComponent<UIStatusController>().HideLoader();
+                break;
+            case 3:
+
+
+                var uiStatusController = errorCanvas.GetComponent<UIStatusController>();
+                if (uiStatusController != null)
+                {
+
+
+                    uiStatusController.AddressablesError_Panel.SetActive(true);
+                    uiStatusController.messagePanel.SetActive(false);
+                    uiStatusController.loadingPanel.SetActive(false);
+                    
+                    if (!string.IsNullOrEmpty(msg))
+                    {
+                        uiStatusController.AddressablesError_txt.text = msg;
+                    }
+
+                    uiStatusController.AddressablesError_ScalePael.transform.GetComponent<RectTransform>().localScale = Vector3.zero;
+                    uiStatusController.AddressablesError_ScalePael.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+                }
                 break;
         }
     }

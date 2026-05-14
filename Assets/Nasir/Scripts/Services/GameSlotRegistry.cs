@@ -47,6 +47,8 @@ public static class GameSlotRegistry
             slotMachines[key] = machine;
             Debug.Log($"✅ Registered slot machine: {key}");
         }
+
+        ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
     }
 
     public static BaseSlotMachine GetMachine(string sceneName)

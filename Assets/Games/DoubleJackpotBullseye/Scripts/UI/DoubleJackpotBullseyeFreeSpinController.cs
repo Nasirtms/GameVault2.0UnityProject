@@ -8,15 +8,31 @@ public class DoubleJackpotBullseyeFreeSpinController : MonoBehaviour
     [SerializeField] private float firstSpinDelay = 1.5f;
     [SerializeField] private float betweenSpinsDelay = 0.6f;
 
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
+
+    #region Unity Methods
     private void Awake()
     {
         if (Instance == null) Instance = this; else Destroy(gameObject);
     }
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
+    #endregion
+
 
     public void StartFreeSpins()
     {
         StopAllCoroutines();
-        StartCoroutine(FreeSpinLoop());
+        cancelRequested = false; 
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
     private IEnumerator FreeSpinLoop()
     {
@@ -33,13 +49,14 @@ public class DoubleJackpotBullseyeFreeSpinController : MonoBehaviour
 
         while (true)
         {
+            if (cancelRequested) yield break;
             // 1) spin (only reels 0 & 2 will move; reel 1 is frozen by SlotMachine logic below)
             float bet = DoubleJackpotBullseyeUIManager.Instance.CurrentBet();
             SlotSpinService.Instance.Spin(bet);
 
             // 2) wait until reels stop (slot machine sets isSpinAgain)
             yield return new WaitUntil(() => sm.isSpinAgain);
-
+            if (cancelRequested) yield break;
             // 3) check if this spin has at least one payline win
             var r = sm.currentSpinResult;
             bool hasWin = r != null && r.paylineWins != null && r.paylineWins.Count > 0;
@@ -72,5 +89,16 @@ public class DoubleJackpotBullseyeFreeSpinController : MonoBehaviour
 
         // end transition
         DoubleJackpotBullseyeFreeGameTransitionController.Instance.EndFreeSpinTransition();
+    }
+    private void CancelFreeSpins()
+    {
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        DoubleJackpotBullseyeUIManager.Instance.UpdateButtons("exitfreeSpin");
     }
 }

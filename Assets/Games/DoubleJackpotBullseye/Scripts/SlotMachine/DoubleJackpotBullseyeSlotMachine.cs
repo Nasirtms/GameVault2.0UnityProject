@@ -1,5 +1,8 @@
+using Coffee.UIEffects;
+using DG.Tweening;
 using Newtonsoft.Json;
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -35,8 +38,8 @@ public class DoubleJackpotBullseyeSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     [HideInInspector] public bool isPaylineCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -44,7 +47,7 @@ public class DoubleJackpotBullseyeSlotMachine : BaseSlotMachine
     private bool isSettingResult;
 
     [HideInInspector] public float freeSpinWinAmount = 0f;
-    [HideInInspector] public bool isFreeGame = false;
+    //[HideInInspector] public bool isFreeGame = false;
     [HideInInspector] public bool isFreeGameReady = false;
     [HideInInspector] public bool playingwinanimation;
     [HideInInspector] public int bullseyeCount = 0;
@@ -56,7 +59,12 @@ public class DoubleJackpotBullseyeSlotMachine : BaseSlotMachine
     //[SerializeField] private bool testOnce = true;      // auto-disable after first trigger
     //[SerializeField] private string testBullseyeId = "DoubleJackpotBullseye"; // backend id
     //private bool testHasTriggered = false;              // internal guard
-
+    [Header("Animation Settings")]
+    public GameObject TopImage;
+    public float scaleAmount = 1.1f;
+    public float animationDuration = 0.5f;
+    public float animationPause = 0.75f;
+    private Tween animationTween;
     // Coins Variables
     private float winAmount;
     public Coroutine AnimateToValueCoroutine;
@@ -94,6 +102,7 @@ public class DoubleJackpotBullseyeSlotMachine : BaseSlotMachine
 
         // Initialize Variables
         InSpin = false;
+        animationTween = CreateTweenWithPause(TopImage, scaleAmount, animationDuration, animationPause);
     }
 
     private void Update()
@@ -291,7 +300,7 @@ public class DoubleJackpotBullseyeSlotMachine : BaseSlotMachine
         horizontalLayout.enabled = false;
         _reelsCount = reels.Count;
         ClearPaylines();
-
+        DoubleJackpotBullseyeUIManager.Instance.PlaySpinMusic("Spin");
         // Getting Spin Settings
         _acceleration = settings.spinSettings.useSameAcceleration
             ? DoubleJackpotBullseyeGameExtension.GetRandomValue(settings.spinSettings.acceleration)
@@ -369,7 +378,7 @@ public class DoubleJackpotBullseyeSlotMachine : BaseSlotMachine
     public bool errorFreeSpin;
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -396,7 +405,7 @@ public class DoubleJackpotBullseyeSlotMachine : BaseSlotMachine
             {
                 DoubleJackpotBullseyeUIManager.Instance.UpdateButtons("Stop");
             }
-
+            DoubleJackpotBullseyeUIManager.Instance.StopSpinMusic("Spin");
             isSpinAgain = true;
             yield break;
         }
@@ -492,7 +501,7 @@ public class DoubleJackpotBullseyeSlotMachine : BaseSlotMachine
 
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
+            //Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -563,7 +572,7 @@ public class DoubleJackpotBullseyeSlotMachine : BaseSlotMachine
                 DoubleJackpotBullseyeUIManager.Instance.StartCoroutine(DoubleJackpotBullseyeUIManager.Instance.AnimateValue(freeSpinWinAmount, (freeSpinWinAmount+winAmount), 0.7f, DoubleJackpotBullseyeUIManager.Instance.winAmount));
                 freeSpinWinAmount += winAmount;
             }
-            Invoke(nameof(UpdateGameCoin), 1f);
+            UpdateGameCoin();
         }
 
         if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0)
@@ -616,6 +625,33 @@ public class DoubleJackpotBullseyeSlotMachine : BaseSlotMachine
 
     #region Helper Functions
 
+    private Tween CreateTweenWithPause(GameObject target, float scale, float duration, float pause)
+    {
+        if (target == null || !target.activeSelf)
+            return null;
+
+        RectTransform rect = target.GetComponent<RectTransform>();
+        if (rect == null)
+            return null;
+
+        Sequence seq = DOTween.Sequence();
+
+        // Scale up
+        seq.Append(rect.DOScale(scale, duration).SetEase(Ease.OutSine));
+
+        // Pause at top
+        seq.AppendInterval(pause*0.3f);
+
+        // Scale back to normal
+        seq.Append(rect.DOScale(1f, duration).SetEase(Ease.InSine));
+
+        seq.AppendInterval(pause * 0.3f);
+
+        // Loop
+        seq.SetLoops(-1, LoopType.Yoyo);
+
+        return seq;
+    }
     public override void StopSpinGettingError()
     {
         currentSpinResult = null;
@@ -626,7 +662,7 @@ public class DoubleJackpotBullseyeSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.resourcesList == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
+            //Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

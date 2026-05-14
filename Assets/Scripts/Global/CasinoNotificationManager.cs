@@ -17,6 +17,7 @@ public class CasinoNotificationManager : MonoBehaviour
 
     [Header("UI References")]
     public GameObject notificationCanvas;
+    public RectTransform notificationBar;
     public Button closeScrollContainerButton;
     public Transform verticalScrollContent;
     public Button moreButton;
@@ -33,6 +34,15 @@ public class CasinoNotificationManager : MonoBehaviour
     public TextMeshProUGUI topMessageText;
     public float slideDuration = 0.4f;
     public float stayDuration = 2f;
+
+    [Header("Other Settings")]
+    public Vector2 barHidePosition;
+    public Vector2 barShowPosition;
+    public float barShowTimeDuration = 5;
+    public float barHideTimeDuration = 3;
+    private float barShowHideTimer = 0;
+    private bool isBarVisible = false;
+    private bool barShowHideInProgress = false;
 
 #if UNITY_WEBGL
     private const int POOL_SIZE = 30;
@@ -55,7 +65,7 @@ public class CasinoNotificationManager : MonoBehaviour
   
     private void OnEnable()
     {
-        Debug.Log("[NOTIFY] Subscribed to FetchedNotifictionData");
+        //Debug.Log("[NOTIFY] Subscribed to FetchedNotifictionData");
         UserManager.FetchedNotifictionData += OnNotificationDataReceived;
     }
 
@@ -64,17 +74,29 @@ public class CasinoNotificationManager : MonoBehaviour
         UserManager.FetchedNotifictionData -= OnNotificationDataReceived;
     }
 
+    private void Update()
+    {
+        if (!barShowHideInProgress && !isExpanded)
+        {
+            barShowHideTimer += Time.deltaTime;
+            if (barShowHideTimer >= (isBarVisible ? barShowTimeDuration : barHideTimeDuration))
+            {
+                ForceShowHideBar(!isBarVisible);
+            }
+        }
+    }
+
     // ------------------------------------------------------------
     // EVENT ENTRY POINT (ONLY ENTRY)
     // ------------------------------------------------------------
 
     private void OnNotificationDataReceived(UserProfileResponse response)
     {
-        Debug.Log("[NOTIFY] Notification data received");
+        //Debug.Log("[NOTIFY] Notification data received");
 
         if (response == null || response.recent_big_wins == null || response.recent_big_wins.Count == 0)
         {
-            Debug.Log("[NOTIFY] No notifications found");
+            //Debug.Log("[NOTIFY] No notifications found");
             return;
         }
 
@@ -107,12 +129,15 @@ public class CasinoNotificationManager : MonoBehaviour
         if (notificationCanvas != null)
             return;
 
-        Debug.Log("[NOTIFY] Creating notification canvas");
+        //Debug.Log("[NOTIFY] Creating notification canvas");
 
         notificationCanvas = Instantiate(notificationCanvasPrefab, canvasTransform);
 
         closeScrollContainerButton =
             notificationCanvas.transform.Find("CloseScrollButton").GetComponent<Button>();
+
+        notificationBar =
+            notificationCanvas.transform.Find("Notification").GetComponent<RectTransform>();
 
         moreButton =
             notificationCanvas.transform.Find("Notification/MoreButton").GetComponent<Button>();
@@ -150,7 +175,7 @@ public class CasinoNotificationManager : MonoBehaviour
         if (notificationMessages.Count == 0 || isSliding)
             return;
 
-        Debug.Log("[NOTIFY] Start sliding messages");
+        //Debug.Log("[NOTIFY] Start sliding messages");
 
         isSliding = true;
         currentTopIndex = 0;
@@ -187,7 +212,10 @@ public class CasinoNotificationManager : MonoBehaviour
 
     public void ToggleMore()
     {
-        Debug.Log("[NOTIFY] ToggleMore");
+        if (barShowHideInProgress)
+            return;
+
+        //Debug.Log("[NOTIFY] ToggleMore");
 
         isExpanded = !isExpanded;
 
@@ -232,7 +260,7 @@ public class CasinoNotificationManager : MonoBehaviour
 
     private void CreatePool()
     {
-        Debug.Log($"[POOL] Creating pool ({POOL_SIZE})");
+        //Debug.Log($"[POOL] Creating pool ({POOL_SIZE})");
 
         entryPool.Clear();
         nextPoolIndex = 0;
@@ -247,7 +275,7 @@ public class CasinoNotificationManager : MonoBehaviour
 
     private IEnumerator PopulateScrollGradually()
     {
-        Debug.Log("[POOL] Populate start");
+        //Debug.Log("[POOL] Populate start");
 
         foreach (var obj in entryPool)
             obj.SetActive(false);
@@ -263,12 +291,12 @@ public class CasinoNotificationManager : MonoBehaviour
         }
 
         Canvas.ForceUpdateCanvases();
-        Debug.Log("[POOL] Populate done");
+        //Debug.Log("[POOL] Populate done");
     }
 
     private void AddEntry(string msg)
     {
-        Debug.Log("[POOL] AddEntry");
+        //Debug.Log("[POOL] AddEntry");
 
         GameObject obj = entryPool[nextPoolIndex];
         nextPoolIndex = (nextPoolIndex + 1) % POOL_SIZE;
@@ -278,9 +306,9 @@ public class CasinoNotificationManager : MonoBehaviour
         var entry = obj.GetComponent<NotificationEntryUI>();
         entry.SetMessage(msg);
 
-        Debug.Log("[POOL] SetActive(true)");
+        //Debug.Log("[POOL] SetActive(true)");
         obj.SetActive(true);
-        Debug.Log("[POOL] Activated");
+        //Debug.Log("[POOL] Activated");
     }
 
     // ------------------------------------------------------------
@@ -290,5 +318,23 @@ public class CasinoNotificationManager : MonoBehaviour
     private string FormatNotificationMessage(string msg)
     {
         return msg.Replace("Congratulations", "<color=#dc8001>Congratulations</color>");
+    }
+
+    void ForceShowHideBar(bool state)
+    {
+        if (barShowHideInProgress)
+            return;
+
+        if (isBarVisible == state)
+            return;
+
+        barShowHideInProgress = true;
+        barShowHideTimer = 0;
+
+        notificationBar.DOAnchorPos(state ? barShowPosition : barHidePosition, 0.6f).SetEase(Ease.InOutSine).OnComplete(() =>
+        {
+            barShowHideInProgress = false;
+            isBarVisible = state;
+        });
     }
 }

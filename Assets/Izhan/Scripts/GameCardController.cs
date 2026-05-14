@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Linq;
@@ -15,12 +16,15 @@ public class GameCardController : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     [Header("Addressable")]
     public string addressableLabel; // set by the catalogue when spawning the card
+    public string sceneName; // set by the catalogue when spawning the card
 
     [SerializeField] private string gameID;
+    [SerializeField] private string gameTitle;
     [SerializeField] private Toggle targetToggle;
     [SerializeField] private Image imageToDisplay;
     [SerializeField] private Image isHot_Image;
     [SerializeField] private Image isNew_image;
+    [SerializeField] private Image isComingSoon_image;
     [SerializeField] private Slider fillSlider;
     [SerializeField] private TMP_Text fillText;
     [SerializeField] private Button button;
@@ -69,6 +73,7 @@ public class GameCardController : MonoBehaviour, IPointerDownHandler, IPointerUp
     public void SetGameCardData(string gameTitle, bool isFavorite, bool shinerBool, string gameid)
     {
         gameID = gameid;
+        this.gameTitle = gameTitle;
 
         //if (!string.IsNullOrEmpty(gameTitle))
         //    transform.GetChild(1).GetComponent<TMP_Text>().text = gameTitle;
@@ -84,6 +89,7 @@ public class GameCardController : MonoBehaviour, IPointerDownHandler, IPointerUp
         {
             isHot_Image.gameObject.SetActive(gi.Gametitle.ToLower().Contains("hot"));
             isNew_image.gameObject.SetActive(gi.Gametitle.ToLower().Contains("new"));
+            isComingSoon_image.gameObject.SetActive((gi.Gametitle.ToLower().Contains("comingsoon") || gi.Gametitle.ToLower().Contains("coming soon") || gi.Gametitle.ToLower().Contains("coming_soon")));
         }
     }
 
@@ -151,6 +157,8 @@ public class GameCardController : MonoBehaviour, IPointerDownHandler, IPointerUp
                     var response = JsonConvert.DeserializeObject<SerializableClasses.AddFavoriteResponse>(www.downloadHandler.text);
                     Debug.Log($"✅ Favorite Updated: {response.message}");
                     gameCatalogueController.UpdateGameItemList(gameID, addToFavorites, this);
+
+                    CasinoUIManager.Instance.ShowErrorCanvas(1, (addToFavorites ? "Added to " : "Removed from ") + "Favorites");
                 }
                 catch
                 {
@@ -349,5 +357,26 @@ public class GameCardController : MonoBehaviour, IPointerDownHandler, IPointerUp
     public void SetFavoriteButtonInteractable(bool state)
     {
         targetToggle.interactable = state;
+    }
+
+    public float scaleMultiplier = .3f;
+    public float duration = .4f;
+    public int vibrato = 10;
+    public float elasticity = 1;
+
+    public void GameCardClicked()
+    {
+        Vector3 initialScale = transform.localScale;
+        button.interactable = false;
+
+        transform.localScale = initialScale;
+        transform.DOPunchScale(-initialScale * 0.1f, 0.4f, 9, 1).OnComplete(() =>
+        {
+            button.interactable = true;
+        });
+        DOVirtual.DelayedCall(0.25f, () =>
+        {
+            MainMenu.MainMenuManager.instance.OpenLevel(sceneName, gameID, addressableLabel, gameTitle);
+        });
     }
 }

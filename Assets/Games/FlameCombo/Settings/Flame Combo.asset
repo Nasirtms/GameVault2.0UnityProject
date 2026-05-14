@@ -46,7 +46,35 @@ MonoBehaviour:
   - type: 10
     slotAnimationBool: Wild
     slotTypeIndex: 10
-  soundItems: []
+  soundItems:
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: b78df9d867fd3ae49be4d23f0a868125, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinBG
+    audioClip: {fileID: 8300000, guid: bbd7658bce776934b828a0634305d146, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: a9833c3db2e1c844fbde37751e9bb4cb, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Bet
+    audioClip: {fileID: 8300000, guid: b5e232d108e6cac41b0546fb7193a9fc, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 501cb12c23066b445b6caba0dd47f174, type: 3}
+    volume: 0.5
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 54eef4fbfee221040b59b797121a2668, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: bbd6d7b4f3c2caa469164db7d845efeb, type: 3}
+    volume: 0.5
+    pitch: 1
   spinSettings:
     startSpin: 1
     endSpin: 0

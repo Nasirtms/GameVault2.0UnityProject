@@ -14,7 +14,20 @@ public class FruitParadiseFreeSpinController : MonoBehaviour
     private int freeSpinDone = 0;
     private bool isFreeGame = false;
     private bool firstSpin;
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
+    #endregion
 
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
     #endregion
 
     #region Public References
@@ -23,11 +36,12 @@ public class FruitParadiseFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         freeSpinDone = 0;
 
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
 
     public void ResetFreeSpins()
@@ -73,7 +87,7 @@ public class FruitParadiseFreeSpinController : MonoBehaviour
             {
                 yield return new WaitForSeconds(delayBetweenSpins); // optional delay between spins
             }
-
+            if (cancelRequested) yield break;
             float betAmount = FruitParadiseUIManager.Instance.CurrentBet();
             SlotSpinService.Instance.Spin(betAmount);
 
@@ -82,7 +96,7 @@ public class FruitParadiseFreeSpinController : MonoBehaviour
             freeSpinDone++;
 
             yield return new WaitUntil(() => FruitParadiseSlotMachine.Instance.isSpinAgain);
-
+            if (cancelRequested) yield break;
             if (FruitParadiseSlotMachine.Instance.currentSpinResult != null)
             {
                 if (FruitParadiseSlotMachine.Instance.GetWinAmount() > 0)
@@ -105,6 +119,18 @@ public class FruitParadiseFreeSpinController : MonoBehaviour
 
         FruitParadiseFreeGameTransitionController.Instance.EndFreeSpinTransition();
     }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
 
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        FruitParadiseUIManager.Instance.UpdateButtons("Stop");
+    }
     #endregion
 }

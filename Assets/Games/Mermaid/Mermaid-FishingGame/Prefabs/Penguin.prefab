@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -634379780589492338}
   - component: {fileID: 98000616281173621}
   - component: {fileID: -2733909967130831397}
+  - component: {fileID: 7997614184172180193}
   m_Layer: 8
   m_Name: Penguin
   m_TagString: Fish
@@ -104,9 +105,11 @@ MonoBehaviour:
   - {fileID: 7739841332593263878, guid: 1cd1a5a8131f0c84e9abca783ca56905, type: 3}
   - {fileID: 7739841332593263878, guid: c495c15136c3f6044af5c4d24333568d, type: 3}
   flashDuration: 0.1
-  lockedColor: {r: 1, g: 1, b: 1, a: 1}
+  lockedColor: {r: 0, g: 1, b: 0, a: 1}
   speed: 0
   destination: {x: 0, y: 0, z: 0}
+  useCustomAnimBool: 0
+  animationParameterName: 
   sr: {fileID: 6709115806958749429}
   originalLayer:
     serializedVersion: 2
@@ -149,7 +152,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 515206095348466204}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -187,6 +190,65 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 7, y: 3}
   m_EdgeRadius: 0
+--- !u!60 &7997614184172180193
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 515206095348466204}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 1.1934321, y: 1.2638112}
+      - {x: -0.93107116, y: 3.0347435}
+      - {x: -0.41001964, y: 1.6360904}
+      - {x: -2.1355457, y: 1.5104017}
+      - {x: -3.3429508, y: 0.7465502}
+      - {x: -4.541746, y: 1.293433}
+      - {x: -4.5690413, y: -1.3115382}
+      - {x: -3.3075447, y: -0.7033485}
+      - {x: -2.145528, y: -1.4873891}
+      - {x: -0.37300453, y: -1.5810083}
+      - {x: -0.9283613, y: -2.9449978}
+      - {x: 1.231139, y: -1.2145799}
+      - {x: 3.263586, y: -0.7336423}
+      - {x: 3.300233, y: 0.6482031}
+  m_UseDelaunayMesh: 0
 --- !u!1 &1662602947399919168
 GameObject:
   m_ObjectHideFlags: 0

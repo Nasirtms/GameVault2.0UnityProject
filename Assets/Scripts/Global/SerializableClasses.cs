@@ -70,6 +70,8 @@ public class SerializableClasses : MonoBehaviour
         public string sessionId;
         public bool isActive;
         public bool canAddCoin;
+        public bool isFeedback;
+        public bool hasSetAvatarOnce;
 
 
         public void EnsureDefaults()
@@ -342,7 +344,25 @@ public class SerializableClasses : MonoBehaviour
 
     #endregion
 
+    #region GoldRushGus MiniGame
+    [Serializable]
+    public class GoldRushGusMiniGameCoinUpdateResposne
+    {
+        public bool success;
+        public string requestId;
+        public float WinAmount;
+        public float newBalance;
+    }
 
+    [Serializable]
+    public class GoldRushGusMiniGameCoinUpdateRequest
+    {
+        public string gameId;
+        public string requestId;
+        public float betAmount;
+        public int CoinMultiplier;
+    }
+    #endregion
 
     [Serializable]
     public class UserProfileResponse
@@ -386,6 +406,8 @@ public class SerializableClasses : MonoBehaviour
         public bool isActive;
         public bool canAddCoin;
         public string token;
+        public bool isFeedback;
+        public bool hasSetAvatarOnce;
     }
 
 }

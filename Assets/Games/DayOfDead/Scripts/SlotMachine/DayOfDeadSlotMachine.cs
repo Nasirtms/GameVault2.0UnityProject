@@ -21,8 +21,8 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
     [ShowInInspector][ReadOnly] public SpinResult currentSpinResult;
 
     // State Variables
-    public bool InSpin = false;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //public bool InSpin = false;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     public bool isSlotAnimationCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -187,6 +187,7 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
             StopCoroutine(stopCoroutine);
 
         // Start the spin
+        //addFreeSpinWildToList();
         spinCoroutine = StartCoroutine(StartSpin());
         addExpendingWildIndexIntoList();
     }
@@ -195,8 +196,9 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
     {
         if (!isReSpin && !isRespinActive)
         {
-            ReSpinWinAmount = 0;
+            ReSpinWinAmount = 0f;
             ClearExpandingWilds();
+            isWildCompleted = true;
         }
         if ((!isFreeGame && !isRespinActive) || firstFreeSpin )
         {
@@ -217,6 +219,7 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
         isSettingResult = false;
         isStopBtnPressed = false;
         isSlotAnimationCompleted = false;
+        isSlotAnimationDone = true;
 
         freeSpinWildSlots.Clear();
         spinSymbolMatrix.Clear();
@@ -270,7 +273,7 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
 
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -397,7 +400,6 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -412,6 +414,7 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
         }
         else if (isReSpin && winAmount > 0)
         {
+            firstReSpin = false;
             ReSpinWinAmount += winAmount;
             DayOfDeadUIManager.Instance.UpdateWinAmount(winAmount, true);
         }
@@ -419,7 +422,6 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
         {
             float betAmount = DayOfDeadUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
         }
 
         // Free game wild scanning
@@ -447,7 +449,12 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
                 }
             }
         }
-
+        // Expanding wild check (only in normal base game spin end)
+        if (!isReSpin && !isFreeGameReady && !isFreeGame)
+        {
+            FindExpandingWildSlots();
+            StartCoroutine(StartExpandingWild());
+        }
         //Paylines
         if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || scatterCount >= 3)
         {
@@ -466,24 +473,21 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
             SetSlotAnimationCompleted();
         }
 
-        // Expanding wild check (only in normal base game spin end)
-        if (!isReSpin && !isFreeGameReady && !isFreeGame)
-        {
-            FindExpandingWildSlots();
-            StartCoroutine(StartExpandingWild());
-        }
-
         InSpin = false;
         isSpinAgain = true;
-        if(DayOfDeadAutoSpinController.isAutoSpinning && isReSpin)
+        if (isFreeGameReady)
+        {
+            DayOfDeadUIManager.Instance.UpdateButtons("Transition Start");
+        }
+        else if (DayOfDeadAutoSpinController.isAutoSpinning && isReSpin)
         {
             DayOfDeadUIManager.Instance.UpdateButtons("Auto Respin");
         }
-        if (!DayOfDeadAutoSpinController.isAutoSpinning && !isFreeGame && !isRespinActive)
+        else if (!DayOfDeadAutoSpinController.isAutoSpinning && !isFreeGame && !isRespinActive)
         {
             DayOfDeadUIManager.Instance.UpdateButtons("Single Stop");
         }
-        if (!DayOfDeadAutoSpinController.isAutoSpinning && isRespinActive)
+        else if (!DayOfDeadAutoSpinController.isAutoSpinning && isRespinActive)
         {
             DayOfDeadUIManager.Instance.UpdateButtons("Free Spin");
         }
@@ -523,9 +527,12 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
     }
     private IEnumerator StartExpandingWild()
     {
-        yield return new WaitUntil(() => DayOfDeadUIManager.Instance.winAnimationCompleted);
         if (isFreeGameReady || isFreeGame)
+        {
+            isWildCompleted = true;
+            isSlotAnimationDone = true;
             yield break;
+        }
 
         if (expandingWildSlots.Count == 0)
         {
@@ -595,15 +602,16 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
             isRespinActive = false;
         }
     }
-    private int AddNewExpandingWildsDuringRespins()
+    private bool AddNewExpandingWildsDuringRespins()
     {
-        int newMaxReelIndex = -1;
+        //int newMaxReelIndex = -1;
         HashSet<int> reelsWithWild = new HashSet<int>();
 
         foreach (var i in activeExpandingWilds)
             reelsWithWild.Add(i.reelIndex);
 
-        isSlotAnimationDone = false;
+        //isSlotAnimationDone = false;
+        bool addedNewWild = false;
         foreach (var slot in expandingWildSlots)
         {
             if (slot == null) continue;
@@ -618,18 +626,33 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
                 continue;
 
             slot.isLocked = true;
-
+            isSlotAnimationDone = false;
             var instance = SpawnExpandingWildInstance(slot, reelIndex, slotIndex);
             activeExpandingWilds.Add(instance);
 
             reelsWithWild.Add(reelIndex);
-            addExpendingWildIndexIntoList();
+             addExpendingWildIndexIntoList();
 
-            if (reelIndex > newMaxReelIndex)
-                newMaxReelIndex = reelIndex;
+            //if (reelIndex > newMaxReelIndex)
+            //    newMaxReelIndex = reelIndex;
+
+            addedNewWild = true;
         }
+        if (!addedNewWild)
+        {
+            isSlotAnimationDone = true;
+        }
+        else
+        {
+            StartCoroutine(SetSlotAnimationDoneAfterDelay(1.6f));
+        }
+        //isSlotAnimationDone = true;
+        return addedNewWild;
+    }
+    private IEnumerator SetSlotAnimationDoneAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
         isSlotAnimationDone = true;
-        return newMaxReelIndex;
     }
     private ExpandingWildInstance SpawnExpandingWildInstance(DayOfDeadSlotScript slot, int reelIndex, int slotIndex)
     {
@@ -664,7 +687,6 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
             wildInstance = instance
         });
 
-        // Animation chain
         DOTween.Sequence()
             .AppendInterval(0.5f)
             .AppendCallback(() => instance.animController?.PlaySmallToBigOnce())
@@ -698,9 +720,9 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
         Transform inst = wild.instance.transform;
         Vector3 startPos = inst.position;
         Vector3 targetPos = targetSlot.transform.position;
-        Vector3 finalPos = new Vector3(startPos.x, -2.5f, startPos.z);
+        Vector3 finalPos = new Vector3(startPos.x, -2.51f, startPos.z); //-2.51f
 
-        inst.DOMoveY(finalPos.y, 0.6f)
+        inst.DOMoveY(finalPos.y, 0.7f) //0.6
             .SetEase(Ease.OutCubic)
             .OnComplete(() =>
             {
@@ -729,14 +751,13 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
 
         while (isRespinActive && remainingRespins > 0 && activeExpandingWilds.Count > 0)
         {
-            if (firstReSpin)
-                firstReSpin = false;
-            else
-                yield return new WaitForSeconds(1f); 
+            yield return new WaitForSeconds(1f);
+            if (DayOfDeadFreeSpinController.Instance.cancelRequested) yield break;
 
             int baseRemaining = Mathf.Max(remainingRespins - 1, 0);
             FindExpandingWildSlots();
-            AddNewExpandingWildsDuringRespins();
+            //AddNewExpandingWildsDuringRespins();
+            bool newWildAdded = AddNewExpandingWildsDuringRespins();
 
             int highestReelIndex = -1;
             foreach (var w in activeExpandingWilds)
@@ -803,28 +824,38 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
 
             isSpinAgain = false;
             isSlotAnimationCompleted = false;
-
-            yield return new WaitUntil(() => isSlotAnimationDone);
+            Debug.Log("LovKumar 6");
+            //yield return new WaitUntil(() => isSlotAnimationDone);
+            if (newWildAdded)
+            {
+                yield return new WaitUntil(() => isSlotAnimationDone);
+            }
+            else
+            {
+                isSlotAnimationDone = true;
+            }
 
             SlotSpinService.Instance.Spin(betAmount);
-
+            Debug.Log("LovKumar 7");
             yield return new WaitUntil(() => isSpinAgain);
 
+            if (DayOfDeadFreeSpinController.Instance.cancelRequested) yield break;
             if (currentSpinResult != null && GetWinAmount() > 0)
             {
                 yield return new WaitUntil(() => isSlotAnimationCompleted);
             }
 
             remainingRespins = nextRemainingRespins;
-
+            Debug.Log("LovKumar 8");
             if (remainingRespins <= 0)
             {
+                Debug.Log("LovKumar 9");
                 isRespinActive = false;
                 break;
             }
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(0.5f);
         }
-
+        Debug.Log("LovKumar 10");
         isWildCompleted = true;
         isReSpin= false;
         isFreeGame = false;
@@ -832,10 +863,10 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
         {
             float betAmount = DayOfDeadUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, ReSpinWinAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
-        DayOfDeadPaylineController.Instance.StopPaylines();
-        DayOfDeadPaylineController.Instance.ClearPaylineData();
+        //DayOfDeadPaylineController.Instance.StopPaylines();
+        //DayOfDeadPaylineController.Instance.ClearPaylineData();
         if (DayOfDeadAutoSpinController.isAutoSpinning)
         {
             DayOfDeadUIManager.Instance.SetAutoInteractable(false);
@@ -1062,11 +1093,11 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
         Transform inst = instance.instance.transform;
         Vector3 startPos = inst.position;
         Vector3 targetPos = targetSlot.transform.position;
-        Vector3 finalPos = new Vector3(startPos.x, -2.5f, startPos.z);
+        Vector3 finalPos = new Vector3(startPos.x, -2.52f, startPos.z); // -2.52f
 
         //targetPos.y
 
-        inst.DOMoveY(finalPos.y, 0.6f)
+        inst.DOMoveY(finalPos.y, 0.5f) //0.6f
             .SetEase(Ease.OutCubic)
             .OnComplete(() =>
             {
@@ -1103,7 +1134,6 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
                 int slotIndex = row + visibleOffset;
                 if (slotIndex < 0 || slotIndex >= reelObj.slots.Count)
                 {
-                    Debug.LogWarning($"[GetWalkingWild] Invalid slotIndex={slotIndex} for reel={reelIndex}");
                     return null;
                 }
                 DayOfDeadSlotScript slot = reelObj.slots[slotIndex];
@@ -1112,7 +1142,7 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
 
                 slot.reelIndex = reelIndex;
                 slot.slotIndex = slotIndex;
-                Debug.Log("slot " + slot);
+                //Debug.Log("slot " + slot);
                 Debug.Log("slot.reelIndex " + slot.reelIndex);
                 Debug.Log("slot.slotlIndex " + slot.slotIndex);
                 return slot;  
@@ -1120,7 +1150,7 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
         }
         return null;
     }
-    void addExpendingWildIndexIntoList()
+    public void addExpendingWildIndexIntoList()
     {
         freeSpinWildReel.Clear();
         foreach (var ew in activeExpandingWilds)
@@ -1128,6 +1158,15 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
             freeSpinWildReel.Add(ew.reelIndex);
         }
     }
+    public void addFreeSpinWildToList()
+    {
+        freeSpinWildReel.Clear();
+        foreach (var i in activeWilds)
+        {
+            freeSpinWildReel.Add(i.reelIndex + 1);
+        }
+    }
+
     public void UpdateFreeSpinWildVisual(FreeSpinWalkingWild freeSpinWildInstance)
     {
         if (freeSpinWildInstance == null)

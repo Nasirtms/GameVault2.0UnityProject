@@ -18,11 +18,15 @@ public class StarBurstSlotsAutoSpinController : MonoBehaviour
     #endregion
 
     #region Unity Methods
-
-    private void Start()
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
     #endregion
 
     #region Public References
@@ -97,7 +101,7 @@ public class StarBurstSlotsAutoSpinController : MonoBehaviour
                 break;
             }
 
-            Debug.Log("Has free game: " + StarBurstSlotsSlotMachine.Instance.isFreeGameReady);
+            //Debug.Log("Has free game: " + StarBurstSlotsSlotMachine.Instance.isFreeGameReady);
             if (StarBurstSlotsSlotMachine.Instance.isFreeGameReady)
                 break;
            
@@ -140,6 +144,19 @@ public class StarBurstSlotsAutoSpinController : MonoBehaviour
             StarBurstSlotsSlotMachine.Instance.isFreeGameReady = false;
         }
     }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
 
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
 }

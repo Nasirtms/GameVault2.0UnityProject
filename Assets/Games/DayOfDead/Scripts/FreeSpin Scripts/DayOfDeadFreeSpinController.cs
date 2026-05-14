@@ -14,7 +14,7 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
     [SerializeField] private TMP_Text freeSpinsText;
 
     [SerializeField] private float delayBetweenSpins = 1f;
-    private bool isFreeGame = false;
+    public bool isFreeGame = false;
     private bool firstSpin;
 
     [Header("Topbar Settings")]
@@ -26,14 +26,15 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
 
     public int currentMultiplier = 2;
 
-    // only walking wilds live here now
-
     public int reelIndex = 0;
     public int slotIndex = 0;
     public GameObject wildParticles;
+
+    private Coroutine freeSpinRoutine;
+    public bool cancelRequested;
     #endregion
 
-    #region Public References
+    #region Unity Methods
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -43,24 +44,37 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
         }
         Instance = this;
     }
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
+    #endregion
+
+    #region Public References
+
     public void StartFreeSpins()
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         DayOfDeadSlotMachine.Instance.ClearExpandingWilds();
         DayOfDeadSlotMachine.Instance.isRespinActive = false;
         DayOfDeadSlotMachine.Instance.isReSpin = false;
 
-        //topbar.topbarArea.SetActive(true);
         if (topbar != null)
             topbar.CreateInitialTokens(initialTopbarTokens);
 
         currentMultiplier = 2;
         UpdateSpinText();
 
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
 
     public void ResetFreeSpins()
@@ -186,8 +200,8 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
             slotIndex = slotIndex,
             animController = animCtrl
         };
-
-        wildSeq.AppendInterval(0.5f).AppendCallback(() =>
+        instance.animController.ResetAll();
+        wildSeq.AppendInterval(0.9f).AppendCallback(() =>
                {
                    child11.SetActive(true);
                    newSlot.transform.parent = slot.transform.parent;
@@ -195,13 +209,12 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
                    newSlot.transform.localScale = slot.transform.localScale;
                    newSlot.transform.parent = null;
                })
-               .AppendInterval(0.5f).AppendCallback(() => 
+               .AppendInterval(0.7f).AppendCallback(() => 
                {
-                   instance.animController.ResetAll();
                    instance.animController?.PlaySmallToBigOnce(); 
                })
 
-               .AppendInterval(0.2f).AppendCallback(() => DayOfDeadSlotMachine.Instance.MoveFreeSpinWildToRow3(instance))
+               .AppendCallback(() => DayOfDeadSlotMachine.Instance.MoveFreeSpinWildToRow3(instance)) //.AppendInterval(0.2f)
 
                .AppendInterval(1f).AppendCallback(() =>
                {
@@ -236,9 +249,9 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
             {
                 yield return new WaitForSeconds(delayBetweenSpins); 
             }
-
+            if (cancelRequested) yield break;
             MoveWildsLeft();
-
+            DayOfDeadSlotMachine.Instance.addFreeSpinWildToList();
             if (!HasFreeSpin())
                 break;
 
@@ -251,12 +264,13 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
             SlotSpinService.Instance.Spin(betAmount);
 
             yield return new WaitUntil(() => DayOfDeadSlotMachine.Instance.isSpinAgain);
+            if (cancelRequested) yield break;
 
             if (DayOfDeadSlotMachine.Instance.currentSpinResult != null && DayOfDeadSlotMachine.Instance.GetWinAmount() > 0)
             {
                 yield return new WaitUntil(() => DayOfDeadSlotMachine.Instance.isSlotAnimationCompleted);
             }
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -296,6 +310,19 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
             yield return slot.MoveParticles(tokenWorldPos);
         }
         isWildParticle = true;
+    }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
+
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        DayOfDeadUIManager.Instance.UpdateButtons("Free Spin End");
     }
     #endregion
 }

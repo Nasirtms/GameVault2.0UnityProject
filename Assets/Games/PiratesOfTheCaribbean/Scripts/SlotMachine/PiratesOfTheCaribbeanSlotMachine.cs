@@ -19,8 +19,8 @@ public class PiratesOfTheCaribbeanSlotMachine : BaseSlotMachine
     [ShowInInspector][ReadOnly] public SpinResult currentSpinResult;
 
     // State Variables
-    public bool InSpin = false;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //public bool InSpin = false;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     [HideInInspector] public bool isSlotAnimationCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -28,7 +28,7 @@ public class PiratesOfTheCaribbeanSlotMachine : BaseSlotMachine
     public bool firstFreeSpin;
 
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool isFreeGameReady;
     [HideInInspector] public int freeSpinCount;
     [HideInInspector] public float freeSpinWinAmount;
@@ -132,7 +132,7 @@ public class PiratesOfTheCaribbeanSlotMachine : BaseSlotMachine
         }
 
 
-            Debug.Log("Scatter Count: " + currentSpinResult.scatterCount + "\nPaylines Count: " + currentSpinResult.paylineWins.Count);
+            //Debug.Log("Scatter Count: " + currentSpinResult.scatterCount + "\nPaylines Count: " + currentSpinResult.paylineWins.Count);
         Debug.Log("SpinResult (parsed):\n" + JsonConvert.SerializeObject(currentSpinResult, Formatting.Indented));
 
         spinSymbolMatrix.Clear();
@@ -187,6 +187,9 @@ public class PiratesOfTheCaribbeanSlotMachine : BaseSlotMachine
         isSettingResult = false;
         isStopBtnPressed = false;
         isSlotAnimationCompleted = false;
+
+        PiratesOfTheCaribbeanUIManager.Instance.autoSpinPopupPanel.transform.localScale = new Vector3(1, 0, 1);
+        PiratesOfTheCaribbeanUIManager.Instance.autoSpinPopupPanel.SetActive(false);
         PiratesOfTheCaribbeanUIManager.Instance.winAnimationCompleted = true;
         PiratesOfTheCaribbeanPaylineController.Instance.StopPaylines();
         PiratesOfTheCaribbeanPaylineController.Instance.ClearPaylineData();
@@ -237,7 +240,7 @@ public class PiratesOfTheCaribbeanSlotMachine : BaseSlotMachine
 
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -382,7 +385,7 @@ public class PiratesOfTheCaribbeanSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
+            //Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -406,7 +409,7 @@ public class PiratesOfTheCaribbeanSlotMachine : BaseSlotMachine
         {
             float betAmount = PiratesOfTheCaribbeanUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
 
         if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || scatterCount >= 3)
@@ -563,7 +566,7 @@ public class PiratesOfTheCaribbeanSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.slotResources == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
+            //Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

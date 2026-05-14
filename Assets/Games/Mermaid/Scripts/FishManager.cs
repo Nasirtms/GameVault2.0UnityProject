@@ -2,19 +2,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 using Color = UnityEngine.Color;
 using Random = UnityEngine.Random;
 
 [Serializable]
 public class FishInfo
 {
+    public bool applyMovement = false;
     public Transform transform;
     public Vector3 destination;
     public float speed;
@@ -56,8 +55,12 @@ public class FishManager : MonoBehaviour
     [Serializable]
     private class SpawnState
     {
-public GameObject prefab; public FishData fishData; // using your custom fish data
-public float timer;     }
+        public string fishGuid;
+        public List<string> fishBatchGuids = new List<string>();
+        public GameObject prefab; 
+        public FishData fishData; // using your custom fish data
+        public float timer;
+    }
 
     [Header("Debug Spawn States (Inspector View)")]
     [SerializeField] private List<SpawnState> spawnStates = new List<SpawnState>();
@@ -107,6 +110,7 @@ public float timer;     }
     [SerializeField] public GameObject[] bonusPrefabsType2;
 
     [Tooltip("Seconds from start when bonus begins")]
+    [SerializeField] private Vector2 bonusStartTimeMinMax = new Vector2(1200f, 1800f);
     [SerializeField] private float bonusStartTime = 50f;
     [SerializeField] private bool requirePool = true;
     private Coroutine spawnLoop;
@@ -127,8 +131,10 @@ public float timer;     }
     [Header("Spawn Settings")]
     [SerializeField] private float globalSpawnIntervalMin = 1f;
     [SerializeField] private float globalSpawnIntervalMax = 3f;
+    [SerializeField] private int totalFishCapacity = 40;
     private float globalSpawnTimer = 0f;
     private bool IsFirstBonusRound = true;
+    private bool spawningInProgress = false;
 
     [SerializeField] private GameObject fullScreenBombExplosionPrefab;
     [SerializeField] private float fullScreenBombFXDuration = 1.2f;
@@ -150,6 +156,9 @@ public float timer;     }
     bool ignoreFirst;
     [SerializeField] List<string> bonusFishNames = new List<string>();
 
+
+    public int GenerateRandomHealth() => Random.Range(15, 51);
+
     // Start is called before the first frame update
     void Start()
     {
@@ -163,6 +172,8 @@ public float timer;     }
         IsFirstBonusRound = true;
 
         bonusTriggered = false;
+        bonusStartTime = Random.Range(bonusStartTimeMinMax.x, bonusStartTimeMinMax.y);
+
         for (int i = 0; i < fishDatabase.fishList.Count; i++)
         {
             Debug.Log($"Adding fish from database: {fishDatabase.fishList[i].fishName}");
@@ -180,10 +191,11 @@ public float timer;     }
                 timer = Random.Range(globalSpawnIntervalMin, globalSpawnIntervalMax)
             });
             
-            Debug.Log($"Adding fish from database: Added: {spawnStates[i].fishData.fishName}");
+            Debug.Log($"Adding fish from database: Added: {fishDatabase.fishList[i].fishName}");
         }
 
-        Fish.OnFishKilled += HandleFishKilled;
+        Fish.OnFishKilledByPlayer += HandleFishKilledByPlayer;
+        Fish.OnFishKilledByBot += HandleFishKilledByBot;
 
         SpawnFish();
         InvokeRepeating(nameof(CheckForEmptyFishes), 0f, 5f);
@@ -193,7 +205,7 @@ public float timer;     }
     void CheckForEmptyFishes()
     {
         //if (fishspawner_new.GetTotalActiveCount() <= 40 && !isBonus && ignoreFirst && !bonusRoundStarted)
-        if (fishspawner_new.GetTotalActiveCount() <= 40 && ignoreFirst)
+        if (fishspawner_new.GetTotalActiveCount() <= totalFishCapacity && ignoreFirst)
         {
             //SpawnBufferFishes();
             Debug.Log("total Active Fishes " + fishspawner_new.GetTotalActiveCount());
@@ -208,7 +220,7 @@ public float timer;     }
 
     public void SpawnMoreFishes(bool isReset)
     {
-        MermaidBackendBridge.instance.LoadBackendProfiles(isBonus ? 0 : Random.Range(3, 9), Manager.totalBetAmountPerInterval,Manager.totalFishWinAmountPerInterval);
+        MermaidBackendBridge.instance.LoadBackendProfiles(isBonus ? 0 : Random.Range(15, 20), Manager.totalBetAmountPerInterval,Manager.totalFishWinAmountPerInterval);
         StartCoroutine(nameof(WaitForData), isReset);
     }
 
@@ -232,8 +244,14 @@ public float timer;     }
             {
                 for (int i = 0; i < getfishFromSpawnList.Count; i++)
                 {
-                    SpawnState newSpawn = getfishFromSpawnList[i];
+                    SpawnState newSpawn = new SpawnState();
+                    newSpawn.fishData = getfishFromSpawnList[i].fishData;
+                    newSpawn.prefab = getfishFromSpawnList[i].prefab;
+                    newSpawn.timer = getfishFromSpawnList[i].timer;
+                    newSpawn.fishGuid = fish.fishId;
+                    newSpawn.fishBatchGuids = fish.fishIds.ToList();
                     newSpawn.fishData.maxHealth = fish.adjustedHealth;
+                    newSpawn.fishData.fishMultiplyer = fish.fishMultiplyer;
                     //Debug.Log($"Fish Spawn 111 ___ fish: {newSpawn.fishData.fishName} ___ newSpawn.fishData.fishMultiplyer: {newSpawn.fishData.fishMultiplyer}");
                     newSpawnStatesFromApi.Add(newSpawn);
 
@@ -247,43 +265,54 @@ public float timer;     }
 
 
 
-    IEnumerator WaitForData(bool isReset) {
+    IEnumerator WaitForData(bool isReset)
+    {
+        yield return new WaitUntil(() => MermaidBackendBridge.instance.IsReady());
 
-       
-        yield return new WaitUntil(()=> MermaidBackendBridge.instance.IsReady());
-        if (bonusRoundStarted)
-            yield break;
-        newSpawnStatesFromApi.Clear();
-        Debug.Log("currentActive Fish Count  " + fishspawner_new.GetTotalActiveCount());
-        ignoreFirst = true;
-        if (isReset)
+        if (!spawningInProgress)
         {
-            //Manager.totalBetAmountPerInterval = 0;
-            //Manager.totalFishWinAmountPerInterval = 0;
-        }
-        //yield return new WaitForSeconds(2);
-        foreach (var fish in MermaidAPIManager.Instance.fishProfilesInInspector)
-        {
-            var getfishFromSpawnList = spawnStates.FindAll(x => x.fishData.fishName.ToLower() == fish.fishName);
+            spawningInProgress = true;
 
-            if (getfishFromSpawnList.Count > 0)
+            if (bonusRoundStarted)
+                yield break;
+            newSpawnStatesFromApi.Clear();
+            Debug.Log("currentActive Fish Count  " + fishspawner_new.GetTotalActiveCount());
+            ignoreFirst = true;
+            if (isReset)
             {
-                for (int i = 0; i < getfishFromSpawnList.Count; i++)
+                //Manager.totalBetAmountPerInterval = 0;
+                //Manager.totalFishWinAmountPerInterval = 0;
+            }
+            //yield return new WaitForSeconds(2);
+            foreach (var fish in MermaidAPIManager.Instance.fishProfilesInInspector)
+            {
+                var getfishFromSpawnList = spawnStates.FindAll(x => x.fishData.fishName.ToLower() == fish.fishName);
+
+                if (getfishFromSpawnList.Count > 0)
                 {
-                    SpawnState newSpawn = getfishFromSpawnList[i];
-                    newSpawn.fishData.maxHealth = fish.adjustedHealth;
-                    newSpawn.fishData.batchSize = fish.batchSize;
-                    //Debug.Log($"Fish Spawn 444 ___ fish: {newSpawn.fishData.fishName} ___ newSpawn.fishData.fishMultiplyer: {newSpawn.fishData.fishMultiplyer}");
-                    newSpawnStatesFromApi.Add(newSpawn);
-                    Debug.Log($"Adding Fish: {newSpawn.fishData.fishName}");
-
-
+                    for (int i = 0; i < getfishFromSpawnList.Count; i++)
+                    {
+                        SpawnState newSpawn = new SpawnState();
+                        newSpawn.fishData = getfishFromSpawnList[i].fishData;
+                        newSpawn.prefab = getfishFromSpawnList[i].prefab;
+                        newSpawn.timer = getfishFromSpawnList[i].timer;
+                        newSpawn.fishGuid = fish.fishId;
+                        newSpawn.fishBatchGuids = fish.fishIds.ToList();
+                        newSpawn.fishData.maxHealth = fish.adjustedHealth;
+                        newSpawn.fishData.batchSize = fish.batchSize;
+                        newSpawn.fishData.fishMultiplyer = fish.fishMultiplyer;
+                        //Debug.Log($"Fish Spawn 444 ___ fish: {newSpawn.fishData.fishName} ___ newSpawn.fishData.fishMultiplyer: {newSpawn.fishData.fishMultiplyer}");
+                        newSpawnStatesFromApi.Add(newSpawn);
+                        Debug.Log($"Adding Fish: {newSpawn.fishData.fishName} __ {newSpawn.fishGuid}");
+                    }
                 }
+
             }
 
-        }
+            newSpawnStatesFromApi = newSpawnStatesFromApi.DistinctBy(x => x.fishGuid).ToList();
 
-        StartCoroutine(SpawnAllFishes(newSpawnStatesFromApi));
+            StartCoroutine(SpawnAllFishes(newSpawnStatesFromApi));
+        }
     }
 
     void SpawnBufferFishes()
@@ -324,7 +353,12 @@ public float timer;     }
 
     public bool FishSpawnAccordingToHealth(FishData fish)
     {
-        if(fish.maxHealth >= spawnFishMinHealth && fish.maxHealth <= spawnFishMaxHealth)
+        //Debug.Log("Adding fish from database: fish: " + fish.fishName);
+        //Debug.Log("Adding fish from database: fish.maxHealth: " + fish.maxHealth);
+        //Debug.Log("Adding fish from database: spawnFishMinHealth: " + spawnFishMinHealth);
+        //Debug.Log("Adding fish from database: spawnFishMaxHealth: " + spawnFishMaxHealth);
+        //Debug.Log("Adding fish from database: booool: " + (fish.maxHealth >= spawnFishMinHealth) + " " + (fish.maxHealth <= spawnFishMaxHealth) + " " + (fish.maxHealth >= spawnFishMinHealth && fish.maxHealth <= spawnFishMaxHealth));
+        if (fish.maxHealth >= spawnFishMinHealth && fish.maxHealth <= spawnFishMaxHealth)
         {
             return true;
         }
@@ -343,6 +377,64 @@ public float timer;     }
         return currentRTP;
     }
     int totalKilled;
+    //private void HandleFishKilled(Fish fish)
+    //{
+    //    float prize = fish.maxHealth;
+    //    //int bet = 1;
+
+    //    if ((UnityEngine.Object)fish.lastAttacker == GetComponent<GunManager>())
+    //    {
+    //        totalKilled++;
+    //        //if (totalKilled % 5 == 0 && !bonusRoundStarted)
+    //        if (totalKilled % 5 == 0)
+    //        {
+    //            if (fishspawner_new.GetTotalActiveCount() <= totalFishCapacity)
+    //            {
+    //                //SpawnMoreFishes(true);
+    //            }
+    //        }
+    //        //if (CalculateCurrentRTP(Manager.totalFishWinAmountPerInterval, Manager.totalBetAmountPerInterval) >= Manager.targetRTBFromBackend)
+    //        //{
+    //        //    Manager.onHealthMultiplier?.Invoke();
+    //        //}
+
+    //    }
+
+
+    //    if (fish.lastAttacker is BotController bot)
+    //    {
+    //        bot.AddBalance(prize);
+    //        ShowPrizePopup($"+{prize}", fish.transform.position, fish.prizeAmount);
+    //        StartCoroutine(CoinBurstRoutine(fish.transform.position, (int)fish.prizeAmount, bot.transform.position));
+    //    }
+    //    else
+    //    {
+    //        Debug.Log($"Fish killed: fish: {JsonUtility.ToJson(fish)} ____________  fishData: {JsonUtility.ToJson(fish.fishData)}");
+
+    //        float currentBetAmount = fish.currentBetamount == 0 ? Manager.currentBetAmoun : fish.currentBetamount;
+    //        float newPayout = fish.fishData.fishMultiplyer * currentBetAmount;
+    //        Debug.Log($"Fish killed: {fish.fishData.fishName} ___ multiplier: {fish.fishData.fishMultiplyer} ___ currentBetAmount: {currentBetAmount}");
+    //        Manager.Instance.balance += newPayout;
+    //        Manager.Instance.UpdateBalanceUI();
+    //        ShowPrizePopup($"+{newPayout}", fish.transform.position, fish.prizeAmount);
+    //        StartCoroutine(CoinBurstRoutine(fish.transform.position, (int)fish.prizeAmount, GunManager.Instance.gunTransform.position));
+
+    //        Manager.totalFishWinAmountPerInterval += newPayout;
+
+    //        if (!Manager.fishKilledListPerInterval.ContainsKey(fish.fishData.fishName))
+    //            Manager.fishKilledListPerInterval.Add(fish.fishData.fishName, currentBetAmount);
+    //        Manager.fishKilledListPerInterval[fish.fishData.fishName] += currentBetAmount;
+    //    }
+    //    for (int i = activeFishes.Count - 1; i >= 0; i--)
+    //    {
+    //        if (activeFishes[i].transform == fish.transform)
+    //        {
+    //            activeFishes.RemoveAt(i);
+    //            break;
+    //        }
+    //    }
+    //}
+
     private void HandleFishKilled(Fish fish)
     {
         float prize = fish.maxHealth;
@@ -354,38 +446,100 @@ public float timer;     }
             //if (totalKilled % 5 == 0 && !bonusRoundStarted)
             if (totalKilled % 5 == 0)
             {
-                if (fishspawner_new.GetTotalActiveCount() <= 50)
+                if (fishspawner_new.GetTotalActiveCount() <= totalFishCapacity)
                 {
-                    SpawnMoreFishes(true);
+                    //SpawnMoreFishes(true);
                 }
             }
-            if (CalculateCurrentRTP(Manager.totalFishWinAmountPerInterval, Manager.totalBetAmountPerInterval) >= Manager.targetRTBFromBackend)
-            {
-                Manager.onHealthMultiplier?.Invoke();
-            }
+            //if (CalculateCurrentRTP(Manager.totalFishWinAmountPerInterval, Manager.totalBetAmountPerInterval) >= Manager.targetRTBFromBackend)
+            //{
+            //    Manager.onHealthMultiplier?.Invoke();
+            //}
 
         }
-  
-        
+
+
         if (fish.lastAttacker is BotController bot)
         {
             bot.AddBalance(prize);
             ShowPrizePopup($"+{prize}", fish.transform.position, fish.prizeAmount);
             StartCoroutine(CoinBurstRoutine(fish.transform.position, (int)fish.prizeAmount, bot.transform.position));
         }
+        //else
+        //{
+        //    Debug.Log($"Fish killed: fish: {JsonUtility.ToJson(fish)} ____________  fishData: {JsonUtility.ToJson(fish.fishData)}");
+
+        //    float currentBetAmount = fish.currentBetamount == 0 ? Manager.currentBetAmoun : fish.currentBetamount;
+        //    float newPayout = fish.fishData.fishMultiplyer * currentBetAmount;
+        //    Debug.Log($"Fish killed: {fish.fishData.fishName} ___ multiplier: {fish.fishData.fishMultiplyer} ___ currentBetAmount: {currentBetAmount}");
+        //    Manager.Instance.balance += newPayout;
+        //    Manager.Instance.UpdateBalanceUI();
+        //    ShowPrizePopup($"+{newPayout}", fish.transform.position, fish.prizeAmount);
+        //    StartCoroutine(CoinBurstRoutine(fish.transform.position, (int)fish.prizeAmount, GunManager.Instance.gunTransform.position));
+
+        //    Manager.totalFishWinAmountPerInterval += newPayout;
+
+        //    if (!Manager.fishKilledListPerInterval.ContainsKey(fish.fishData.fishName))
+        //        Manager.fishKilledListPerInterval.Add(fish.fishData.fishName, currentBetAmount);
+        //    Manager.fishKilledListPerInterval[fish.fishData.fishName] += currentBetAmount;
+        //}
+        for (int i = activeFishes.Count - 1; i >= 0; i--)
+        {
+            if (activeFishes[i].transform == fish.transform)
+            {
+                activeFishes.RemoveAt(i);
+                break;
+            }
+        }
+    }
+
+    void HandleFishKilledByBot(Fish fish, FishWSNetworkMessages.FishHit_Response response, bool fromBombKill)
+    {
+        float prize = fish.GetWinAmountByFormula(response.bulletCost);
+
+        if (fish.lastAttacker is BotController bot)
+        {
+            if (!fromBombKill)
+            {
+                bot.AddBalance(prize);
+            }
+            ShowPrizePopup($"+{prize}", fish.transform.position, fish.prizeAmount);
+            StartCoroutine(CoinBurstRoutine(fish.transform.position, (int)fish.prizeAmount, bot.transform.position));
+        }
+
+        for (int i = activeFishes.Count - 1; i >= 0; i--)
+        {
+            if (activeFishes[i].transform == fish.transform)
+            {
+                activeFishes.RemoveAt(i);
+                break;
+            }
+        }
+    }
+
+    void HandleFishKilledByPlayer(Fish fish, FishWSNetworkMessages.FishHit_Response response, bool fromBombKill)
+    {
+        float prize;
+        if (!fromBombKill)
+        {
+            prize = response.winAmount;
+            Manager.Instance.balance += response.winAmount;
+            Manager.Instance.UpdateBalanceUI();
+        }
         else
         {
-            Debug.Log($"Fish killed: fish: {JsonUtility.ToJson(fish)} ____________  fishData: {JsonUtility.ToJson(fish.fishData)}");
-
-            float currentBetAmount = fish.currentBetamount == 0 ? Manager.currentBetAmoun : fish.currentBetamount;
-            float newPayout = fish.fishData.fishMultiplyer * currentBetAmount;
-            Debug.Log($"Fish killed: {fish.fishData.fishName} ___ multiplier: {fish.fishData.fishMultiplyer} ___ currentBetAmount: {currentBetAmount}");
-            Manager.Instance.balance += newPayout;
-            Manager.Instance.UpdateBalanceUI();
-            ShowPrizePopup($"+{newPayout}", fish.transform.position, fish.prizeAmount);
-            StartCoroutine(CoinBurstRoutine(fish.transform.position, (int)fish.prizeAmount, GunManager.Instance.gunTransform.position));
-            Manager.totalFishWinAmountPerInterval += newPayout;
+            prize = fish.GetWinAmountByFormula(response.bulletCost);
         }
+
+        ShowPrizePopup($"+{prize}", fish.transform.position, fish.prizeAmount);
+        StartCoroutine(CoinBurstRoutine(fish.transform.position, (int)fish.prizeAmount, GunManager.Instance.gunTransform.position));
+
+        Manager.totalFishWinAmountPerInterval += response.winAmount;
+
+        //if (!Manager.fishKilledListPerInterval.ContainsKey(fishInfo.fish.fishData.fishName))
+        //    Manager.fishKilledListPerInterval.Add(fishInfo.fish.fishData.fishName, currentBetAmount);
+        //Manager.fishKilledListPerInterval[fishInfo.fish.fishData.fishName] += currentBetAmount;
+
         for (int i = activeFishes.Count - 1; i >= 0; i--)
         {
             if (activeFishes[i].transform == fish.transform)
@@ -528,7 +682,7 @@ public float timer;     }
             if (rand < weights[i])
             {
                 var ss = spawnStates[i];
-                SpawnBatch(ss.prefab, ss.fishData);
+                SpawnBatch(ss.prefab, ss.fishData, ss.fishGuid, ss.fishBatchGuids);
                 return;
             }
             rand -= weights[i];
@@ -537,13 +691,16 @@ public float timer;     }
 
     private IEnumerator SpawnAllFishes(List<SpawnState> spawnStates)
     {
-        Debug.Log("Spawning fish Count " + spawnStates.Count);
+        //Debug.Log("Spawning fish Count " + spawnStates.Count);
         if (spawnStates == null || spawnStates.Count == 0)
           yield return null;
 
         var safeList = new List<SpawnState>(spawnStates);
+
         foreach (var ss in safeList)
         {
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
             var data = ss.fishData;
 
             //if (data.allowOnlyOne &&
@@ -555,8 +712,8 @@ public float timer;     }
                 continue;
             }
 
+            SpawnBatch(ss.prefab, data, ss.fishGuid, ss.fishBatchGuids);
             yield return new WaitForSeconds(0.25f);
-            SpawnBatch(ss.prefab, data);
         }
         //for (int i=safeList.Count - 1; i>=0; i--)
         //{
@@ -592,6 +749,8 @@ public float timer;     }
         //    yield return new WaitForSeconds(0.25f);
         //    SpawnBatch(safeList[i].prefab, data);
         //}
+
+        spawningInProgress = false;
     }
     // Track which fish types are currently alive
     private Dictionary<FishData, int> activeFishCount = new Dictionary<FishData, int>();
@@ -599,6 +758,7 @@ public float timer;     }
 
     private void SpawnBonusFishes(GameObject[] chosen)
     {
+        Dictionary<string, List<string>> spawnedFishes = new Dictionary<string, List<string>>();
 
         foreach (var prefab in chosen)
         {
@@ -663,11 +823,27 @@ public float timer;     }
                         var getMaxHealthFromAPI = newSpawnStatesFromApi.Find(x => x.fishData.fishName == bigFishComponents[i].fishData.fishName);
                         if (getMaxHealthFromAPI != null)
                         {
-                            bigFishComponents[i].fishData.maxHealth = getMaxHealthFromAPI.fishData.maxHealth;
+                            //bigFishComponents[i].fishData.maxHealth = getMaxHealthFromAPI.fishData.maxHealth;
                             bigFishComponents[i].fishData.fishMultiplyer = getMaxHealthFromAPI.fishData.fishMultiplyer;
                             //Debug.Log($"Fish Spawn 555 111 ___ fish: {bigFishComponents[i].fishData.fishName} ___ getMaxHealthFromAPI.fishData.maxHealth: {getMaxHealthFromAPI.fishData.maxHealth} ___ bigFishComponents[i].fishData.maxHealth: {bigFishComponents[i].fishData.maxHealth}");
                             //Debug.Log($"Fish Spawn 555 222 ___ fish: {bigFishComponents[i].fishData.fishName} ___ getMaxHealthFromAPI.fishData.fishMultiplyer: {getMaxHealthFromAPI.fishData.fishMultiplyer} ___ bigFishComponents[i].fishData.fishMultiplyer: {bigFishComponents[i].fishData.fishMultiplyer}");
                         }
+                        bigFishComponents[i].fishData.maxHealth = GenerateRandomHealth();
+                        bigFishComponents[i].fishGuid = Guid.NewGuid().ToString();
+
+                        activeFishes.Add(new FishInfo
+                        {
+                            transform = go.transform,
+                            speed = 1,
+                            rotationSpeed = 1,
+                            allowRedirect = false,
+                            fish = bigFishComponents[i],
+                            applyMovement = false
+                        });
+
+                        if (!spawnedFishes.ContainsKey(bigFishComponents[i].fishData.fishName))
+                            spawnedFishes.Add(bigFishComponents[i].fishData.fishName, new List<string>());
+                        spawnedFishes[bigFishComponents[i].fishData.fishName].Add(bigFishComponents[i].fishGuid);
 
                         controller.StartMovement(bonusDestPoint.position, bonusSet.bonusFishSpeed);
                     }
@@ -701,10 +877,27 @@ public float timer;     }
                         var getMaxHealthFromAPI_smallFishes = newSpawnStatesFromApi.Find(x => x.fishData.fishName == fish.fishData.fishName);
                         if (getMaxHealthFromAPI_smallFishes != null)
                         {
-                            fish.fishData.maxHealth = getMaxHealthFromAPI.fishData.maxHealth;
+                            //fish.fishData.maxHealth = getMaxHealthFromAPI.fishData.maxHealth;
                             fish.fishData.fishMultiplyer = getMaxHealthFromAPI.fishData.fishMultiplyer;
                             //Debug.Log($"Fish Spawn 222 ___ fish: {fish.fishData.fishName} ___ newSpawn.fishData.fishMultiplyer: {fish.fishData.fishMultiplyer}");
                         }
+
+                        fish.fishData.maxHealth = GenerateRandomHealth();
+                        fish.fishGuid = Guid.NewGuid().ToString();
+
+                        activeFishes.Add(new FishInfo
+                        {
+                            transform = go.transform,
+                            speed = 1,
+                            rotationSpeed = 1,
+                            allowRedirect = false,
+                            fish = fish,
+                            applyMovement = false
+                        });
+
+                        if (!spawnedFishes.ContainsKey(fish.fishData.fishName))
+                            spawnedFishes.Add(fish.fishData.fishName, new List<string>());
+                        spawnedFishes[fish.fishData.fishName].Add(fish.fishGuid);
 
                         controller.StartMovement(bonusDestPoint.position, bonusSet.bonusFishSpeed);
                     }
@@ -713,6 +906,28 @@ public float timer;     }
                 break; // Stop after applying one matching set
             }
         }
+
+        StartCoroutine(SendBonusSpawnedFishesListToBackend(spawnedFishes));
+    }
+
+    IEnumerator SendBonusSpawnedFishesListToBackend(Dictionary<string, List<string>> spawnedFishes)
+    {
+        List<SpawnedFishesListToServer_RequestBody.FishGroup> spawnedFishesGroups = new List<SpawnedFishesListToServer_RequestBody.FishGroup>();
+
+        foreach (var key in spawnedFishes.Keys)
+        {
+            SpawnedFishesListToServer_RequestBody.FishGroup fishGroup = new SpawnedFishesListToServer_RequestBody.FishGroup();
+            fishGroup.fishName = key;
+
+            foreach (var value in spawnedFishes[key])
+                fishGroup.fishIds.Add(value);
+
+            spawnedFishesGroups.Add(fishGroup);
+        }
+
+        StartCoroutine(MermaidAPIManager.Instance.SendSpawnedFishesListToServer(spawnedFishesGroups));
+
+        yield return new WaitForEndOfFrame();
     }
 
 
@@ -826,6 +1041,7 @@ public float timer;     }
     {
         isBonus = false;
         stepCountSpeed = stepCountSpeed_normal;
+        spawningInProgress = false;
 
         // Destroy all normal fishes
         for (int i = activeFishes.Count - 1; i >= 0; i--)
@@ -845,10 +1061,11 @@ public float timer;     }
         bonusTriggerConsumed = false;
         bonusRoundStarted = false;
         bonusTriggered = false;
+        bonusStartTime = Random.Range(bonusStartTimeMinMax.x, bonusStartTimeMinMax.y);
     }
 
 
-    private void SpawnBatch(GameObject prefab, FishData fishData)
+    private void SpawnBatch(GameObject prefab, FishData fishData, string fishGuid, List<string> fishBatchGuids)
     {
         if (movementPoints == null || movementPoints.Length < 2) return;
 
@@ -868,32 +1085,44 @@ public float timer;     }
         Vector3 baseDestPos = destAnchor.position;
 
 
-        var tempGO = SpawnFish(fishData.fishName, prefab, new Vector3(99999f, 99999f, 0f), Quaternion.identity, fishContainer);
+        //var tempGO = SpawnFish(fishData.fishName, prefab, new Vector3(99999f, 99999f, 0f), Quaternion.identity, fishContainer);
 
-        if (tempGO == null)
+        //if (tempGO == null)
+        //{
+        //    Debug.LogWarning("Fish GameObject reference is null, skipping...");
+        //    return;
+        //}
+
+        //var tempFish = tempGO.GetComponent<Fish>();
+        //if (tempFish == null)
+        //{
+        //    DespawnFish(tempGO);
+        //    return;
+        //}
+
+        //tempFish.ApplyData(fishData);
+        //tempFish.fishGuid = fishGuid;
+
+        //SpriteRenderer sr = tempFish.sr;
+        //if (sr == null)
+        //{
+        //    DespawnFish(tempGO);
+        //    return;
+        //}
+
+
+        //float fishWidth = sr.bounds.size.x;
+        //DespawnFish(tempGO);
+
+
+        SpriteRenderer sr = prefab.GetComponent<Fish>().sr;
+        float fishWidth;
+        if (sr != null)
         {
-            Debug.LogWarning("Fish GameObject reference is null, skipping...");
-            return;
+            fishWidth = sr.bounds.size.x;
         }
-
-        var tempFish = tempGO.GetComponent<Fish>();
-        if (tempFish == null)
-        {
-            DespawnFish(tempGO);
+        else
             return;
-        }
-
-        tempFish.ApplyData(fishData);
-        SpriteRenderer sr = tempFish.sr;
-        if (sr == null)
-        {
-            DespawnFish(tempGO);
-            return;
-        }
-
-
-        float fishWidth = sr.bounds.size.x;
-        DespawnFish(tempGO);
 
 
         FishBatchSpawner.GenerateBatchPositions(
@@ -933,7 +1162,7 @@ public float timer;     }
                 fishContainer
             );
 
-            Debug.Log($"Spawning Fish: fishName: {fishData.fishName} ___ batchSize: {fishData.batchSize}");
+            //Debug.Log($"Spawning Fish: fishName: {fishData.fishName} ___ batchSize: {fishData.batchSize}");
 
             if (go == null)
             {
@@ -949,6 +1178,7 @@ public float timer;     }
             }
 
             fc.ApplyData(fishData);
+            fc.fishGuid = fishBatchGuids[i];
             fc.InitializeMovement(destPositions[i]);
 
    
@@ -962,7 +1192,8 @@ public float timer;     }
                 rotationSpeed = fc.rotationSpeed,
                 allowRedirect = fc.isRotatable,
                 initialStart = spawnPositions[i],
-                fish = fc
+                fish = fc,
+                applyMovement = true
             });
 
             var getFishFromSpawnner = fishspawner_new.fishData.Find(x => x.fishId == fishData.fishName);
@@ -1008,10 +1239,10 @@ public float timer;     }
             if (fishInfo != null && fishInfo.transform == temp)
             {
                 Vector3 newDestination = movementPoints[Random.Range(0, movementPoints.Length)].position;
-                Debug.Log($"Changing Destination: Fish Index: {activeFishes.IndexOf(fishInfo)} ___ FROM: {fishInfo.destination}");
+                //Debug.Log($"Changing Destination: Fish Index: {activeFishes.IndexOf(fishInfo)} ___ FROM: {fishInfo.destination}");
                 fishInfo.destination = newDestination;
                 fishInfo.transform.GetComponent<Fish>().InitializeMovement(newDestination);
-                Debug.Log($"Changing Destination Fish Index: {activeFishes.IndexOf(fishInfo)} ___ TO: {fishInfo.destination}");
+                //Debug.Log($"Changing Destination Fish Index: {activeFishes.IndexOf(fishInfo)} ___ TO: {fishInfo.destination}");
             }
         }
     }
@@ -1031,30 +1262,43 @@ public float timer;     }
             Transform t = info.transform;
 
             Vector3 toDest = info.destination - t.position;
-            float dist = toDest.magnitude;
+            float dist;
+
+            if (info.applyMovement)
+            {
+                toDest = info.destination - t.position;
+                dist = toDest.magnitude;
+            }
+            else
+            {
+                dist = 10;
+            }
 
             if (dist > 0.01f)
             {
-                if (!bonusRoundStarted)
+                if (info.applyMovement)
                 {
-                    Vector3 dir = toDest.normalized;
+                    if (!bonusRoundStarted)
+                    {
+                        Vector3 dir = toDest.normalized;
 
-                    // Smooth rotation toward destination
-                    float targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-                    Quaternion targetRot = Quaternion.Euler(0f, 0f, targetAngle);
-                    float rotationSmoothness = info.rotationSpeed;
-                    t.rotation = Quaternion.Slerp(t.rotation, targetRot, rotationSmoothness * Time.deltaTime);
+                        // Smooth rotation toward destination
+                        float targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                        Quaternion targetRot = Quaternion.Euler(0f, 0f, targetAngle);
+                        float rotationSmoothness = info.rotationSpeed;
+                        t.rotation = Quaternion.Slerp(t.rotation, targetRot, rotationSmoothness * Time.deltaTime);
+                    }
+
+                    // Move toward destination without overshooting
+                    float step = info.speed * Time.deltaTime * stepCount;
+                    if (step > dist)
+                        step = dist; // clamp to stop exactly at destination
+
+                    //t.position += dir * step;
+                    t.position += t.right * step;
+
+                    //Debug.Log($"Moving... fishIndex: {activeFishes.IndexOf(info)} ___ step: {step} ___ fishInfo: {JsonUtility.ToJson(info)}");
                 }
-
-                // Move toward destination without overshooting
-                float step = info.speed * Time.deltaTime * stepCount;
-                if (step > dist)
-                    step = dist; // clamp to stop exactly at destination
-
-                //t.position += dir * step;
-                t.position += t.right * step;
-
-                //Debug.Log($"Moving... fishIndex: {activeFishes.IndexOf(info)} ___ step: {step} ___ fishInfo: {JsonUtility.ToJson(info)}");
             }
             else
             {
@@ -1082,7 +1326,7 @@ public float timer;     }
 
         if (fishInfo == null)
         {
-            Debug.Log($"Fish reached screen exit... Fish not in activeFishes: {fish.fishData.fishName}");
+            //Debug.Log($"Fish reached screen exit... Fish not in activeFishes: {fish.fishData.fishName}");
             return;
         }
 
@@ -1094,6 +1338,19 @@ public float timer;     }
         var locked = LockManager.GetLockedFish();
         if (locked != null && locked.transform == t)
             LockManager.ClearLockedFish();
+
+        if (!fishInfo.fish.despawnCallSentToBackend)
+        {
+            fishInfo.fish.despawnCallSentToBackend = true;
+
+            FishWSNetworkMessages.FishDespawn_Request fd_req = new FishWSNetworkMessages.FishDespawn_Request()
+            {
+                requestId = Guid.NewGuid().ToString(),
+                gameId = SceneManagement.currentGameID,
+                fishId = fishInfo.fish.fishGuid
+            };
+            FishWSNetworkManager.Instance.Send(fd_req);
+        }
 
         var fishComp = t.GetComponent<Fish>();
         if (fishComp != null)
@@ -1185,7 +1442,7 @@ public float timer;     }
         return true;
     }
 
-    public void TriggerBomb(Fish sourceFish)
+    public void TriggerBomb(Fish sourceFish, FishWSNetworkMessages.FishHit_Response response)
     {
         // find all fishes of same prefab/type (excluding source)
         var sameTypeFishes = new List<Fish>();
@@ -1203,32 +1460,55 @@ public float timer;     }
             }
         }
 
-        float totalPrize = sourceFish.prizeAmount;
+        float currentBetAmount = response.bulletCost;
+        //float totalPrize = sourceFish.prizeAmount;
+        float totalPrize = 0;
+
+        List<Fish> killedFishes = sameTypeFishes.ToList();
+        Debug.Log("Fishes killed by bomb: " + JsonUtility.ToJson(killedFishes));
 
         // FX + kill for each chain target
         foreach (var f in sameTypeFishes)
         {
-            totalPrize += f.prizeAmount;
+            totalPrize += f.GetWinAmountByFormula(currentBetAmount);
 
             // 🔥 scaled FX at each fish wiped by Bomb
             SpawnPowerupFX(f.transform.position, bombFXScale, fullScreenBombExplosionPrefab, fullScreenBombFXDuration);
 
-            StartCoroutine(forceKill(f));
+            StartCoroutine(forceKill(f, response));
         }
+
+        FishWSNetworkMessages.FishHit_Request fishHit_request = new FishWSNetworkMessages.FishHit_Request()
+        {
+            requestId = Guid.NewGuid().ToString(),
+            gameId = SceneManagement.currentGameID,
+            bulletId = response.bulletId,
+            fishId = "",
+            fishIdsKilledByBomb = killedFishes.Select(x => x.fishGuid).ToList(),
+            bulletCost = currentBetAmount.ToString("G17", CultureInfo.InvariantCulture),
+            killedByBomb = true,
+            killedByBot = response.killedByBot
+        };
+
+        FishWSNetworkManager.Instance.Send(fishHit_request);
+        Debug.Log($"Killed By Bomb ___ currentBetAmount: {currentBetAmount}");
 
         // 🔥 also spawn FX where the Bomb carrier died
         SpawnPowerupFX(sourceFish.transform.position, bombFXScale, fullScreenBombExplosionPrefab, fullScreenBombFXDuration);
 
-        RewardAttacker(sourceFish.lastAttacker, totalPrize);
+        RewardAttacker(response.killedByBot == false ? GunManager.Instance : sourceFish.lastAttacker, totalPrize);
     }
 
 
-    public void TriggerFullScreenBomb(Fish sourceFish)
+    public void TriggerFullScreenBomb(Fish sourceFish, FishWSNetworkMessages.FishHit_Response response)
     {
         SpawnPowerupFX(sourceFish.transform.position, 5f, fullScreenBombExplosionPrefab, fullScreenBombFXDuration);
 
         float totalPrize = 0;
         var fishesToKill = new List<Fish>();
+
+        //float currentBetAmount = sourceFish.currentBetamount == 0 ? Manager.currentBetAmoun : sourceFish.currentBetamount;
+        float currentBetAmount = response.bulletCost;
 
         foreach (var info in new List<FishInfo>(activeFishes))
         {
@@ -1241,25 +1521,44 @@ public float timer;     }
             if (f != null && f != sourceFish)
             {
                 fishesToKill.Add(f);
-                totalPrize += f.prizeAmount;
+                //totalPrize += f.prizeAmount;
+                totalPrize += f.GetWinAmountByFormula(currentBetAmount);
             }
         }
 
+        List<Fish> killedFishes = fishesToKill.ToList();
+        Debug.Log("Fishes killed by bomb: " + JsonUtility.ToJson(killedFishes));
+
         foreach (var f in fishesToKill)
-            StartCoroutine(forceKill(f));
+            StartCoroutine(forceKill(f, response));
 
-        totalPrize += sourceFish.prizeAmount;
+        //totalPrize += sourceFish.prizeAmount;
 
-        RewardAttacker(sourceFish.lastAttacker, totalPrize);
+        FishWSNetworkMessages.FishHit_Request fishHit_request = new FishWSNetworkMessages.FishHit_Request()
+        {
+            requestId = Guid.NewGuid().ToString(),
+            gameId = SceneManagement.currentGameID,
+            bulletId = response.bulletId,
+            fishId = "",
+            fishIdsKilledByBomb = killedFishes.Select(x => x.fishGuid).ToList(),
+            bulletCost = currentBetAmount.ToString("G17", CultureInfo.InvariantCulture),
+            killedByBomb = true,
+            killedByBot = response.killedByBot
+        };
+
+        FishWSNetworkManager.Instance.Send(fishHit_request);
+        Debug.Log($"Killed By FullScreenBomb ___ currentBetAmount: {currentBetAmount}");
+
+        RewardAttacker(response.killedByBot == false? GunManager.Instance : sourceFish.lastAttacker, totalPrize);
     }
 
-    public void TriggerCoralReef(Fish sourceFish)
+    public void TriggerCoralReef(Fish sourceFish, FishWSNetworkMessages.FishHit_Response response)
     {
         int mult = UnityEngine.Random.Range(coralReefMultiplierRange.x, coralReefMultiplierRange.y + 1);
         ApplyMultiplierToShooter(sourceFish.lastAttacker, mult, coralReefDuration);
     }
 
-    public void TriggerCannonCard(Fish sourceFish)
+    public void TriggerCannonCard(Fish sourceFish, FishWSNetworkMessages.FishHit_Response response)
     {
         // Give the one-shot cannon only to the killer (player)
         if (sourceFish.lastAttacker is GunManager)
@@ -1269,18 +1568,32 @@ public float timer;     }
     }
 
 
-    private IEnumerator forceKill(Fish f)
+    private IEnumerator forceKill(Fish f, FishWSNetworkMessages.FishHit_Response response)
     {
-        yield return f.StartCoroutine(f.DieWithFeedback());
+        if (!response.killedByBot)
+        {
+            yield return f.StartCoroutine(f.DieWithFeedback(response, true));
+        }
+        else
+        {
+            yield return f.StartCoroutine(f.HitOrDieWithFeedback(response, true));
+        }
     }
 
     private void RewardAttacker(object attacker, float prize)
     {
         if (attacker is GunManager)
         {
-            float mult = GetPlayerMultiplier();        // NEW
-            Manager.Instance.balance += prize * mult;  // NEW
-            Manager.Instance.UpdateBalanceUI();
+            Debug.Log($"BOMB WIN: ___ currentBalance: {Manager.Instance.balance} ___ prizeAmountLocal: {prize}");
+
+            //Manager.Instance.balance += prize;
+            //Manager.Instance.UpdateBalanceUI();
+
+            //float mult = GetPlayerMultiplier();        // NEW
+            ////Manager.Instance.balance += prize * mult;  // NEW
+            //Manager.Instance.UpdateBalanceUI();
+
+            //Manager.totalFishWinAmountPerInterval += prize * mult;
         }
         else if (attacker is BotController bot)
         {
@@ -1332,12 +1645,40 @@ public float timer;     }
 
     private void OnDestroy()
     {
-        Fish.OnFishKilled -= HandleFishKilled;
+        Fish.OnFishKilledByPlayer -= HandleFishKilledByPlayer;
+        Fish.OnFishKilledByBot -= HandleFishKilledByBot;
     }
 
     public void MoveAllFishForward(int stepCount)
     {
         MoveFishes(stepCount);
+    }
+
+    public void FishHitResponse(FishWSNetworkMessages.FishHit_Response response)
+    {
+        if (response.success)
+        {
+            if (response.killedByBomb)
+            {
+                Manager.Instance.balance += response.winAmount;
+                Manager.Instance.UpdateBalanceUI();
+            }
+            else
+            {
+                FishInfo fishInfo = activeFishes.FirstOrDefault(x => x.fish.fishGuid == response.fishId);
+                if (fishInfo != null)
+                {
+                    if (!response.killedByBot)
+                    {
+                        fishInfo.fish.TakeDamageByPlayer(response);
+                    }
+                    else
+                    {
+                        fishInfo.fish.TakeDamageByBot(response, null, 1, response.bulletCost);
+                    }
+                }
+            }
+        }
     }
 
     #region FishJobs

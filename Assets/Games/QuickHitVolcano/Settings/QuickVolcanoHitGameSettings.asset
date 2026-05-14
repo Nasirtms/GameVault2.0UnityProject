@@ -35,8 +35,6 @@ MonoBehaviour:
     background: {fileID: 1273165782, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
   - type: 10
     background: {fileID: -278423811, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
-  - type: 9
-    background: {fileID: 1273165782, guid: 3584263aa0669ee488a03eb2ec275eaf, type: 3}
   soundItems:
   - soundName: Background
     audioClip: {fileID: 8300000, guid: 1c9afbf373d8c8548a7d7e3dd78ccd2c, type: 3}
@@ -60,6 +58,10 @@ MonoBehaviour:
     pitch: 1
   - soundName: ReelStop
     audioClip: {fileID: 8300000, guid: f21cfb89f4570c447b0c2860aa19def9, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 23158d68e68574043bfd3557e74a9e21, type: 3}
     volume: 1
     pitch: 1
   spinSettings:

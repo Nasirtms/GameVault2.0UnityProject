@@ -62,11 +62,7 @@ public class HexagonKenoSoundManager : MonoBehaviour
             musicSource.loop = true;
             musicSource.Play();
         }
-        else
-        {
-        }
     }
-
 
     public bool IsMusicPlaying(string soundName)
     {
@@ -83,9 +79,6 @@ public class HexagonKenoSoundManager : MonoBehaviour
         {
             musicSource.clip = sound.audioClip;
             musicSource.Stop();
-        }
-        else
-        {
         }
     }
     public void PlayReelStopSFX(string soundName)
@@ -122,10 +115,6 @@ public class HexagonKenoSoundManager : MonoBehaviour
             sfxSource.pitch = sound.pitch;
             sfxSource.PlayOneShot(sound.audioClip);
         }
-        else
-        {
-        }
-
     }
 
     public void MuteSFX(bool mute)

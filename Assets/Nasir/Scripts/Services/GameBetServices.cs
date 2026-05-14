@@ -1,4 +1,6 @@
-﻿using TMPro;
+﻿using System;
+using System.Reflection;
+using TMPro;
 using UnityEngine;
 
 public class GameBetServices : MonoBehaviour
@@ -14,6 +16,7 @@ public class GameBetServices : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(Instance);
         }
         else
         {
@@ -74,6 +77,7 @@ public class GameBetServices : MonoBehaviour
 
         CallAnimationMethod(method, winAmount);
         UpdateCoins(newBalance);
+        Debug.Log("newBalance : " + newBalance);
     }
 
 
@@ -111,7 +115,9 @@ public class GameBetServices : MonoBehaviour
 
     public void UpdateCoins(float newAmount)
     {
+        Debug.Log("Coins : " + newAmount);
         UserManager.Instance.UpdateCoins(newAmount);
+        //CurrentCoinsText.text = newAmount.ToString();
         UpdateCoinsAction?.Invoke();
     }
 

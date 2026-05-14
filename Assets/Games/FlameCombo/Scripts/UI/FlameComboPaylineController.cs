@@ -285,7 +285,7 @@ public class FlameComboPaylineController : MonoBehaviour
                 var slot = FlameComboSlotMachine.Instance.reels[x].slots[y + 1];
                 if (slot == null) continue;
 
-                if ((Hit_Count >= 3 && slot.type == FlameComboSlotType.HIT) || (
+                if ((Hit_Count >= 3 && slot.type == FlameComboSlotType.HIT) || (FlameComboSlotMachine.Instance.isFreeGameReady && 
                     resultScatterCount >= 3 && slot.type == FlameComboSlotType.FREE_GAME))
                 {
                     slot.PlayAnimation();

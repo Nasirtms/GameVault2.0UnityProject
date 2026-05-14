@@ -144,10 +144,6 @@ public class TheGreenMachineDeluxeSlotScript : MonoBehaviour
             this.jackpotTextIcon.sprite = newType.textImage;
             SetActiveIcon(2);
         }
-        else
-        {
-            Debug.LogWarning("No Slot Found of Category: " + category);
-        }
     }
 
     private void SetActiveIcon(int index)

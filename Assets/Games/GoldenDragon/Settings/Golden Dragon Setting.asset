@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02aeeb3bee7c3464c91daf823da8b62a, type: 3}
+  m_Name: Golden Dragon Setting
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    slotTypeIndex: 0
+  - type: 1
+    slotTypeIndex: 1
+  - type: 2
+    slotTypeIndex: 2
+  - type: 3
+    slotTypeIndex: 3
+  - type: 4
+    slotTypeIndex: 4
+  - type: 5
+    slotTypeIndex: 5
+  - type: 6
+    slotTypeIndex: 6
+  - type: 7
+    slotTypeIndex: 7
+  - type: 8
+    slotTypeIndex: 8
+  - type: 9
+    slotTypeIndex: 9
+  - type: 10
+    slotTypeIndex: 10
+  - type: 11
+    slotTypeIndex: 11
+  soundItems:
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: a7877b4190bed314092a1f1db07b82c3, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Bet
+    audioClip: {fileID: 8300000, guid: 2e2697e11c68c974994ffd8c92a5e5c6, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: 0b01785dfe24fc241ae1765436713157, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Maxbet
+    audioClip: {fileID: 8300000, guid: 2848ba7e052350349a04f0c70ef673fe, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinBG
+    audioClip: {fileID: 8300000, guid: fca58be1d0d52cc47b4851b2c1663cd2, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 7790f5bde87ccba40a3e544747814b98, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 9f994d9b5a1ddb4409680ed7101b3e17, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: 379131e4c71feec4b88875bb55352422, type: 3}
+    volume: 0.5
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    delayAmongReels: {x: 0.3, y: 0.3}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.4
+    topBoundary: -350
+    bottomBoundary: -585
+    startSpeed: {x: 30, y: 35}
+    acceleration: {x: 1.5, y: 2}
+    speedRange: {x: 35, y: 40}
+  horizontalLayout: 160
+  verticalLayout: 3
+  paddingTop: -507
+  slotScale: 0.95

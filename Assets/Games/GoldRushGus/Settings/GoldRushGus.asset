@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ec514e23a1ed247826f51d8a727637, type: 3}
+  m_Name: GoldRushGus
+  m_EditorClassIdentifier: 
+  slotResources:
+  - slotType: 0
+    slotAnimationBool: A
+    slotTypeIndex: 0
+  - slotType: 1
+    slotAnimationBool: K
+    slotTypeIndex: 1
+  - slotType: 2
+    slotAnimationBool: Q
+    slotTypeIndex: 2
+  - slotType: 3
+    slotAnimationBool: J
+    slotTypeIndex: 3
+  - slotType: 5
+    slotAnimationBool: Nine
+    slotTypeIndex: 4
+  - slotType: 4
+    slotAnimationBool: Ten
+    slotTypeIndex: 5
+  - slotType: 9
+    slotAnimationBool: Necklace
+    slotTypeIndex: 6
+  - slotType: 10
+    slotAnimationBool: Jar
+    slotTypeIndex: 7
+  - slotType: 11
+    slotAnimationBool: Serpent
+    slotTypeIndex: 8
+  - slotType: 13
+    slotAnimationBool: Idol
+    slotTypeIndex: 9
+  - slotType: 12
+    slotAnimationBool: Eagle
+    slotTypeIndex: 10
+  - slotType: 6
+    slotAnimationBool: Wild
+    slotTypeIndex: 11
+  - slotType: 8
+    slotAnimationBool: FreeSpin
+    slotTypeIndex: 12
+  - slotType: 7
+    slotAnimationBool: Key
+    slotTypeIndex: 13
+  soundItems:
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: 40da34c4fb3d0a5468d9156199eb9b94, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: c3a384ec2aebaf7488e086141da86422, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: SpinButton
+    audioClip: {fileID: 8300000, guid: c8dbc8b7d98499e46a54a23d9e782970, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Bet
+    audioClip: {fileID: 8300000, guid: 7c16bd48ef391c2449de2dc5af96e863, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: JackpotWin
+    audioClip: {fileID: 8300000, guid: bce8ec9b62a208c42bdebd9e3ae54640, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: MiniGamePopup
+    audioClip: {fileID: 8300000, guid: 1db6359c7d302c147bca6efbabfdbf0c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: CoinFlip
+    audioClip: {fileID: 8300000, guid: 875ac7f048420b543b6e22615ead9b38, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: MiniGameEnd
+    audioClip: {fileID: 8300000, guid: f3478511fe022fb4bb2c0906ec492d2c, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 1ad34a00e5010904187a4e8af1ffc60c, type: 3}
+    volume: 0.6
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 22a90320e4e3a6f4bb1ea36b52c0ac5d, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: c0d5e3b84b66beb4288442e7b3cff07d, type: 3}
+    volume: 0.3
+    pitch: 1
+  - soundName: FreeSpinBG
+    audioClip: {fileID: 8300000, guid: 408bed167b4057d44a2404b6901ed247, type: 3}
+    volume: 0.2
+    pitch: 1
+  spinSettings:
+    startSpin: 0
+    endSpin: 0
+    spinDirection: 0
+    SpinSpeed: 40
+    ReelStopDelay: 0.2
+    ReelStartDelay: 0.08
+    SlowDownDuration: 0.5
+    ClampToTopPosition: 1
+    spinClampFrequency: 0.05
+    SpinClampStrength: 5
+    WindUpAmount: 0.1
+    WindUpDuration: 0.2
+    ClampDuration: 2
+  slotSettings:
+    MoveSpeed: 5
+    TopYPosition: 0
+    BottomYPosition: -0.04
+    MinSpinDuration: 1.5
+    MaxSpinDuration: 2.5
+    SymbolScaleX: 0.4770681
+    SymbolScaleY: 0.1592474

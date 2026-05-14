@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -17,6 +18,7 @@ public class UnitySessionManager : MonoBehaviour
     [SerializeField] private GameObject sessionEndPanel = null;
     string _massage;
 
+    public static Action OnForcedLogout;
 
     private void Awake()
     {
@@ -28,6 +30,11 @@ public class UnitySessionManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start()
+    {
+        StartSessionWatch();
     }
 
     private void AddListenee()
@@ -50,7 +57,6 @@ public class UnitySessionManager : MonoBehaviour
         CheckSessionStatus(); // Run immediately
         InvokeRepeating(nameof(CheckSessionStatus), PollInterval, PollInterval);
     }
-
 
     public void StopSessionWatch()
     {
@@ -145,7 +151,6 @@ public class UnitySessionManager : MonoBehaviour
         }
     }
 
-
     public void ForceLogout()
     {
         HandleForcedLogout();
@@ -169,10 +174,19 @@ public class UnitySessionManager : MonoBehaviour
 
         if (sessionEndPanel == null)
         {
-            sessionEndPanel = Instantiate(SessionLogoutPanelPrefab);
+            if (SessionLogoutPanelPrefab != null)
+                sessionEndPanel = Instantiate(SessionLogoutPanelPrefab);
+            else
+                sessionEndPanel = Instantiate(Resources.Load<GameObject>("SessionLogoutPopup"));
+            //GameObject logoutPopupPrefab = Resources.Load<GameObject>("SessionLogoutPopup");
+            //if (logoutPopupPrefab != null)
+            //{
+            //    sessionEndPanel = Instantiate(logoutPopupPrefab);
+            //}
+
             if (Screen.orientation == ScreenOrientation.Portrait)
             {
-                sessionEndPanel.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2 (1692, 1136);
+                sessionEndPanel.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(700, 455);
                 MainMenuUIManager.Instance.ShowPopup(sessionEndPanel);
             }
             else
@@ -186,10 +200,14 @@ public class UnitySessionManager : MonoBehaviour
                 sessionEndPanel.transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = _massage;
             }
         }
+
+        OnForcedLogout?.Invoke();
     }
 
     void LoadLoginScene()
     {
+        Time.timeScale = 1;
+
         if (ClickSessionManager.Instance != null)
             ClickSessionManager.Instance.StopInactivityTracking();
 
@@ -201,7 +219,17 @@ public class UnitySessionManager : MonoBehaviour
         PlayerPrefs.DeleteKey("profileImageUrl");
         Screen.orientation = ScreenOrientation.LandscapeLeft;
         SceneManagement.ResetSceneManagementData();
+
+        if (WebSocketManager.Instance != null)
+            Destroy(WebSocketManager.Instance.gameObject);
+
+        if (InternetWatchdog.Instance != null)
+            Destroy(InternetWatchdog.Instance.gameObject);
+
         SceneManager.LoadScene("Login");
+
+        if (Instance != null)
+            Destroy(Instance.gameObject);
     }
 }
 

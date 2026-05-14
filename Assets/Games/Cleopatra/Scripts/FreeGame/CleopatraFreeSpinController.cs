@@ -15,7 +15,8 @@ public class CleopatraFreeSpinController : MonoBehaviour
     private bool isFreeGame = false;
 
     private CleopatraGameTransitionController gameTransitionController;
-
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
     #endregion
 
     #region Unity Methods
@@ -29,6 +30,15 @@ public class CleopatraFreeSpinController : MonoBehaviour
         freeSpinDone--;
         UpdateSpinCount();
     }
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
     #endregion
 
     #region Public References
@@ -37,10 +47,11 @@ public class CleopatraFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         freeSpinDone = 0;
         CleopatraUIManager.Instance.StopMusic("Background");
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
 
     public void ResetFreeSpins()
@@ -74,6 +85,7 @@ public class CleopatraFreeSpinController : MonoBehaviour
 
         while (freeSpinDone < totalFreeSpins)
         {
+            if (cancelRequested) yield break;
             float betAmount = CleopatraUIManager.Instance.GetComponent<CleopatraBetController>().GetCurrentBet();
             SlotSpinService.Instance.Spin(betAmount);
 
@@ -82,7 +94,7 @@ public class CleopatraFreeSpinController : MonoBehaviour
             yield return new WaitUntil(() => CleopatraSlotMachine.Instance.isSpinAgain);
 
             freeSpinDone++;
-
+            if (cancelRequested) yield break;
             if (CleopatraSlotMachine.Instance.currentSpinResult != null)
             {
                 if (CleopatraSlotMachine.Instance.GetWinAmount() > 0)
@@ -108,6 +120,18 @@ public class CleopatraFreeSpinController : MonoBehaviour
 
         gameTransitionController.PlayTransition();
     }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
 
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        CleopatraUIManager.Instance.UpdateButtons("Single Stop");
+    }
     #endregion
 }

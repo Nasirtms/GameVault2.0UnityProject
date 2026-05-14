@@ -17,9 +17,18 @@ public class FruitParadiseAutoSpinController : MonoBehaviour
 
     public bool IsAutoRunning => isAutoRunning;
 
-    private void Start()
+
+    #region Unity Methods
+    private void OnEnable()
     {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
     }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
+    #endregion
 
     public void StartAutoSpin(float betAmount)
     {
@@ -52,7 +61,6 @@ public class FruitParadiseAutoSpinController : MonoBehaviour
         while (!cancelRequested)
         {
             FruitParadiseUIManager.Instance.winAnimationCompleted = true;
-            FruitParadiseUIManager.Instance.PlaySound("FruitParadise_Spin");
 
             float balance = UserManager.Instance.Coins;
 
@@ -64,15 +72,15 @@ public class FruitParadiseAutoSpinController : MonoBehaviour
             if (FruitParadiseUIManager.Instance.winCoroutine != null)
                 StopCoroutine(FruitParadiseUIManager.Instance.winCoroutine);
 
-
             yield return new WaitUntil(() => !FruitParadiseSlotMachine.Instance.InSpin);
+
+            if (cancelRequested) break;
+
             if (FruitParadiseSlotMachine.Instance.GetWinAmount() > 0)
             {
                 yield return new WaitUntil(() => FruitParadiseSlotMachine.Instance.isPaylineCompleted);
             }
             yield return new WaitUntil(() => FruitParadiseUIManager.Instance.winAnimationCompleted);
-
-            if (cancelRequested) break;
 
             yield return new WaitForSeconds(delayBetweenSpins);
 
@@ -92,5 +100,19 @@ public class FruitParadiseAutoSpinController : MonoBehaviour
         isAutoSpinning = false;
         isAutoRunning = false;
         cancelRequested = false;
+    }
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
+
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
     }
 }

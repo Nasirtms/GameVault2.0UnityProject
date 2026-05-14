@@ -17,6 +17,7 @@ namespace MainMenu
         public string gameID;
         public string sceneName;
         public string addressableLabel;
+        public string gameTitle;
 
         private void OnValidate()
         {

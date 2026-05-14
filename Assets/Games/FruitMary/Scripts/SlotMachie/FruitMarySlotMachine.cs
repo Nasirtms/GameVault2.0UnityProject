@@ -9,7 +9,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static UnityEngine.UI.Image;
 
 public class FruitMarySlotMachine : BaseSlotMachine
 {
@@ -39,11 +38,11 @@ public class FruitMarySlotMachine : BaseSlotMachine
     private float _delayAmongReel;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool InSpin;
     private bool _isSingleSpin;
     private float _acceleration;
     private float _speed;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isResultReceived;
     [HideInInspector] public bool isSpinAgain = false;
     private bool isSettingResult;
@@ -55,7 +54,7 @@ public class FruitMarySlotMachine : BaseSlotMachine
 
     //Free Spin 
     [HideInInspector] public bool forceWildPayline;
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool isFreeGameReady;
     [HideInInspector] public int freeSpinCount;
     [HideInInspector] public float freeSpinWinAmount;
@@ -168,7 +167,7 @@ public class FruitMarySlotMachine : BaseSlotMachine
     void UpdateSlotServicesGameName()
     {
         string sceneName = GameSlotRegistry.TrimSceneName(SceneManager.GetActiveScene().name);
-        Debug.Log("Scene Name : " + sceneName);
+        //Debug.Log("Scene Name : " + sceneName);
         GameSlotRegistry.Register(sceneName, this);
 
         SceneManagement.UpdateCurrentSceneName(sceneName);
@@ -211,6 +210,7 @@ public class FruitMarySlotMachine : BaseSlotMachine
 
             freeSpinCount = 3;
         }
+
         if (currentSpinResult.isBonusGame && currentSpinResult.jackpotWin.type.Contains("wildBonus"))
         {
             fruitMaryGameCount = (int)currentSpinResult.jackpotWin.amount;
@@ -349,7 +349,7 @@ public class FruitMarySlotMachine : BaseSlotMachine
         if (isStopBtnPressed)
             StopButtonPressed();
 
-        FruitMaryUIManager.Instance.SetStopInteractable(false);
+        //FruitMaryUIManager.Instance.SetStopInteractable(false);
         yield return new WaitUntil(() => reels.All(r => r.IsClamped()));
         
         ProcessSpinResult();
@@ -399,7 +399,7 @@ public class FruitMarySlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
+            //Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -423,7 +423,7 @@ public class FruitMarySlotMachine : BaseSlotMachine
             float betAmount = FruitMaryUIManager.Instance.CurrentBet();
 
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
         if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0 || scatterCount > 2)
         {
@@ -463,7 +463,7 @@ public class FruitMarySlotMachine : BaseSlotMachine
     }
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -476,6 +476,20 @@ public class FruitMarySlotMachine : BaseSlotMachine
         if (currentSpinResult == null || currentSpinResult.reels == null || currentSpinResult.reels.Count == 0)
         {
             StopWithResult(); // fallback
+            if (isFreeGame)
+            {
+                FruitMaryGameTransitionController.Instance.NetworkErrorFreeSpin();
+            }
+            else if (FruitMaryAutoSpinController.isAutoSpinning)
+            {
+                FruitMaryUIManager.Instance.CancelAutoSpin();
+            }
+            else
+            {
+                FruitMaryUIManager.Instance.UpdateButtons("Stop");
+            }
+            FruitMaryUIManager.Instance.StopCurrentSFX();
+            isSpinAgain = true;
             yield break;
         }
 
@@ -505,7 +519,7 @@ public class FruitMarySlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.resourcesList == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
+            //Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

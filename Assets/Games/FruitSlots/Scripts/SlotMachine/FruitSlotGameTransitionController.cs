@@ -80,7 +80,7 @@ public class FruitSlotGameTransitionController : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         //freeSpinAnimator.SetTrigger("FreeSpin");
-
+        FruitSlotUIManager.Instance.UpdateButtons("Free Spin");
         yield return new WaitForSeconds(1.5f);
 
         PopupAnimation(freeSpinStartFrame, 1f, 0.5f, false);
@@ -93,7 +93,8 @@ public class FruitSlotGameTransitionController : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        FruitSlotUIManager.Instance.UpdateButtons("Free Spin");
+
+        Debug.Log("LovKumar FreeSpinTransition");
         freeSpinController.StartFreeSpins();
     }
 
@@ -133,7 +134,7 @@ public class FruitSlotGameTransitionController : MonoBehaviour
             float freeGameWin = FruitSlotMachine.Instance.freeSpinWinAmount;
             float betAmount = FruitSlotUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, freeGameWin, FruitSlotMachine.Instance.currentSpinResult.newBalance);
-            Invoke(nameof(FruitSlotMachine.Instance.UpdateGameCoin), 1f);
+            //Invoke(nameof(FruitSlotMachine.Instance.UpdateGameCoin), 1f);
         }
 
         FruitSlotUIManager.Instance.spinButton.GetComponent<Button>().interactable = true;

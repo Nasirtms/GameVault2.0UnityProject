@@ -21,8 +21,10 @@ namespace MainMenu
         public UIMainEnvironmentPanel mainEnvironmentPanel;
         public UILoadingPanel loadingPanel;
         public GameCardMenuControllor gameCardMenuPanel;
+        public AvatarChangeController avatarChangeController;
 
         [Header("DragSettings")]
+        public UIDragHandler uiDragHandler;
         public MainMenuCamera mainCamera;
         public Vector3 touchOffset;
         public bool isDragging;
@@ -30,6 +32,12 @@ namespace MainMenu
         public bool draggingwhileMovingWithButtons;
         public float dragSpeed = 10;
         public float dragThreshold = .3f;
+        public int moveToEndButtonPressThreshold = 2;
+        //public int moveLeftButtonConsecutivePressCount = 0;
+        //public int moveRightButtonConsecutivePressCount = 0;
+
+        [Header("StartScreen_FirstTime")]
+        public StartScreen_FirstTime startScreen;
 
         private Vector2 mousePosition_current;
         private Vector2 mousePosition_previous;
@@ -44,6 +52,12 @@ namespace MainMenu
             instance = this;
             gameCardMenuPanel.gameObject.SetActive(true);
             Application.targetFrameRate = 120;
+
+            InternetWatchdog internetWatchdogPrefab = Resources.Load<InternetWatchdog>("InternetWatchdog");
+            if (internetWatchdogPrefab != null)
+            {
+                Instantiate(internetWatchdogPrefab);
+            }
         }
 
         private void OnEnable()
@@ -61,6 +75,11 @@ namespace MainMenu
             //HandleDrag();
         }
 
+        private void LateUpdate()
+        {
+            SetPlayerMovementArrowsStates();
+        }
+
         private void Start()
         {
             if (!SceneManagement.lastOpenedGameCategory.IsNullOrWhitespace())
@@ -74,6 +93,22 @@ namespace MainMenu
                     //SceneManagement.lastOpenedGameCategory = "";
                 }
             }
+            else
+            {
+                if (!UserManager.Instance.HasSetAvatarOnce)
+                {
+                    StartEnvironment();
+                }
+                else
+                {
+                    player.transform.position = new Vector3(player.transform.position.x, currentEnvironment.playerTargetStartPosition.y, player.transform.position.z);
+                    moveTargetMarker.ForceSetPosition(player.transform.position.x, player.transform.position.y);
+                    currentEnvironment.ForceInitializePositions();
+                }
+            }
+
+            if (InternetWatchdog.Instance != null)
+                InternetWatchdog.Instance.isWatchdogActive = false;
         }
 
         //void HandleDrag()
@@ -150,7 +185,7 @@ namespace MainMenu
 
         IEnumerator GoToCategoryEnvironment_Coroutine(eGameCategories categoryName)
         {
-            //loadingPanel.OpenPanel(.5f);
+            loadingPanel.OpenPanel(.5f, 1);
             //loadingPanel.loadingBarFill.fillAmount = 0;
             //yield return new WaitForSeconds(1f);
             //loadingPanel.loadingBarFill.fillAmount = 0.7f;
@@ -173,7 +208,7 @@ namespace MainMenu
 
         IEnumerator ExitCategoryBuilding_Coroutine()
         {
-            //loadingPanel.OpenPanel(.5f);
+            loadingPanel.OpenPanel(.5f, 1);
             //loadingPanel.loadingBarFill.fillAmount = 0;
             //yield return new WaitForSeconds(1f);
             //loadingPanel.loadingBarFill.fillAmount = 0.7f;
@@ -186,7 +221,7 @@ namespace MainMenu
 
             yield return new WaitForSeconds(.5f);
             //loadingPanel.loadingBarFill.fillAmount = 1;
-            //loadingPanel.ClosePanel(.5f);
+            loadingPanel.ClosePanel(.5f);
         }
 
         public void GoToMachine(MainMenu.MenuGameMachine gameMachine)
@@ -198,26 +233,34 @@ namespace MainMenu
         {
             loadingPanel.OpenPanel(.5f);
             yield return new WaitForSeconds(.5f);
-            OpenLevel(gameMachine.sceneName, gameMachine.gameID, gameMachine.addressableLabel);
+            OpenLevel(gameMachine.sceneName, gameMachine.gameID, gameMachine.addressableLabel, gameMachine.gameTitle);
             yield return new WaitForSeconds(.5f);
             //loadingPanel.OpenPanel(.5f);
         }
 
-        public void OpenLevel(string sceneName, string gameID, string addressableLabel)
+        public void OpenLevel(string sceneName, string gameID, string addressableLabel, string gameTitle)
         {
-            StartCoroutine(OpenLevel_Coroutine(sceneName, gameID, addressableLabel));
+            if (gameTitle.ToLower().Contains("comingsoon") || gameTitle.ToLower().Contains("coming soon") || gameTitle.ToLower().Contains("coming_soon"))
+            {
+                CasinoUIManager.Instance.ShowErrorCanvas(1, "This game will be available soon. Stay tuned.");
+                return;
+            }
+
+            StartCoroutine(OpenLevel_Coroutine(sceneName, gameID, addressableLabel, gameTitle));
         }
 
-        private IEnumerator OpenLevel_Coroutine(string sceneName, string gameID, string addressableLabel)
+        private IEnumerator OpenLevel_Coroutine(string sceneName, string gameID, string addressableLabel, string gameTitle)
         {
-            loadingPanel.OpenPanel(.5f);
+            loadingPanel.OpenPanel(.5f, 1f);
 
             Coroutine _loadRoutine;
             Vector3 loadingBarFillTargetScale = Vector3.one;
             loadingBarFillTargetScale.x = 0;
 
-            loadingPanel.loadingBarFill.gameObject.SetActive(true);
-            loadingPanel.loadingBarFill.transform.localScale = loadingBarFillTargetScale;
+            yield return new WaitForSeconds(0.5f);
+
+            //loadingPanel.loadingBarFill.gameObject.SetActive(true);
+            //loadingPanel.loadingBarFill.transform.localScale = loadingBarFillTargetScale;
             //loadingPanel.loadingBarFill.fillAmount = 0f;
 
             //GameItem gi = GameCatalogueController.instance.gameItems.FirstOrDefault(x => x.id == gameID);
@@ -273,5 +316,99 @@ namespace MainMenu
                 gameCard.SetFavoriteButtonInteractable(true);
             }
         }
+
+        void SetPlayerMovementArrowsStates()
+        {
+            if (menuEnvironment.currentActiveCategoryEnvironment != null)
+            {
+                mainEnvironmentPanel.leftButton.gameObject.SetActive(menuEnvironment.currentActiveCategoryEnvironment.gameMachines.Count > 0 ?
+                    (player.transform.position.x > menuEnvironment.currentActiveCategoryEnvironment.gameMachines[0].entryPoint.position.x) :
+                    false);
+                mainEnvironmentPanel.rightButton.gameObject.SetActive(menuEnvironment.currentActiveCategoryEnvironment.gameMachines.Count > 0 ?
+                    (player.transform.position.x < menuEnvironment.currentActiveCategoryEnvironment.gameMachines[menuEnvironment.currentActiveCategoryEnvironment.gameMachines.Count - 1].entryPoint.position.x) :
+                    false);
+            }
+            else
+            {
+                mainEnvironmentPanel.leftButton.gameObject.SetActive(menuEnvironment.buildingEnvironment.buildings.Count > 0 ?
+                    (player.transform.position.x > menuEnvironment.buildingEnvironment.buildings[0].entryPoint.position.x) :
+                    false);
+                mainEnvironmentPanel.rightButton.gameObject.SetActive(menuEnvironment.buildingEnvironment.buildings.Count > 0 ?
+                    (player.transform.position.x < menuEnvironment.buildingEnvironment.buildings[menuEnvironment.buildingEnvironment.buildings.Count - 1].entryPoint.position.x) :
+                    false);
+            }
+        }
+
+        #region StartScreen
+
+        void StartEnvironment()
+        {
+            StopCoroutine("StartEnvironment_Coroutine");
+            StartCoroutine("StartEnvironment_Coroutine");
+        }
+
+        IEnumerator StartEnvironment_Coroutine()
+        {
+            loadingPanel.OpenPanel(0.01f, 1);
+            currentEnvironment.gameObject.SetActive(true);
+
+            SceneManagement.lastOpenedGameCategory = "";
+
+            uiDragHandler.isActive = false;
+            mainEnvironmentPanel.ClosePanel(0.01f);
+            gameCardMenuPanel.gameObject.SetActive(false);
+
+            currentEnvironment.moveTarget.position = startScreen.moveTargetPosition;
+            player.transform.position = startScreen.moveTargetPosition;
+
+            startScreen.gameObject.SetActive(true);
+            startScreen.PlayIdleAnimation();
+
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(.5f);
+            //loadingPanel.loadingBarFill.fillAmount = 1;
+            loadingPanel.ClosePanel(.5f);
+        }
+
+        public void StartScreen_AvatarSelectRightButton()
+        {
+            avatarChangeController.NextAvatar();
+        }
+
+        public void StartScreen_AvatarSelectLeftButton()
+        {
+            avatarChangeController.PreviousAvatar();
+        }
+
+        public void StartScreen_Done()
+        {
+            StopCoroutine("StartScreem_Done_Coroutine");
+            StartCoroutine("StartScreem_Done_Coroutine");
+        }
+
+        IEnumerator StartScreem_Done_Coroutine()
+        {
+            yield return new WaitForEndOfFrame();
+
+            avatarChangeController.UpdateAvatar_Silent();
+            startScreen.PlayDoneAnimation();
+
+            yield return new WaitForSeconds(startScreen.doneAnimationDuration);
+
+            player.transform.position = new Vector3(player.transform.position.x, currentEnvironment.playerTargetStartPosition.y, player.transform.position.z);
+            moveTargetMarker.ForceSetPosition(player.transform.position.x,player.transform.position.y);
+            currentEnvironment.ForceInitializePositions();
+
+            //gameCardMenuPanel.gameObject.SetActive(false);
+
+            startScreen.gameObject.SetActive(false);
+
+            yield return new WaitForSeconds(2);
+
+            uiDragHandler.isActive = true;
+            mainEnvironmentPanel.OpenPanel(0.6f);
+        }
+
+        #endregion StartScreen
     }
 }

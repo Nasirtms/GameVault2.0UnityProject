@@ -8,44 +8,44 @@ public static class JSInputHandler
     public static void OnLoginSuccess(string token)
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-    Application.ExternalCall("onLoginStatusChanged", "true");
-    // Send token after login
-    if (!string.IsNullOrEmpty(token))
-    {
-        Application.ExternalCall("onTokenReceived", token);
-    }
+            //Application.ExternalCall("onLoginStatusChanged", "true");
+            // Send token after login
+            if (!string.IsNullOrEmpty(token))
+            {
+                Application.ExternalCall("onTokenReceived", token);
+            }
 #endif
     }
 
     public static void OnLoginField()
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            Application.ExternalCall("onLoginStatusChanged", "false");
-#endif
+        //#if UNITY_WEBGL && !UNITY_EDITOR
+        //            Application.ExternalCall("onLoginStatusChanged", "false");
+        //#endif
     }
 
     public static void OnLogoutSuccess()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        
+
         // Clear stored token
         Application.ExternalCall("clearStoredToken");
-        
-        // First hide the fullscreen button
-        Application.ExternalCall("onLoginStatusChanged", "false");
-        
-        // Then exit fullscreen if currently in fullscreen
-        Application.ExternalCall("exitFullscreenIfActive");
-        
+
+        //        // First hide the fullscreen button
+        //        Application.ExternalCall("onLoginStatusChanged", "false");
+
+        //        // Then exit fullscreen if currently in fullscreen
+        //        Application.ExternalCall("exitFullscreenIfActive");
+
 #endif
     }
 
     public static void exitFullscreenIfActive()
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
-        // Then exit fullscreen if currently in fullscreen
-        Application.ExternalCall("exitFullscreenIfActive");
-#endif
+        //#if UNITY_WEBGL && !UNITY_EDITOR
+        //        // Then exit fullscreen if currently in fullscreen
+        //        Application.ExternalCall("exitFullscreenIfActive");
+        //#endif
     }
 
     // Send token and baseUrl to JavaScript (encrypted storage)
@@ -86,6 +86,26 @@ public static class JSInputHandler
 #else
         GUIUtility.systemCopyBuffer = text;
 #endif
+    }
+
+    public static void SumbilOrCloseFeedbackPanel()
+    {
+        //#if UNITY_WEBGL && !UNITY_EDITOR
+        //        Application.ExternalCall("forceShowFullscreenHint");
+        //#endif
+    }
+
+    public static void OnFeedbackPanelOpen()
+    {
+        //#if UNITY_WEBGL && !UNITY_EDITOR
+
+        //        // First hide the fullscreen button
+        //        Application.ExternalCall("onLoginStatusChanged", "false");
+
+        //        // Then exit fullscreen if currently in fullscreen
+        //        Application.ExternalCall("exitFullscreenIfActive");
+
+        //#endif
     }
 
 }

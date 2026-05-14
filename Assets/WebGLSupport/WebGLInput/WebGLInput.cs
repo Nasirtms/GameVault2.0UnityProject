@@ -229,6 +229,13 @@ namespace WebGLSupport
             WebGLWindow.OnBlurEvent += OnWindowBlur;
         }
 
+        public void FocusManual()
+        {
+            if (id != -1) throw new Exception("OnSelect : id != -1");
+
+            WebGLInputPlugin.WebGLInputFocus(id);
+        }
+
         /// <summary>
         /// sync text from inputfield
         /// </summary>

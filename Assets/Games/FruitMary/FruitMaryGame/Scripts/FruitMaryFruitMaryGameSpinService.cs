@@ -67,20 +67,20 @@ public class FruitMaryFruitMaryGameSpinService : MonoBehaviour
             if (www.result != UnityWebRequest.Result.Success)
             {
                 AddCurrentBetCoinIntoUserCoin();
-                Debug.LogError("❌ Response text is null or empty.");
+                //Debug.LogError("❌ Response text is null or empty.");
                 CasinoUIManager.Instance.ShowErrorCanvas(1, "Network Error");
                 yield break;
             }
 
             string responseText = www.downloadHandler.text;
-            Debug.Log("✅ Response Received: " + responseText);
+            //Debug.Log("✅ Response Received: " + responseText);
 
             try
             {
                 if (string.IsNullOrEmpty(responseText))
                 {
                     AddCurrentBetCoinIntoUserCoin();
-                    Debug.LogError("❌ Response text is null or empty.");
+                    //Debug.LogError("❌ Response text is null or empty.");
                     CasinoUIManager.Instance.ShowErrorCanvas(1, "Empty server response");
                     yield break;
                 }
@@ -90,7 +90,7 @@ public class FruitMaryFruitMaryGameSpinService : MonoBehaviour
                 if (spinResult == null)
                 {
                     AddCurrentBetCoinIntoUserCoin();
-                    Debug.LogError("❌ Failed to deserialize spin response.");
+                    //Debug.LogError("❌ Failed to deserialize spin response.");
                     CasinoUIManager.Instance.ShowErrorCanvas(1, "Invalid response format");
                     yield break;
                 }
@@ -98,8 +98,8 @@ public class FruitMaryFruitMaryGameSpinService : MonoBehaviour
                 if (!string.IsNullOrEmpty(spinResult.requestId) && spinResult.requestId != currentRequestId)
                 {
                     AddCurrentBetCoinIntoUserCoin();
-                    Debug.LogWarning($"⚠️ Received outdated response (requestId: {spinResult.requestId}). Ignoring.");
-                    Debug.Log("\nResponse ID: " + spinResult.requestId + "\nRequest ID: " + currentRequestId);
+                    //Debug.LogWarning($"⚠️ Received outdated response (requestId: {spinResult.requestId}). Ignoring.");
+                    //Debug.Log("\nResponse ID: " + spinResult.requestId + "\nRequest ID: " + currentRequestId);
                     yield break;
                 }
 
@@ -108,7 +108,7 @@ public class FruitMaryFruitMaryGameSpinService : MonoBehaviour
             catch (Exception ex)
             {
                 AddCurrentBetCoinIntoUserCoin();
-                Debug.LogError("❌ Exception while parsing spin result: " + ex.Message);
+                //Debug.LogError("❌ Exception while parsing spin result: " + ex.Message);
                 CasinoUIManager.Instance.ShowErrorCanvas(1, "Network Error");
             }
         }
@@ -124,7 +124,7 @@ public class FruitMaryFruitMaryGameSpinService : MonoBehaviour
         }
         else
         {
-            Debug.Log("Error :  SpinResult parse error or unsuccessful.");
+            //Debug.Log("Error :  SpinResult parse error or unsuccessful.");
         }
     }
 

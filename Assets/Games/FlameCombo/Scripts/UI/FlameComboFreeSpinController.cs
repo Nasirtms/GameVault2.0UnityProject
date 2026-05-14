@@ -13,6 +13,20 @@ public class FlameComboFreeSpinController : MonoBehaviour
     private bool isFreeGame = false;
     private bool firstSpin;
 
+    private Coroutine freeSpinRoutine;
+    private bool cancelRequested;
+    #endregion
+
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += CancelFreeSpins;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= CancelFreeSpins;
+    }
     #endregion
 
     #region Public References
@@ -21,11 +35,12 @@ public class FlameComboFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
 
+        cancelRequested = false;
         isFreeGame = true;
         firstSpin = true;
         freeSpinDone = 0;
 
-        StartCoroutine(FreeSpinLoop());
+        freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
     public void ResetFreeSpins()
     {
@@ -70,6 +85,8 @@ public class FlameComboFreeSpinController : MonoBehaviour
                 yield return new WaitForSeconds(1f);
             }
 
+            if (cancelRequested) yield break;
+
             float betAmount = FlameComboUIManager.Instance.CurrentBet();
             SlotSpinService.Instance.Spin(betAmount);
 
@@ -78,6 +95,8 @@ public class FlameComboFreeSpinController : MonoBehaviour
             freeSpinDone++;
 
             yield return new WaitUntil(() => FlameComboSlotMachine.Instance.isSpinAgain);
+
+            if (cancelRequested) yield break;
 
             if (FlameComboSlotMachine.Instance.currentSpinResult != null)
             {
@@ -99,6 +118,18 @@ public class FlameComboFreeSpinController : MonoBehaviour
 
         FlameComboFreeGameTransitionController.Instance.EndFreeSpinTransition();
     }
+    private void CancelFreeSpins()
+    {
+        if (!isFreeGame) return;
 
+        cancelRequested = true;
+
+        if (freeSpinRoutine != null)
+        {
+            StopCoroutine(freeSpinRoutine);
+            freeSpinRoutine = null;
+        }
+        FlameComboUIManager.Instance.UpdateButtons("Stop");
+    }
     #endregion
 }

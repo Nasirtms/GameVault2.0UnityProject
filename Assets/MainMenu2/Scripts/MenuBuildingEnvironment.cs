@@ -24,6 +24,7 @@ namespace MainMenu
                 moveTarget.position = new Vector3(lastEnteredBuilding.entryPoint.position.x, moveTarget.position.y, moveTarget.position.z);
                 moveTargetPositionTemp = moveTarget.position;
                 MainMenuManager.instance.player.transform.position = new Vector3(moveTargetPositionTemp.x, MainMenuManager.instance.player.transform.position.y, MainMenuManager.instance.player.transform.position.z);
+                MainMenuManager.instance.mainCamera.transform.position = new Vector3(moveTargetPositionTemp.x, MainMenuManager.instance.mainCamera.transform.position.y, MainMenuManager.instance.mainCamera.transform.position.z);
                 lastEnteredBuilding = null;
             }
             else
@@ -31,6 +32,155 @@ namespace MainMenu
                 moveTarget.position = moveTargetStartPosition;
                 moveTargetPositionTemp = moveTarget.position;
                 MainMenuManager.instance.player.transform.position = new Vector3(playerTargetStartPosition.x, MainMenuManager.instance.player.transform.position.y, MainMenuManager.instance.player.transform.position.z);
+            }
+        }
+
+        public void ForceInitializePositions()
+        {
+            moveTarget.position = moveTargetStartPosition;
+            moveTargetPositionTemp = moveTarget.position;
+            MainMenuManager.instance.player.transform.position = new Vector3(playerTargetStartPosition.x, MainMenuManager.instance.player.transform.position.y, MainMenuManager.instance.player.transform.position.z);
+        }
+
+        protected override void MoveLeftOnePage()
+        {
+            if (isGoingInside)
+                return;
+
+            if (MainMenuManager.instance.player.isWalking && moveRightButtonConsecutivePressCount > 0)
+                return;
+
+            bool moveToEnd = false;
+            moveRightButtonConsecutivePressCount = 0;
+            //moveLeftButtonConsecutivePressCount++;
+
+            if (!MainMenuManager.instance.player.isWalking)
+            {
+                moveLeftButtonConsecutivePressCount = 1;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveLeftButtonConsecutivePressCount < MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                moveLeftButtonConsecutivePressCount++;
+                return;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveLeftButtonConsecutivePressCount >= MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                moveLeftButtonConsecutivePressCount = 0;
+                moveToEnd = true;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveLeftButtonConsecutivePressCount > MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                return;
+            }
+
+            MenuBuilding buildingToMoveTo = null;
+            if (!moveToEnd)
+            {
+                for (int i = buildings.Count - 1; i >= 0 && buildingToMoveTo == null; i--)
+                {
+                    if (buildings[i].entryPoint.position.x < moveTarget.position.x - 0.2f)
+                    {
+                        buildingToMoveTo = buildings[i];
+                    }
+                }
+            }
+            else
+            {
+                if (buildings.Count > 0)
+                {
+                    buildingToMoveTo = buildings[0];
+                }
+            }
+
+            if (buildingToMoveTo != null)
+            {
+                MainMenuManager.instance.movingWithButtons = true;
+                moveTargetPositionTemp.x = buildingToMoveTo.entryPoint.position.x;
+                moveTargetPositionTemp.x = Mathf.Clamp(moveTargetPositionTemp.x, environmentBounds.x, environmentBounds.y); ;
+                moveTarget.position = moveTargetPositionTemp;
+                MainMenuManager.instance.mainCamera.followDamping = MainMenuManager.instance.mainCamera.followDampingMinMax.x;
+                MainMenuManager.instance.mainCamera.followTarget = MainMenuManager.instance.moveTarget.transform;
+                MainMenuManager.instance.moveTargetMarker.followTarget = MainMenuManager.instance.player.transform;
+                if (!moveToEnd)
+                    MainMenuManager.instance.player.moveSpeed = MainMenuManager.instance.player.moveSpeedMinMax.x;
+                else
+                {
+                    MainMenuManager.instance.player.moveSpeed = MainMenuManager.instance.player.moveSpeedMinMax.y;
+                    MainMenuManager.instance.player.transform.position = new Vector3(moveTargetPositionTemp.x, MainMenuManager.instance.player.transform.position.y, MainMenuManager.instance.player.transform.position.z);
+                    MainMenuManager.instance.player.SetAvatarDirection(false);
+                    //MainMenuManager.instance.player.moveSpeed = (((MainMenuManager.instance.player.moveSpeedMinMax.y - MainMenuManager.instance.player.moveSpeedMinMax.x) * .1f) + MainMenuManager.instance.player.moveSpeedMinMax.x);
+                }
+            }
+        }
+
+        protected override void MoveRightOnePage()
+        {
+            if (isGoingInside)
+                return;
+
+            if (MainMenuManager.instance.player.isWalking && moveLeftButtonConsecutivePressCount > 0)
+                return;
+
+            bool moveToEnd = false;
+            moveLeftButtonConsecutivePressCount = 0;
+            //moveRightButtonConsecutivePressCount++;
+
+            if (!MainMenuManager.instance.player.isWalking)
+            {
+                moveRightButtonConsecutivePressCount = 1;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveRightButtonConsecutivePressCount < MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                moveRightButtonConsecutivePressCount++;
+                return;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveRightButtonConsecutivePressCount >= MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                moveRightButtonConsecutivePressCount = 0;
+                moveToEnd = true;
+            }
+            else if (MainMenuManager.instance.player.isWalking && moveRightButtonConsecutivePressCount > MainMenuManager.instance.moveToEndButtonPressThreshold)
+            {
+                return;
+            }
+
+            MenuBuilding buildingToMoveTo = null;
+            if (!moveToEnd)
+            {
+                for (int i = 0; i < buildings.Count && buildingToMoveTo == null; i++)
+                {
+                    if (buildings[i].entryPoint.position.x > moveTarget.position.x + 0.2f)
+                    {
+                        buildingToMoveTo = buildings[i];
+                    }
+                }
+            }
+            else
+            {
+                if (buildings.Count > 0)
+                {
+                    buildingToMoveTo = buildings[buildings.Count - 1];
+                }
+            }
+
+            if (buildingToMoveTo != null)
+            {
+                MainMenuManager.instance.movingWithButtons = true;
+                moveTargetPositionTemp.x = buildingToMoveTo.entryPoint.position.x;
+                moveTargetPositionTemp.x = Mathf.Clamp(moveTargetPositionTemp.x, environmentBounds.x, environmentBounds.y); ;
+                moveTarget.position = moveTargetPositionTemp;
+                MainMenuManager.instance.mainCamera.followDamping = MainMenuManager.instance.mainCamera.followDampingMinMax.x;
+                MainMenuManager.instance.mainCamera.followTarget = MainMenuManager.instance.moveTarget.transform;
+                MainMenuManager.instance.moveTargetMarker.followTarget = MainMenuManager.instance.player.transform;
+                if (!moveToEnd)
+                    MainMenuManager.instance.player.moveSpeed = MainMenuManager.instance.player.moveSpeedMinMax.x;
+                else
+                {
+                    MainMenuManager.instance.player.moveSpeed = MainMenuManager.instance.player.moveSpeedMinMax.y;
+                    MainMenuManager.instance.player.transform.position = new Vector3(moveTargetPositionTemp.x, MainMenuManager.instance.player.transform.position.y, MainMenuManager.instance.player.transform.position.z);
+                    MainMenuManager.instance.player.SetAvatarDirection(true);
+                    //MainMenuManager.instance.player.moveSpeed = (((MainMenuManager.instance.player.moveSpeedMinMax.y - MainMenuManager.instance.player.moveSpeedMinMax.x) * .1f) + MainMenuManager.instance.player.moveSpeedMinMax.x);
+                }
             }
         }
 

@@ -13,6 +13,8 @@ namespace MainMenu
 
         public int currentCategoryEnvIndex = -1;
 
+        public MenuCategoryEnvironment currentActiveCategoryEnvironment;
+
         public void EnableCategoryEnvironment(eGameCategories categoryName)
         {
             MenuCategoryEnvironment currentCategotyEnv = categoryEnvironments.FirstOrDefault(x=>x.categoryName == categoryName);
@@ -20,6 +22,7 @@ namespace MainMenu
             {
                 currentCategoryEnvIndex = categoryEnvironments.IndexOf(currentCategotyEnv);
                 categoryEnvironments[currentCategoryEnvIndex].gameObject.SetActive(true);
+                currentActiveCategoryEnvironment = categoryEnvironments[currentCategoryEnvIndex];
             }
         }
 
@@ -29,6 +32,7 @@ namespace MainMenu
             {
                 categoryEnvironments[currentCategoryEnvIndex].gameObject.SetActive(false);
                 currentCategoryEnvIndex = -1;
+                currentActiveCategoryEnvironment = null;
             }
         }
 

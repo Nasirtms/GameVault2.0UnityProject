@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68874f18dec307440b35ac1baa22d273, type: 3}
+  m_Name: RedHotTripple
+  m_EditorClassIdentifier: 
+  resourcesList:
+  - type: 0
+    slotAnimationBool: 
+    slotTypeIndex: 0
+  - type: 2
+    slotAnimationBool: blueseven
+    slotTypeIndex: 1
+  - type: 1
+    slotAnimationBool: whiteseven
+    slotTypeIndex: 2
+  - type: 3
+    slotAnimationBool: singleseven
+    slotTypeIndex: 3
+  - type: 4
+    slotAnimationBool: doubleseven
+    slotTypeIndex: 4
+  - type: 5
+    slotAnimationBool: trippleseven
+    slotTypeIndex: 5
+  - type: 6
+    slotAnimationBool: trippleredhot
+    slotTypeIndex: 6
+  - type: 7
+    slotAnimationBool: bonus
+    slotTypeIndex: 7
+  - type: 8
+    slotAnimationBool: x2
+    slotTypeIndex: 8
+  - type: 9
+    slotAnimationBool: x3
+    slotTypeIndex: 9
+  - type: 10
+    slotAnimationBool: x4
+    slotTypeIndex: 10
+  - type: 11
+    slotAnimationBool: x5
+    slotTypeIndex: 11
+  - type: 12
+    slotAnimationBool: x6
+    slotTypeIndex: 12
+  - type: 13
+    slotAnimationBool: x7
+    slotTypeIndex: 13
+  soundItems:
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: 106e8f8b791f0824c80aeba197f3d245, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: 624924c6a7ee25346b72acbc7defa794, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 794c7ee5e4a04074590b44a55a1904e3, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Bet
+    audioClip: {fileID: 8300000, guid: 03332417ff087eb4db03fb3ec615d31b, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: d2baa812f969bb14db5e79e1ce93202a, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 283accdf956bce24dbf6a80010d242ea, type: 3}
+    volume: 0.4
+    pitch: 1
+  spinSettings:
+    startSpin: 1
+    endSpin: 0
+    spinDirection: 0
+    delayAmongReels: {x: 0.1, y: 0.2}
+    useSameAcceleration: 1
+    useSameSpeed: 1
+    minClamp: 0.5
+    topBoundary: -318
+    middleBoundary: -276
+    bottomBoundary: -505
+    startSpeed: {x: 30, y: 40}
+    acceleration: {x: 0.35, y: 0.5}
+    speedRange: {x: 30, y: 50}
+  horizontalLayout: 0
+  verticalLayout: -30
+  paddingTop: -540
+  slotScale: 0.9

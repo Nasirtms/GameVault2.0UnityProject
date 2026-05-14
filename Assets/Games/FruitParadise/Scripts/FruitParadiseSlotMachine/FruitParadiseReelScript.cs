@@ -114,10 +114,6 @@ public class FruitParadiseReelScript : MonoBehaviour
                 slot.RowIndex = rowIndex;
 
             }
-            else
-            {
-                Debug.LogWarning($"?? No slot resource found for ID: {symbolData.id}");
-            }
         }
 
 

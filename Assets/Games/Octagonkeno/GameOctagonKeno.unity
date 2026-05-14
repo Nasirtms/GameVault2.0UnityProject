@@ -198,7 +198,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 617.9999, y: 297.99997}
+  m_AnchoredPosition: {x: 617.9999, y: 298}
   m_SizeDelta: {x: -1742, y: -804.00006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &39620725
@@ -880,8 +880,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.7882353}
+  m_Material: {fileID: 2100000, guid: 139491e8d249bcd49a20c272632f7f83, type: 2}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.19607843}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5095,7 +5095,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -362.1, y: -15}
+  m_AnchoredPosition: {x: -362.09998, y: -15}
   m_SizeDelta: {x: 82, y: 82}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1018639350
@@ -5699,7 +5699,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.5411765}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7065,6 +7065,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Settings: {fileID: 11400000, guid: 9ba7e5d802c75e94bbefb67a2eaa394a, type: 2}
+  _response:
+    requestId: 
+    gameId: 
+    playerPicks: 
+    drawnNumbers: 
+    hitCount: 0
+    betAmount: 0
+    winAmount: 0
+    newBalance: 0
+    totalWin: 0
+    isWin: 0
+    timestamp: 
   numberButtons: []
   btnPrefab: {fileID: 6089082516728636069, guid: e2f83d11dbdfd8a4593d1f2a1490d31e, type: 3}
   spinnerImage: {fileID: 1077089465}
@@ -7097,7 +7109,6 @@ MonoBehaviour:
   picksCountText: {fileID: 976226528}
   balanceText: {fileID: 394535651}
   balance: 0
-  winning: 0
   hitPayContainer: {fileID: 561422201}
   hitPayRowPrefab: {fileID: 3181340953084879224, guid: be539b03efe68e04e87037ef6c12335b, type: 3}
   GridParent: {fileID: 648630962}

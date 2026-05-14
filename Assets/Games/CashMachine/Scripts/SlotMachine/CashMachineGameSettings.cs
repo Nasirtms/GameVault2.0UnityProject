@@ -6,7 +6,7 @@ using Sirenix.Utilities;
 
 public enum CashMachineSlotType
 {
-    One, Zero, DoubleZero, Two, Five, Ten, Blank
+    One, Zero, DoubleZero, Two, Five, Ten, Blank, Diamond
 }
 
 public enum CashMachineSpinType

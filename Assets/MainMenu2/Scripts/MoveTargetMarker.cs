@@ -29,5 +29,13 @@ namespace MainMenu
                 transform.position = followPosition;
             }
         }
+
+        public void ForceSetPosition(float x, float y)
+        {
+            followPosition.x = x;
+            followPosition.y = y;
+
+            transform.position = followPosition;
+        }
     }
 }

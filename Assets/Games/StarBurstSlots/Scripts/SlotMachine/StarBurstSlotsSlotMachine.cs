@@ -48,8 +48,8 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     [HideInInspector] public bool isPaylineCompleted;
     [HideInInspector] public bool isSlotAnimationCompleted;
@@ -59,7 +59,7 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
     private bool isSettingResult;
 
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool makeFreeGameReady = false;
     [HideInInspector] public bool isFreeSpinWhenNoPayline = false;
     [HideInInspector] public bool isFreeGameReady;
@@ -254,10 +254,10 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
 
         for (int i = 0; i < hasWildOnReel.Length; i++)
         {
-            Debug.Log($"Deepak Reel {i + 1} has Wild: {hasWildOnReel[i]}");
+            //Debug.Log($"Deepak Reel {i + 1} has Wild: {hasWildOnReel[i]}");
         }
 
-        Debug.Log("Deepak Chawla 2 has free spins: " + freeSpinCount);
+        //Debug.Log("Deepak Chawla 2 has free spins: " + freeSpinCount);
         if (testMode)
         {
             freeSpinCount = 2;
@@ -271,7 +271,7 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
             freeSpinCount = currentSpinResult.freeSpinCount;
         }
         //freeSpinCount = currentSpinResult.freeSpinCount;
-        Debug.Log("Deepak Chawla 3 has free spins: " + freeSpinCount);
+        //Debug.Log("Deepak Chawla 3 has free spins: " + freeSpinCount);
 
         if (testMode)
         {
@@ -313,7 +313,7 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
         (reels.Count > 2 && hasWildOnReel[2]) ||
         (reels.Count > 3 && hasWildOnReel[3]);
 
-        Debug.Log($"Deepak Free Spin Trigger via Wild: {trigger}");
+        //Debug.Log($"Deepak Free Spin Trigger via Wild: {trigger}");
 
         if (!isFreeGame)
         {
@@ -322,12 +322,12 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
                 hasFreeSpinTriggerViaWild = true;
                 for (int i = 0; i < triggerReelsMask.Length; i++)
                 {
-                    Debug.Log($"Deepak has trigger reel mask on reel {triggerReelsMask[i]}");
+                    //Debug.Log($"Deepak has trigger reel mask on reel {triggerReelsMask[i]}");
                 }
                 Array.Clear(triggerReelsMask, 0, triggerReelsMask.Length);
                 for (int i = 0; i < triggerReelsMask.Length; i++)
                 {
-                    Debug.Log($"Deepak 1 has trigger reel mask on reel {triggerReelsMask[i]}");
+                    //Debug.Log($"Deepak 1 has trigger reel mask on reel {triggerReelsMask[i]}");
                 }
                 if (reels.Count > 1 && hasWildOnReel[1]) { triggerReelsMask[1] = true; lockedReels[1] = true; }
                 if (reels.Count > 2 && hasWildOnReel[2]) { triggerReelsMask[2] = true; lockedReels[2] = true; }
@@ -414,7 +414,7 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
         StarBurstSlotsPaylineController.Instance.ClearPaylineData();
         winAmount = 0;
         freeSpinCount = 0;
-        Debug.Log("Deepak Chawla 1 has free spins: " + freeSpinCount);
+        //Debug.Log("Deepak Chawla 1 has free spins: " + freeSpinCount);
         isSettingResult = false;
         isStopBtnPressed = false;
         currentSpinResult = null;
@@ -497,7 +497,7 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
 
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -511,9 +511,19 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
         {
             CasinoUIManager.Instance.ShowErrorCanvas(1, "Network Error");
             StopWithResult(); // fallback
+            StarBurstSlotsUIManager.Instance.StopSpinMusic("ReelSpin");
+            if (StarBurstSlotsAutoSpinController.isAutoSpinning)
+            {
+                StarBurstSlotsUIManager.Instance.CancelAutoSpin();
+            }
+            else
+            {
+                StarBurstSlotsUIManager.Instance.UpdateButtons("Single Stop");
+            }
+            //StarBurstSlotsUIManager.Instance.UpdateButtons("");
             yield break;
         }
-
+        StarBurstSlotsUIManager.Instance.StopSpinMusic("ReelSpin");
         // Optional: small delay for visual pacing
         yield return new WaitForSeconds(0.5f);
 
@@ -596,7 +606,7 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
+            //Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -634,7 +644,7 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
         {
             float betAmount = StarBurstSlotsUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
 
         if(currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0)
@@ -660,7 +670,7 @@ public class StarBurstSlotsSlotMachine : BaseSlotMachine
         {
             isPaylineCompleted = true;
 
-            Debug.Log("Deepak Chawla 4 has free spins: " + freeSpinCount);
+            //Debug.Log("Deepak Chawla 4 has free spins: " + freeSpinCount);
 
 
             if (isPaylineCompleted && freeSpinCount > 0 && isFreeGameReady)

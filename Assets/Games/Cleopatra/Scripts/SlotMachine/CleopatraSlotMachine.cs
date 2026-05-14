@@ -38,8 +38,8 @@ public class CleopatraSlotMachine : BaseSlotMachine
     private int _reelIndex;
 
     // State Variables
-    [HideInInspector] public bool InSpin;
-    [HideInInspector] public bool isStopBtnPressed = false;
+    //[HideInInspector] public bool InSpin;
+    //[HideInInspector] public bool isStopBtnPressed = false;
     [HideInInspector] public bool isSpinAgain = false;
     [HideInInspector] public bool isPaylineCompleted;
     [HideInInspector] public bool isResultReceived;
@@ -48,7 +48,7 @@ public class CleopatraSlotMachine : BaseSlotMachine
     private bool isSettingResult;
 
     // Free Spin Game
-    [HideInInspector] public bool isFreeGame;
+    //[HideInInspector] public bool isFreeGame;
     [HideInInspector] public bool isFreeGameReady;
     [HideInInspector] public int scatterCount;
 
@@ -257,7 +257,7 @@ public class CleopatraSlotMachine : BaseSlotMachine
         //SlotSpinService.Instance.isCoinUpdaterOrNot = false;
         // Reset Variables and Functions State
         winAmount = 0;
-
+        CleopatraUIManager.Instance.PlaySpinMusic("Spin");
         isSettingResult = false;
         isStopBtnPressed = false;
         currentSpinResult = null;
@@ -267,7 +267,7 @@ public class CleopatraSlotMachine : BaseSlotMachine
         horizontalLayout.enabled = false;
         _reelsCount = reels.Count;
         ClearPaylines();
-
+        CleopatraUIManager.Instance.winAnimationCompleted = true;
         CleopatraUIManager.Instance.SetStopInteractable(false);
 
         // Getting Spin Settings
@@ -340,7 +340,7 @@ public class CleopatraSlotMachine : BaseSlotMachine
 
     private IEnumerator WaitUntilResultAndThenStop()
     {
-        float timeout = 5f;
+        float timeout = 12f;
         float elapsed = 0f;
 
         // Wait until result is received
@@ -365,11 +365,11 @@ public class CleopatraSlotMachine : BaseSlotMachine
             }
             else
             {
-                CleopatraUIManager.Instance.UpdateButtons("Default");
+                CleopatraUIManager.Instance.UpdateButtons("Single Stop");
             }
 
             isSpinAgain = true;
-
+            CleopatraUIManager.Instance.StopSpinMusic("Spin");
             yield break;
         }
 
@@ -475,7 +475,6 @@ public class CleopatraSlotMachine : BaseSlotMachine
     {
         if (currentSpinResult == null || !currentSpinResult.success)
         {
-            Debug.LogWarning("❌ Spin result is invalid or failed.");
             return;
         }
 
@@ -505,7 +504,7 @@ public class CleopatraSlotMachine : BaseSlotMachine
             float betAmount = CleopatraUIManager.Instance.CurrentBet();
 
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
-            Invoke(nameof(UpdateGameCoin), 1f);
+            //Invoke(nameof(UpdateGameCoin), 1f);
         }
 
         if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0 || scatterCount >= 2)
@@ -555,7 +554,6 @@ public class CleopatraSlotMachine : BaseSlotMachine
     {
         if (Instance.settings == null || Instance.settings.resourcesList == null)
         {
-            Debug.LogWarning("Settings or resourcesList is null.");
             return null;
         }
 

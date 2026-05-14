@@ -19,8 +19,6 @@ public class MonkeyMadnessSoundManager : MonoBehaviour
     public bool IsSoundMute() => isSoundMute;
     public bool IsMusicMute() => isMusicMute;
 
-
-
     private void Awake()
     {
         if (instance == null) { instance = this; }
@@ -50,10 +48,6 @@ public class MonkeyMadnessSoundManager : MonoBehaviour
             musicSource.loop = true;
             musicSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
     }
 
 
@@ -72,10 +66,6 @@ public class MonkeyMadnessSoundManager : MonoBehaviour
         {
             musicSource.clip = sound.audioClip;
             musicSource.Stop();
-        }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
     public void PlayReelStopSFX(string soundName)
@@ -111,10 +101,6 @@ public class MonkeyMadnessSoundManager : MonoBehaviour
             sfxSource.volume = sound.volume;
             sfxSource.pitch = sound.pitch;
             sfxSource.PlayOneShot(sound.audioClip);
-        }
-        else
-        {
-            Debug.LogWarning($"SFX not found.");
         }
     }
     public void MuteSFX(bool mute)

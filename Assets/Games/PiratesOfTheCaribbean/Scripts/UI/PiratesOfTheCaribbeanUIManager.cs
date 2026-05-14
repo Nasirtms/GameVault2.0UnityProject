@@ -38,7 +38,7 @@ public class PiratesOfTheCaribbeanUIManager : GameBetServices
     [SerializeField] private Button fastButtonOn;
 
     [Header("Auto Spin Popup")]
-    [SerializeField] private GameObject autoSpinPopupPanel;
+    public GameObject autoSpinPopupPanel;
     [SerializeField] private Button autoSpin25Button;
     [SerializeField] private Button autoSpin50Button;
     [SerializeField] private Button autoSpin100Button;
@@ -296,7 +296,7 @@ public class PiratesOfTheCaribbeanUIManager : GameBetServices
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
         }
-        SceneManager.LoadScene("Main");
+        SceneManagement.GoBackToMainMenu();    // SceneManager.LoadScene("Main");
     }
 
     private void OpenRulesPopup()
@@ -371,7 +371,15 @@ public class PiratesOfTheCaribbeanUIManager : GameBetServices
         autoSpinPopupPanel.SetActive(false);
 
         float betAmount = betController.GetCurrentBet();
-
+        if (textAnimationCoroutine != null)
+        {
+            StopCoroutine(textAnimationCoroutine);
+            StopWinMusic("Win");
+        }
+        if (winCoroutine != null)
+        {
+            StopCoroutine(winCoroutine);
+        }
         autoSpinController.SetSpinCount(spinCount);
         autoSpinController.StartAutoSpin(betAmount);
     }
@@ -423,6 +431,7 @@ public class PiratesOfTheCaribbeanUIManager : GameBetServices
                 inSpin = true;
                 spinButton.ShowButton(false);
                 stopButton.ShowButton(true);
+                stopButton.GetButtonComponent().interactable = false;
                 autoButton.ShowButton(false);
                 autoStopButton.ShowButton(true);
                 break;
@@ -519,7 +528,11 @@ public class PiratesOfTheCaribbeanUIManager : GameBetServices
     #endregion
 
     #region Text Animation
-
+    private string FormatFloorValue(float value)
+    {
+        float floored = Mathf.Floor(value * 100f) / 100f;
+        return floored.ToString("0.00");
+    }
     public void UpdateWinAmount(float winAmount, bool compound = false)
     {
         if (winAmount > 0)
@@ -571,13 +584,14 @@ public class PiratesOfTheCaribbeanUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(startValue, target, t);
-            textToAnimate.text = displayed.ToString("0.00");
+            //textToAnimate.text = displayed.ToString("0.00");
+            textToAnimate.text = FormatFloorValue(displayed);
 
             timer += Time.deltaTime;
             yield return null;
         }
-
-        textToAnimate.text = target.ToString("0.00");
+        textToAnimate.text = FormatFloorValue(target);
+        //textToAnimate.text = target.ToString("0.00");
         StopWinMusic("Win");
         PlaySound("WinEnd");
     }
@@ -590,17 +604,19 @@ public class PiratesOfTheCaribbeanUIManager : GameBetServices
         {
             float t = timer / duration;
             float displayed = Mathf.Lerp(0f, target, t);
-            textToAnimateOne.text = displayed.ToString("0.00");
-            textToAnimateTwo.text = displayed.ToString("0.00");
-
+            //textToAnimateOne.text = displayed.ToString("0.00");
+            //textToAnimateTwo.text = displayed.ToString("0.00");
+            textToAnimateOne.text = FormatFloorValue(displayed);
+            textToAnimateTwo.text = FormatFloorValue(displayed);
             timer += Time.deltaTime;
             yield return null;
         }
 
         // Ensure final value is exact
-        textToAnimateOne.text = target.ToString("0.00");
-        textToAnimateTwo.text = target.ToString("0.00");
-
+        //textToAnimateOne.text = target.ToString("0.00");
+        //textToAnimateTwo.text = target.ToString("0.00");
+        textToAnimateOne.text = FormatFloorValue(target);
+        textToAnimateTwo.text = FormatFloorValue(target);
         StopCoroutine(textAnimationCoroutine);
     }
 

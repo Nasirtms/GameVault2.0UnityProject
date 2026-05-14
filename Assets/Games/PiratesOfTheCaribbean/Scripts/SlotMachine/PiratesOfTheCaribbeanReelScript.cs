@@ -89,7 +89,6 @@ public class PiratesOfTheCaribbeanReelScript : MonoBehaviour
     {
         if (reelIndex >= PiratesOfTheCaribbeanSlotMachine.Instance.spinSymbolMatrix.Count)
         {
-            Debug.LogError($"No spin data for reel {reelIndex}!");
             return;
         }
 
@@ -110,10 +109,6 @@ public class PiratesOfTheCaribbeanReelScript : MonoBehaviour
                 var slot = slots[rowIndex + 1]; // Make sure slots[1], [2], [3] are the visible ones
 
                 slot.SetType(res.Value);
-            }
-            else
-            {
-                Debug.LogWarning($"No slot resource found for ID: {symbolData.id}");
             }
         }
 

@@ -38,10 +38,6 @@ public class CleopatraSoundManager : MonoBehaviour
             musicSource.loop = true;
             musicSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
     }
     public void StopMusic(string soundName)
     {
@@ -50,10 +46,6 @@ public class CleopatraSoundManager : MonoBehaviour
         {
             musicSource.clip = sound.audioClip;
             musicSource.Stop();
-        }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
     public void PlaySpinMusic(string soundName)
@@ -67,10 +59,6 @@ public class CleopatraSoundManager : MonoBehaviour
             spinMusicSource.loop = true;
             spinMusicSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
     }
     public void StopSpinMusic(string soundName)
     {
@@ -79,10 +67,6 @@ public class CleopatraSoundManager : MonoBehaviour
         {
             spinMusicSource.clip = sound.audioClip;
             spinMusicSource.Stop();
-        }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
   
@@ -99,10 +83,6 @@ public class CleopatraSoundManager : MonoBehaviour
                 sfxSource.loop = false;
                 sfxSource.PlayOneShot(sound.audioClip);
             }
-            else
-            {
-                Debug.LogWarning($"SFX '{soundName}' not found.");
-            }
         }
     }
 
@@ -117,10 +97,6 @@ public class CleopatraSoundManager : MonoBehaviour
             winSource.loop = true;
             winSource.Play();
         }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
-        }
     }
 
     public void StopWinMusic(string soundName)
@@ -130,10 +106,6 @@ public class CleopatraSoundManager : MonoBehaviour
         {
             winSource.clip = sound.audioClip;
             winSource.Stop();
-        }
-        else
-        {
-            Debug.LogWarning($"Music '{soundName}' not found.");
         }
     }
 

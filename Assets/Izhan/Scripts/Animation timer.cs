@@ -44,7 +44,7 @@ public class AnimationTimer : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning($"GameObject '{obj.name}' does not have a ParticleSystem component.");
+                    //Debug.LogWarning($"GameObject '{obj.name}' does not have a ParticleSystem component.");
                 }
             }
         }

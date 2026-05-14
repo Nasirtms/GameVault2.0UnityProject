@@ -69,6 +69,7 @@ public class ProfilePanelManager : MonoBehaviour
 
     public void OnCopyIdClicked()
     {
+        GlobleSoundManager.Instance.PlaySFX("ProfileClick");
         JSInputHandler.CopyToClipboard(MainMenuUIManager.Instance.UserID);
 
         Debug.Log("User ID copied!");

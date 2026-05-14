@@ -1,23 +1,24 @@
 ﻿// Assets/Scripts/Coin/Coin3DController.cs
+using DG.Tweening;
 using System;
 using System.Collections;
+using System.Threading;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
-using DG.Tweening;
-using Unity.VisualScripting;
 
 namespace HeadTailGame
 {
     public class HeadTailCoin3DController : MonoBehaviour
     {
+        #region Variables
+
         [Header("Script Refs")]
         [SerializeField] private HeadTailBetManager betManager;
         [SerializeField] private HeadTailGameManager headTailGameManager;
 
-
         [Header("Model")]
         [SerializeField] private Transform coinModel;
-
 
         [Header("Landing Poses (local)")]
         [SerializeField] private Transform headsPose;
@@ -30,21 +31,25 @@ namespace HeadTailGame
         [SerializeField] private AnimationCurve ease = AnimationCurve.EaseInOut(0, 0, 1, 1);
         public float newBalance;
 
-
-
-        //[Header("Force Landing")]
-        //[Tooltip("If true coin always lands on Heads, if false it lands on Tails.")]
-        //public bool forceHeads = true;
-
         Coroutine _spinRoutine;
+        private Tween _spinLoopTween;
 
+        private Tween _spinTween; // track active DOTween
+
+        public bool LastIsWin { get; private set; }     // <-- store backend outcome
+        public string LastResultRaw { get; private set; } // optional (e.g., "Head"/"Tail")
+        public int LastFaceByServer { get; private set; } // optional parsed 0/1 if backend sends face
+        public bool IsSpinning => _spinRoutine != null;
+        public bool HasNetworkError { get; private set; }
+        private bool _apiResponseReceived;
+
+        #endregion
         void Reset()
         {
             coinModel = transform;
             localSpinAxis = Vector3.up;
         }
 
-        public bool IsSpinning => _spinRoutine != null;
         public void SetImmediateFace(int faceId)
         {
             if (!Validate(out var targetRot)) return;
@@ -53,14 +58,7 @@ namespace HeadTailGame
             if (_spinRoutine != null) { StopCoroutine(_spinRoutine); _spinRoutine = null; }
             coinModel.localRotation = targetRot;
         }
-        //public void Spin(Action<int> onComplete = null)
-        //{
-        //    // use the single bool
-        //    int faceId = forceHeads ? HeadTailCoinFaces.Heads : HeadTailCoinFaces.Tails;
 
-        //    if (_spinRoutine != null) StopCoroutine(_spinRoutine);
-        //    _spinRoutine = StartCoroutine(SpinRoutine(faceId, onComplete));
-        //}
         public void SpinTo(int faceId, Action<int> onComplete = null)
         {
             if (_spinRoutine != null) StopCoroutine(_spinRoutine);
@@ -72,18 +70,11 @@ namespace HeadTailGame
             if (coinModel == null) { Debug.LogError("Coin3DController: coinModel not set."); return false; }
             if (headsPose == null || tailsPose == null)
             {
-                Debug.LogError("Coin3DController: Assign headsPose and tailsPose (empty child transforms).");
                 return false;
             }
             return true;
         }
 
-
-        private Tween _spinTween; // track active DOTween
-
-        public bool LastIsWin { get; private set; }     // <-- store backend outcome
-        public string LastResultRaw { get; private set; } // optional (e.g., "Head"/"Tail")
-        public int LastFaceByServer { get; private set; } // optional parsed 0/1 if backend sends face
         private static int ParseFaceFromServer(string s)
         {
             if (string.IsNullOrEmpty(s)) return HeadTailCoinFaces.Heads;
@@ -93,8 +84,6 @@ namespace HeadTailGame
             return HeadTailCoinFaces.Heads;
         }
 
-        private Tween _spinLoopTween;
-        private Coroutine _stopSpinCoroutine;
         public void StartLoopSpin()
         {
             if (!Validate(out _)) return;
@@ -117,8 +106,6 @@ namespace HeadTailGame
 
         public IEnumerator StopSpinToResultAfterMinimum(int faceId, float minDuration = 2f, int minRevolutions = 2, Action<int> onComplete = null)
         {
-            float elapsed = 0f;
-
             // Wait for minDuration seconds using a simple yield return
             yield return new WaitForSeconds(minDuration);
 
@@ -149,7 +136,7 @@ namespace HeadTailGame
             // Wait for tween to complete (this yields without while loop)
             yield return finalRotationTween.WaitForCompletion();
         }
-        IEnumerator SpinRoutine(int faceId, Action<int> onComplete)
+        public IEnumerator SpinRoutine(int faceId, Action<int> onComplete)
         {
             if (!Validate(out _)) yield break;
 
@@ -189,7 +176,6 @@ namespace HeadTailGame
             yield return _spinTween.WaitForCompletion();
         }
 
-
         public void SetMeshRenderersEnabled(bool enabled)
         {
             if (coinModel == null) return;
@@ -201,49 +187,12 @@ namespace HeadTailGame
             }
         }
 
-
         #region Call API Code
-        //IEnumerator CallApiAndWaitForResult()
-        //{
-        //    var requestData = new HeadNTailsRequestBody
-        //    {
-        //        requestId = Guid.NewGuid().ToString(),
-        //        gameId = SceneManagement.currentGameID,
-        //        betAmount = betManager.CurrentBet,
-        //        choice = headTailGameManager.currentPick.ToString(),
-        //    };
 
-        //    string json = JsonUtility.ToJson(requestData);
-        //    Debug.Log("📦 Sending payload: " + json);
-
-        //    UnityWebRequest request = new UnityWebRequest(ApiEndpoints.HeadsNTails, "POST");
-        //    byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
-        //    request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        //    request.downloadHandler = new DownloadHandlerBuffer();
-        //    request.SetRequestHeader("Content-Type", "application/json");
-
-        //    foreach (var header in ApiEndpoints.GetAuthHeaders())
-        //        request.SetRequestHeader(header.Key, header.Value);
-
-        //    yield return request.SendWebRequest();
-
-        //    if (request.result == UnityWebRequest.Result.Success)
-        //    {
-        //        string responseText = request.downloadHandler.text;
-        //        Debug.Log("✅ Received response: " + responseText);
-
-        //        // Parse the response
-        //        var response = JsonUtility.FromJson<HeadNTailsResponse>(responseText);
-        //        Debug.Log($"Result: {response.result}, Win: {response.isWin}, Payout: {response.payout}");
-
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("❌ API Request failed: " + request.error);
-        //    }
-        //}
-        IEnumerator CallApiAndWaitForResult()
+        public IEnumerator CallApiAndWaitForResult()
         {
+            HasNetworkError = false;              
+            _apiResponseReceived = false;
 
             var requestData = new HeadNTailsRequestBody
             {
@@ -254,6 +203,7 @@ namespace HeadTailGame
             };
 
             string json = JsonUtility.ToJson(requestData);
+            Debug.Log("Request Body : " + json);
             UnityWebRequest request = new UnityWebRequest(ApiEndpoints.HeadsNTails, "POST");
             request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
             request.downloadHandler = new DownloadHandlerBuffer();
@@ -273,7 +223,7 @@ namespace HeadTailGame
             if (request.result == UnityWebRequest.Result.Success)
             {
                 string responseText = request.downloadHandler.text;
-                //Debug.Log("✅ Received response: " + responseText);
+                Debug.Log("✅ Received response: " + responseText);
 
                 // Parse the response
                 var response = JsonUtility.FromJson<HeadNTailsResponse>(responseText);
@@ -281,23 +231,37 @@ namespace HeadTailGame
 
                 LastIsWin = response.isWin;
                 newBalance = response.newBalance;
-                LastResultRaw = response.result;                  // optional
-                LastFaceByServer = ParseFaceFromServer(response.result); // optional
+                LastResultRaw = response.result;                
+                LastFaceByServer = ParseFaceFromServer(response.result);
 
+                _apiResponseReceived = true;
             }
             else
             {
-                Debug.LogError("❌ API Request failed: " + request.error);
-                // choose a safe default if API fails
+                HasNetworkError = true;          
+                _apiResponseReceived = true;      
+
                 LastIsWin = false;
-                LastResultRaw = null;
                 LastFaceByServer = HeadTailCoinFaces.Heads;
             }
         }
 
-        public IEnumerator FetchOutcome()
+        public IEnumerator FetchOutcome(float timeout)
         {
-            yield return CallApiAndWaitForResult();
+            //yield return CallApiAndWaitForResult();
+            StartCoroutine(CallApiAndWaitForResult());
+
+            float elapsed = 0f;
+            while (!_apiResponseReceived && elapsed < timeout)
+            {
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            if (!_apiResponseReceived)
+            {
+                HasNetworkError = true;
+            }
         }
 
         #endregion
@@ -318,8 +282,6 @@ namespace HeadTailGame
 #endif
     }
 }
-
-
 
 [Serializable]
 public class HeadNTailsRequestBody

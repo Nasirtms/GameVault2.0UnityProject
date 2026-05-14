@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -112,16 +113,17 @@ namespace MainMenu
 
             List<GameItem> gamesListFiltered = new List<GameItem>();
 
+            var config = SceneManagement.buildConfig;
+
             foreach (GameItem game in gamesList)
             {
                 if (!game.is_active) continue;
-                if (SceneManagement.sceneAccessType == SceneAccessType.Publish && !game.is_publish) continue;
-                if (SceneManagement.sceneAccessType == SceneAccessType.Dev && game.is_publish) continue;
+
+                if (!config.IsBoth() && config.IsProduction() != game.is_publish)
+                    continue;
 
                 if (condition(game, categoryName))
-                {
                     gamesListFiltered.Add(game);
-                }
             }
 
             gameCardPanalsCount = Mathf.CeilToInt((float)gamesListFiltered.Count / cardsPerPage);
@@ -154,9 +156,11 @@ namespace MainMenu
                     gameCardTemp.gameObject.name = "GameCard" + (gameCardIndex + 1) + "-" + gamesListFiltered[gameCardIndex].name;
                     gameCardTemp.gameCatalogueController = GameCatalogueController.instance;
                     gameCardTemp.addressableLabel = gamesListFiltered[gameCardIndex].addressableLabel;
+                    gameCardTemp.sceneName = gamesListFiltered[gameCardIndex].sceneName;
                     gameCardTemp.SetGameCardData(gamesListFiltered[gameCardIndex].Gametitle, gamesListFiltered[gameCardIndex].is_favorite, gamesListFiltered[gameCardIndex].isGameCardShine, gamesListFiltered[gameCardIndex].id);
                     gameCardTemp.SetImage(gamesListFiltered[gameCardIndex]);
-                    gameCardTemp.AddOnClickListener(() => MainMenu.MainMenuManager.instance.OpenLevel(gamesListFiltered[gameCardIndex].sceneName, gamesListFiltered[gameCardIndex].id, gamesListFiltered[gameCardIndex].addressableLabel));
+                    //gameCardTemp.AddOnClickListener(() => MainMenu.MainMenuManager.instance.OpenLevel(gamesListFiltered[gameCardIndex].sceneName, gamesListFiltered[gameCardIndex].id, gamesListFiltered[gameCardIndex].addressableLabel, gamesListFiltered[gameCardIndex].Gametitle));
+                    gameCardTemp.AddOnClickListener(() => gameCardTemp.GameCardClicked());
                     //gameCardTemp.onLongPress.AddListener(() => gameCardTemp.OnHoldStart(gamesListFiltered[gameCardIndex].sceneName, gamesListFiltered[gameCardIndex].id, gamesListFiltered[gameCardIndex].addressableLabel));
                     //gameCardTemp.SetClickEffectSpawner(sceneFavoriteAnimationSpawner);
 

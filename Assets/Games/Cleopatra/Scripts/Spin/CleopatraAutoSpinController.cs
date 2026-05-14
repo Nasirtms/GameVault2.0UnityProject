@@ -21,7 +21,17 @@ public class CleopatraAutoSpinController : MonoBehaviour
 
     #endregion
 
+    #region Unity Methods
+    private void OnEnable()
+    {
+        MainMenuUIManager.PopupShown += HandlePopupShown;
+    }
 
+    private void OnDisable()
+    {
+        MainMenuUIManager.PopupShown -= HandlePopupShown;
+    }
+    #endregion
 
     #region Public References
 
@@ -60,17 +70,24 @@ public class CleopatraAutoSpinController : MonoBehaviour
                 yield return new WaitForSeconds(delayBetweenSpins);
             else
                 firstAuto = false;
-            
-            CleopatraUIManager.Instance.SetStopInteractable(true);
-            if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) break;
 
-            CleopatraUIManager.Instance.PlaySpinMusic("Spin");
+            CleopatraUIManager.Instance.winAnimationCompleted = true;
+            CleopatraUIManager.Instance.SetStopInteractable(true);
+
+            if (cancelRequested)
+            {
+                StopAutoSpin();
+                break;
+            }
+
+            if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) break;
+            SlotSpinService.Instance.Spin(betAmount);
+
+            //CleopatraUIManager.Instance.PlaySpinMusic("Spin");
             if (CleopatraUIManager.Instance.textAnimationCoroutine != null)
                 StopCoroutine(CleopatraUIManager.Instance.textAnimationCoroutine);
             if (CleopatraUIManager.Instance.winCoroutine != null)
                 StopCoroutine(CleopatraUIManager.Instance.winCoroutine);
-
-            SlotSpinService.Instance.Spin(betAmount);
 
             if (CleopatraUIManager.Instance.CurrentButtonSet() != "Auto Start")
                 CleopatraUIManager.Instance.UpdateButtons("Auto Start");
@@ -102,6 +119,7 @@ public class CleopatraAutoSpinController : MonoBehaviour
             {
                 yield return new WaitUntil(() => CleopatraSlotMachine.Instance.isPaylineCompleted);
             }
+            yield return new WaitUntil(() => CleopatraUIManager.Instance.winAnimationCompleted);
         }
 
         StopAutoSpin();
@@ -112,15 +130,24 @@ public class CleopatraAutoSpinController : MonoBehaviour
         CleopatraUIManager.Instance.HideSpinCount();
         CleopatraUIManager.Instance.UpdateButtons("Auto Stop");
 
-        if (!CleopatraUIManager.Instance.GetAutoInteractable())
-        {
-            CleopatraUIManager.Instance.SetAutoInteractable(true);
-        }
-
         isAutoSpinning = false;
         isAutoRunning = false;
         cancelRequested = false;
     }
 
+    private void HandlePopupShown()
+    {
+        if (!isAutoRunning) return;
+
+        cancelRequested = true;
+
+        if (autoSpinRoutine != null)
+        {
+            StopCoroutine(autoSpinRoutine);
+            autoSpinRoutine = null;
+        }
+
+        StopAutoSpin();
+    }
     #endregion
 }

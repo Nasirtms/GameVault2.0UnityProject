@@ -38,8 +38,6 @@ public class HeadTailGameSettings : ScriptableObject
                 if (sound.soundName == soundName)
                     return sound;
             }
-
-            Debug.LogWarning($"Sound '{soundName}' not found in SoundData.");
             return null;
         }
         return null;

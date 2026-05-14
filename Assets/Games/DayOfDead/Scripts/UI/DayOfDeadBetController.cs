@@ -15,6 +15,7 @@ public class DayOfDeadBetController : MonoBehaviour
     private int currentIndex = 0;
 
     [Header("UI References")]
+    [SerializeField] private TMP_Text lineText;
     [SerializeField] private TMP_Text betText;
 
     #endregion
@@ -48,10 +49,11 @@ public class DayOfDeadBetController : MonoBehaviour
     private void UpdateBetUI()
     {
         float bet = betValues[currentIndex];
+        float line = bet / 20;
 
+        lineText.text = line.ToString("0.00");
         betText.text = bet.ToString("0.00");
     }
 
     #endregion
 }
-
