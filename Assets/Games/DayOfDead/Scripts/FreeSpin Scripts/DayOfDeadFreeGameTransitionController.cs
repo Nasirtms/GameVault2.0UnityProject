@@ -14,8 +14,10 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
     public static DayOfDeadFreeGameTransitionController Instance;
 
     [SerializeField] private GameObject freeSpinBackground;
-    private SpriteRenderer background_Sprite;
-    [SerializeField] public SpriteRenderer background_Sprite1;
+    private SpriteRenderer freeSpinBG_Sprite;
+    [SerializeField] public SpriteRenderer baseGameBG_Sprite1;
+    [SerializeField] public SpriteRenderer freeSpinBG_Sprite1;
+
     [SerializeField] private GameObject freeSpinWinFrame;
     [SerializeField] private GameObject freeSpinStartFrame;
     [SerializeField] private TMP_Text freeSpinWinText;
@@ -35,7 +37,7 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
     private void Start()
     {
         freeSpinController = GetComponent<DayOfDeadFreeSpinController>();
-        background_Sprite = freeSpinBackground.GetComponent<SpriteRenderer>();
+        freeSpinBG_Sprite = freeSpinBackground.GetComponent<SpriteRenderer>();
     }
     #endregion
 
@@ -172,17 +174,21 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
     private void ShowBackground()
     {
         freeSpinBackground.SetActive(true);
-        background_Sprite.DOFade(1f, 2.8f)
+        freeSpinBG_Sprite.DOFade(1f, 2.8f)
             .SetEase(Ease.OutQuad);
-        background_Sprite1.DOFade(1f, 2.8f)
+        freeSpinBG_Sprite1.DOFade(1f, 2.8f)
+            .SetEase(Ease.OutQuad);
+        baseGameBG_Sprite1.DOFade(0f, 2.8f)
             .SetEase(Ease.OutQuad);
     }
 
     private void HideBackground()
     {
-        background_Sprite.DOFade(0f, 2.8f)
+        freeSpinBG_Sprite.DOFade(0f, 2.8f)
             .SetEase(Ease.OutQuad);
-        background_Sprite1.DOFade(0f, 2.8f)
+        baseGameBG_Sprite1.DOFade(1f, 2.8f)
+            .SetEase(Ease.OutQuad);
+        freeSpinBG_Sprite1.DOFade(0f, 2.8f)
             .SetEase(Ease.OutQuad);
         freeSpinBackground.SetActive(false);
     }

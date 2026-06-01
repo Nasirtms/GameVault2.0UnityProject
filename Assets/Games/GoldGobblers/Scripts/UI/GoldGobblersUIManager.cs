@@ -1,4 +1,4 @@
-﻿using Coffee.UIEffects;
+using Coffee.UIEffects;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -50,9 +50,9 @@ public class GoldGobblersUIManager : GameBetServices
     private bool musicOn;
 
     [Header("Gobblers")]
-    [SerializeField] private GameObject redGobbler;
-    [SerializeField] private GameObject greenGobbler;
-    [SerializeField] private GameObject blueGobbler;
+    [SerializeField] public GameObject redGobbler;
+    [SerializeField] public GameObject greenGobbler;
+    [SerializeField] public GameObject blueGobbler;
 
     [Header("5X5 / 3X5 Slot Machine")]
     [SerializeField] private SpriteRenderer slotMachineFrame;

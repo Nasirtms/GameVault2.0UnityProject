@@ -304,6 +304,9 @@ public class WildBuffaloUIManager : GameBetServices
         //PlaySound("Button");
         //StopSpinMusic("Spin");
         autoSpinController.CancelAutoSpin();
+        autoButton.SetActive(true);
+        autoStopButton.SetActive(false);
+        SetAutoInteractable(false);
     }
     #endregion
 
@@ -337,7 +340,7 @@ public class WildBuffaloUIManager : GameBetServices
                 break;
 
             case "Auto":
-                interactable = true;
+                interactable = false;
                 spinButton.SetActive(false);
                 stopButton.SetActive(true);
                 autoButton.SetActive(false);

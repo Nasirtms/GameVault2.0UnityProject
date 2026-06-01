@@ -1,11 +1,9 @@
 using DG.Tweening;
 using Sirenix.OdinInspector;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 public class UltimateFireLinkChinaStreetPaylineController : MonoBehaviour
 {
     #region Variables
@@ -23,6 +21,27 @@ public class UltimateFireLinkChinaStreetPaylineController : MonoBehaviour
     private Coroutine animationLoop;
     private Coroutine scatterAnimation;
     public bool isShowing = false;                             // Paylines will be continue as long as it is true
+
+    [SerializeField] public GameObject freeSpinParent;
+    [SerializeField] private GameObject freeSpinStart;
+    [SerializeField] public GameObject freeSpinEnd;
+    [SerializeField] private Button freeSpinButton20;
+    [SerializeField] private Button freeSpinButton15;
+    [SerializeField] private Button freeSpinButton10;
+    [SerializeField] private Button freeSpinButton7;
+    [SerializeField] private Button freeSpinButton5;
+    [SerializeField] private Button freeSpinButtonMystery;
+    [SerializeField] public GameObject freeSpinTypeParent;
+    [SerializeField] public GameObject freeSpin20;
+    [SerializeField] public GameObject freeSpin15;
+    [SerializeField] public GameObject freeSpin10;
+    [SerializeField] public GameObject freeSpin7;
+    [SerializeField] public GameObject freeSpin5;
+    [SerializeField] public GameObject freeSpinMystery;
+    [SerializeField] public GameObject wildMultiplier;
+    [SerializeField] public GameObject jackpots;
+    [SerializeField] public GameObject ads;
+    [SerializeField] public GameObject freeSpinCountObj;
 
     [Header("Results")]
     [ShowInInspector][ReadOnly] private List<UltimateFireLinkChinaStreetPaylineResult> spinResult = new List<UltimateFireLinkChinaStreetPaylineResult>();
@@ -44,6 +63,16 @@ public class UltimateFireLinkChinaStreetPaylineController : MonoBehaviour
     {
         if (Instance != null) Destroy(gameObject);
         else Instance = this;
+    }
+
+    private void Start()
+    {
+        freeSpinButton20.onClick.AddListener(() => StartFreeSpins(20));
+        freeSpinButton15.onClick.AddListener(() => StartFreeSpins(15));
+        freeSpinButton10.onClick.AddListener(() => StartFreeSpins(10));
+        freeSpinButton7.onClick.AddListener(() => StartFreeSpins(7));
+        freeSpinButton5.onClick.AddListener(() => StartFreeSpins(5));
+        freeSpinButtonMystery.onClick.AddListener(() => StartFreeSpins(-1));
     }
 
     #endregion
@@ -148,11 +177,6 @@ public class UltimateFireLinkChinaStreetPaylineController : MonoBehaviour
         //overlay.SetActive(true);
 
         if (resultScatterCount >= 3)
-        {
-            scatterAnimation = StartCoroutine(ScatterAnimation());
-        }
-
-        if((UltimateFireLinkChinaStreetSlotMachine.Instance.isFreeGameReady && !UltimateFireLinkChinaStreetSlotMachine.Instance.isFreeGame) || (!UltimateFireLinkChinaStreetSlotMachine.Instance.isFreeGameReady && UltimateFireLinkChinaStreetSlotMachine.Instance.isFreeGame))
         {
             scatterAnimation = StartCoroutine(ScatterAnimation());
         }
@@ -267,25 +291,119 @@ public class UltimateFireLinkChinaStreetPaylineController : MonoBehaviour
             }
         }
 
-
-        if (UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount > 0 && !UltimateFireLinkChinaStreetSlotMachine.Instance.isFreeGame)
-        {
-            UltimateFireLinkChinaStreetSlotMachine.Instance.firstFreeSpin = true;
-            //PandaFortuneUIManager.Instance.UpdateButtons("Transition");
-            UltimateFireLinkChinaStreetFreeGameTransitionController.Instance.StartFreeSpins();
-            UltimateFireLinkChinaStreetFreeGameTransitionController.Instance.UpdateFreeSpinsCount(UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount);
-        }
-        else if (UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount > 0 && UltimateFireLinkChinaStreetSlotMachine.Instance.isFreeGame)
-        {
-            UltimateFireLinkChinaStreetFreeGameTransitionController.Instance.UpdateFreeSpinsCount(UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount);
-        }
-
         yield return new WaitForSeconds(1f);
 
         if (activePaylines.Count == 0)
         {
             UltimateFireLinkChinaStreetSlotMachine.Instance.isSlotAnimationCompleted = true;
         }
+
+        yield return new WaitUntil(() => UltimateFireLinkChinaStreetSlotMachine.Instance.isSlotAnimationCompleted);
+
+
+        if (!UltimateFireLinkChinaStreetSlotMachine.Instance.isFreeGame && UltimateFireLinkChinaStreetSlotMachine.Instance.isFreeGameReady)
+        {
+            UltimateFireLinkChinaStreetSlotMachine.Instance.firstFreeSpin = true;
+            StartCoroutine(ShowFreeSpinButtons());
+        }
+        else if (UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount > 0 && UltimateFireLinkChinaStreetSlotMachine.Instance.isFreeGame)
+        {
+            UltimateFireLinkChinaStreetFreeGameTransitionController.Instance.UpdateFreeSpinsCount(UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount);
+        }
+    }
+
+    private IEnumerator ShowFreeSpinButtons()
+    {
+        freeSpinStart.transform.localScale = Vector3.zero;
+        freeSpinParent.SetActive(true);
+        freeSpinStart.SetActive(true);
+        freeSpinStart.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
+        yield return new WaitForSeconds(0.5f);
+
+        freeSpinButton20.transform.DOScale(0.8f, 0.5f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+
+        freeSpinButton15.transform.DOScale(0.8f, 0.5f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+
+        freeSpinButton10.transform.DOScale(0.8f, 0.5f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+
+        freeSpinButton7.transform.DOScale(0.8f, 0.5f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+
+        freeSpinButton5.transform.DOScale(0.8f, 0.5f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+
+        freeSpinButtonMystery.transform.DOScale(0.8f, 0.5f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void StartFreeSpins(int freeSpinCount)
+    {
+        jackpots.gameObject.SetActive(false);
+        ads.gameObject.SetActive(false);
+        switch (freeSpinCount)
+        {
+            case 20:
+                freeSpinTypeParent.SetActive(true);
+                freeSpin20.SetActive(true);
+                UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount = freeSpinCount;
+                break;
+            case 15:
+                freeSpinTypeParent.SetActive(true);
+                freeSpin15.SetActive(true);
+                UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount = freeSpinCount;
+                break;
+            case 10:
+                freeSpinTypeParent.SetActive(true);
+                freeSpin10.SetActive(true);
+                UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount = freeSpinCount;
+                break;
+            case 7:
+                freeSpinTypeParent.SetActive(true);
+                freeSpin7.SetActive(true);
+                UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount = freeSpinCount;
+                break;
+            case 5:
+                freeSpinTypeParent.SetActive(true);
+                freeSpin5.SetActive(true);
+                UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount = freeSpinCount;
+                break;
+            case -1:
+                freeSpinTypeParent.SetActive(true);
+                freeSpinMystery.SetActive(true);
+                break;
+        }
+        wildMultiplier.SetActive(true);
+        freeSpinCountObj.SetActive(true);
+
+        freeSpinStart.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack).OnComplete(() =>
+        {
+            freeSpinStart.SetActive(false);
+            freeSpinParent.SetActive(false);
+            freeSpinButton20.transform.DOKill();
+            freeSpinButton20.transform.localScale = Vector3.one;
+            freeSpinButton15.transform.DOKill();
+            freeSpinButton15.transform.localScale = Vector3.one;
+            freeSpinButton10.transform.DOKill();
+            freeSpinButton10.transform.localScale = Vector3.one;
+            freeSpinButton7.transform.DOKill();
+            freeSpinButton7.transform.localScale = Vector3.one;
+            freeSpinButton5.transform.DOKill();
+            freeSpinButton5.transform.localScale = Vector3.one;
+            freeSpinButtonMystery.transform.DOKill();
+            freeSpinButtonMystery.transform.localScale = Vector3.one;
+        });
+
+        UltimateFireLinkChinaStreetFreeGameTransitionController.Instance.StartFreeSpins();
+        UltimateFireLinkChinaStreetFreeGameTransitionController.Instance.UpdateFreeSpinsCount(UltimateFireLinkChinaStreetSlotMachine.Instance.freeSpinCount);
     }
 
     #endregion

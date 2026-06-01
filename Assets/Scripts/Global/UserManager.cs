@@ -28,6 +28,7 @@ public class UserManager : MonoBehaviour
     public int avatarIndex { get;  set; }
     public string Email { get; private set; }
     public float Coins { get;  set; }
+    public float CoinBalanceBeforeGoingInGame { get; set; }
     public string AvatarUrl { get; set; }
 
     public bool IsFeedback { get; set; }
@@ -102,9 +103,12 @@ public class UserManager : MonoBehaviour
             feedbackShowTimer += Time.deltaTime;
             if (feedbackShowTimer >= feedbackPopupShowTime)
             {
-                feedbackTimeReached = true;
-                StopCoroutine("ShowFeedbackPopup");
-                StartCoroutine("ShowFeedbackPopup");
+                if (Coins > CoinBalanceBeforeGoingInGame)
+                {
+                    feedbackTimeReached = true;
+                    StopCoroutine("ShowFeedbackPopup");
+                    StartCoroutine("ShowFeedbackPopup");
+                }
             }
         }
     }

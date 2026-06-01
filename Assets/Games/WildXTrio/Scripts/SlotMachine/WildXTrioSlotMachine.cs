@@ -83,7 +83,6 @@ public class WildXTrioSlotMachine : BaseSlotMachine
 
     #endregion
 
-
     #region Machine Settings
     private void Initialize()
     {

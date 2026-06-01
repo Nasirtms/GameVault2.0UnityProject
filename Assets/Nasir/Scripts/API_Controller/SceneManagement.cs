@@ -41,6 +41,9 @@ public static class SceneManagement
     public static string notificationMessage;
     public static string notificationImageUrl;
 
+    ////Random Data
+    //public static float coinBalanceBeforeGoingInGame;
+
 
     //Game List
     public static List<SerializableClasses.Game> games = new List<SerializableClasses.Game>();

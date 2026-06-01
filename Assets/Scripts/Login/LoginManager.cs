@@ -147,7 +147,8 @@ public class LoginManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(email))
         {
-            ShowError("Please enter a valid email address.");
+            //ShowError("Please enter a valid email address.");
+            ShowError("Please enter a valid account name.");
             return false;
         }
 
@@ -398,10 +399,7 @@ public class LoginManager : MonoBehaviour
         //StartCoroutine(GetGamesData());
         yield return SendAuthorizedRequest(ApiEndpoints.SceneData, json =>
         {
-            Debug.Log($"SceneData Response: {json}");
             sceneData = JsonConvert.DeserializeObject<SerializableClasses.SceneDataResponse>(json);
-            Debug.Log($"SceneData: {JsonConvert.SerializeObject(sceneData)}");
-
             isGetMainMenuData = true;
             StartCoroutine(GetGamesData());
         });

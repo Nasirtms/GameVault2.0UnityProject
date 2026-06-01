@@ -27,6 +27,13 @@ public class VideoEndSceneLoader : MonoBehaviour
     public OnScreenKeyboardManager onScreenKeyboardManagerPrefab;
     public WebGLClipboard webGlClipboardPrefab;
 
+    private void Awake()
+    {
+#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
+            Debug.unityLogger.logEnabled = false;
+#endif
+    }
+
     private void Start()
     {
         SceneManagement.buildConfig = _buildConfig;

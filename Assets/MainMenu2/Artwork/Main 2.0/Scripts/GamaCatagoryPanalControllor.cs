@@ -28,7 +28,7 @@ namespace MainMenu
         [SerializeField] private List<RectTransform> gameCardPanalsRect = new List<RectTransform>();
         //[SerializeField] public List<UIGameCardButton> gameCards = new List<UIGameCardButton>();
         [SerializeField] public List<GameCardController> gameCards = new List<GameCardController>();
-        [SerializeField] private Text categoryEmptyText;
+        [SerializeField] private TextMeshProUGUI categoryEmptyText;
         [SerializeField] private int cardsPerPage = 10;
 
         //[Header("GameCards count")]

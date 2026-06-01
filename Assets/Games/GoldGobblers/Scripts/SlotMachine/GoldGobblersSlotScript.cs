@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using TMPro;
 using UnityEngine;
@@ -14,6 +15,7 @@ public class GoldGobblersSlotScript : MonoBehaviour
     [SerializeField] private GameObject[] slots;
     [SerializeField] private GameObject[] slotParticals;
     [SerializeField] public TMP_Text tunnelSlotText;
+    [SerializeField] private ParticleSystem ScatterParticles;
 
     // Slot Animation
     private Animator slotAnimator;
@@ -228,6 +230,32 @@ public class GoldGobblersSlotScript : MonoBehaviour
         {
             slot.sortingLayerName = "Default";
         }
+    }
+
+    public void PlayScatterParticleTrail()
+    {
+        ScatterParticles.gameObject.transform.position = new Vector3(0,0,0);
+        ScatterParticles.gameObject.SetActive(true);
+        ScatterParticles.Play();
+
+        if (currentResource.slotTypeIndex == 0)
+        {
+            ScatterParticles.gameObject.transform.DOMove(GoldGobblersUIManager.Instance.redGobbler.transform.position, 0.5f);
+        }
+        else if (currentResource.slotTypeIndex == 1)
+        {
+            ScatterParticles.gameObject.transform.DOMove(GoldGobblersUIManager.Instance.greenGobbler.transform.position, 0.5f);
+        }
+        else if (currentResource.slotTypeIndex == 2)
+        {
+            ScatterParticles.gameObject.transform.DOMove(GoldGobblersUIManager.Instance.blueGobbler.transform.position, 0.5f);
+        }
+    }
+
+    public void StopScatterParticleTrail()
+    {
+        ScatterParticles.gameObject.SetActive(false);
+        ScatterParticles.gameObject.transform.position = new Vector3(0, 0, 0);
     }
 
     #endregion

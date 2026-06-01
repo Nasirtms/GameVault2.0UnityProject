@@ -515,6 +515,24 @@ public class SlotSpinService : MonoBehaviour
                     IsFreeSpin = WildBuffaloSlotMachine.Instance.isFreeGame,
                 };
                 break;
+            case "buffaloxtrareelpower":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = BuffaloXtraReelPowerSlotMachine.Instance.isFreeGame,
+                };
+                break;
+            case "wolfmoonlink":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = WolfMoonLinkSlotMachine.Instance.isFreeGame,
+                };
+                break;
             case "richlittlepiggies":
                 requestData = new
                 {
@@ -647,6 +665,10 @@ public class SlotSpinService : MonoBehaviour
                         spinResult = ParseResponseCashVault(responseText);
                         break;
 
+                    case "buffaloxtrareelpower":
+                        spinResult = ParseResponseBuffaloXtraReelPower(responseText);
+                        break;
+
                     default:
                         spinResult = ParseResponseNormal(responseText);
                         break;
@@ -676,6 +698,8 @@ public class SlotSpinService : MonoBehaviour
                         case "zombieparadise":
                             break;
                         case "cashvault":
+                            break;
+                        case "buffaloxtrareelpower":
                             break;
 
                         default:
@@ -746,5 +770,9 @@ public class SlotSpinService : MonoBehaviour
     private CashVaultSpinResult ParseResponseCashVault(string responseText)
     {
         return JsonConvert.DeserializeObject<CashVaultSpinResult>(responseText);
+    }
+    private BuffaloXtraReelPowerSpinResult ParseResponseBuffaloXtraReelPower(string responseText)
+    {
+        return JsonConvert.DeserializeObject<BuffaloXtraReelPowerSpinResult>(responseText);
     }
 }

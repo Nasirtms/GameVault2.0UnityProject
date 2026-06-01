@@ -31,6 +31,7 @@ public class UltimateFireLinkRiverWalkSlotMachine : BaseSlotMachine
     [HideInInspector] public bool isResultReceived;
     private bool isSettingResult;
     public bool firstFreeSpin;
+    public int freeSpinWildMultiplier;
 
     // Free Spin Game
     //[HideInInspector] public bool isFreeGame;
@@ -56,6 +57,7 @@ public class UltimateFireLinkRiverWalkSlotMachine : BaseSlotMachine
     public bool miniGame1;
     public List<int> miniGameLockedReels = new List<int>();
 
+    public bool testMode;
     #endregion
 
     #region Unity Methods
@@ -130,18 +132,36 @@ public class UltimateFireLinkRiverWalkSlotMachine : BaseSlotMachine
         }
 
 
-        if (currentSpinResult.scatterCount >= 3)
+        if (!testMode)
+        {
             scatterCount = currentSpinResult.scatterCount;
-        else
-            scatterCount = fakeScatterCount;
+            freeSpinWildMultiplier = currentSpinResult.freeSpinMultiplier;
+        }
+        else if (testMode)
+        {
+            scatterCount = 3;
+            freeSpinWildMultiplier = 5;
+        }
+        UltimateFireLinkRiverWalkUIManager.Instance.showFreespinMultiplier(freeSpinWildMultiplier);
 
 
-        if (currentSpinResult.isFreeSpin)
+        if (!testMode)
+        {
+            if (currentSpinResult.isFreeSpin)
+            {
+                if (!isFreeGame)
+                    isFreeGameReady = true;
+
+                freeSpinCount = currentSpinResult.freeSpinCount;
+            }
+        }
+        else if (testMode)
         {
             if (!isFreeGame)
+            {
                 isFreeGameReady = true;
-
-            freeSpinCount = currentSpinResult.freeSpinCount;
+                freeSpinCount = 5;
+            }
         }
 
         if (currentSpinResult.isBonusGame)
@@ -422,7 +442,7 @@ public class UltimateFireLinkRiverWalkSlotMachine : BaseSlotMachine
         }
 
 
-        if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || scatterCount >= 1)
+        if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || scatterCount >= 3)
         {
             if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0)
             {

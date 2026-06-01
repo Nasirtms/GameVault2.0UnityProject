@@ -262,6 +262,8 @@ public class GameCatalogueController : MonoBehaviour
         LoadingBridge.pauseProfileApiCall = true;
         SceneManagement.currentGameID = sceneID;
 
+        UserManager.Instance.CoinBalanceBeforeGoingInGame = UserManager.Instance.Coins;
+
         //ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
 
         Addressables.LoadSceneAsync(MainMenuAddressableHandler.sceneLoaderSceneKey, LoadSceneMode.Single, true);    //SceneManager.LoadScene("SceneLoader");

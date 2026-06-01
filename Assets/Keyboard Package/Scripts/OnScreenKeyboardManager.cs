@@ -12,9 +12,12 @@ public class OnScreenKeyboardManager : MonoBehaviour
 
     [Header("UI References")]
     public KeyboardController keyboard;
+    public CanvasGroup canvasGroup;
     public Button blockerBG;
     public GameObject textPanel;
     public TextMeshProUGUI textPreviewBox;
+    public GameObject placeholderTextBox;
+    public TextMeshProUGUI placeholderTextBoxText;
     public GameObject clickBlocker;
 
     [Header("Audio")]
@@ -112,6 +115,7 @@ public class OnScreenKeyboardManager : MonoBehaviour
         keyboardRectTransform.anchoredPosition = new Vector2(0, -592.78f);
         textPanelRectTransform.anchoredPosition = new Vector2(0, -100);
 
+        canvasGroup.DOFade(1, .3f).SetEase(Ease.InOutCirc);
         keyboardRectTransform.DOAnchorPosY(0, .3f).SetEase(Ease.InOutCirc);
         textPanelRectTransform.DOAnchorPosY(492.78f, .3f).SetEase(Ease.InOutCirc).OnComplete(() =>
         {
@@ -128,6 +132,7 @@ public class OnScreenKeyboardManager : MonoBehaviour
         keyboardRectTransform.anchoredPosition = new Vector2(0, 0);
         textPanelRectTransform.anchoredPosition = new Vector2(0, 492.78f);
 
+        canvasGroup.DOFade(0, .3f).SetEase(Ease.InOutCirc);
         keyboardRectTransform.DOAnchorPosY(-592.78f, .3f).SetEase(Ease.InOutCirc);
         textPanelRectTransform.DOAnchorPosY(-100, .3f).SetEase(Ease.InOutCirc).OnComplete(() =>
         {
@@ -207,6 +212,17 @@ public class OnScreenKeyboardManager : MonoBehaviour
             if (currentActivator.hiddenCharacterField)
             {
                 textPreviewBox.text = new string('x', textPreviewBox.text.Length);
+            }
+
+            if (textPreviewBox.text == "" && currentActivator.inputField.placeholder != null && currentActivator.inputField.placeholder.GetType() == typeof(TextMeshProUGUI))
+            {
+                placeholderTextBox.SetActive(true);
+                placeholderTextBoxText.text = ((TextMeshProUGUI)currentActivator.inputField.placeholder).text;
+            }
+            else
+            {
+                placeholderTextBox.SetActive(false);
+                placeholderTextBoxText.text = "";
             }
         }
     }

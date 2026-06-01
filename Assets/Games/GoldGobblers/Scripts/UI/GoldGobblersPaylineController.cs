@@ -118,6 +118,7 @@ public class GoldGobblersPaylineController : MonoBehaviour
                 {
                     slot.SetSpriteToDefault();
                     slot.StopAnimation();
+                    slot.StopScatterParticleTrail();
                 }
             }
         }
@@ -134,7 +135,7 @@ public class GoldGobblersPaylineController : MonoBehaviour
             GoldGobblersSlotMachine.Instance.isSlotAnimationCompleted = true;
         }
 
-        if (resultScatterCount >= 3)
+        if (resultScatterCount >= 0)
         {
             scatterAnimation = StartCoroutine(ScatterAnimation());
         }
@@ -240,10 +241,11 @@ public class GoldGobblersPaylineController : MonoBehaviour
                 var slot = reel.slots[visibleStartSlot + y];
                 if (slot == null) continue;
 
-                if (slot.slotType == GoldGobblersSlotType.RedGem)
+                if (slot.slotType == GoldGobblersSlotType.RedGem || slot.slotType == GoldGobblersSlotType.BlueGem || slot.slotType == GoldGobblersSlotType.GreenGem)
                 {
                     slot.SetSpriteToPayline();
                     slot.PlayAnimation();
+                    slot.PlayScatterParticleTrail();
                 }
             }
         }

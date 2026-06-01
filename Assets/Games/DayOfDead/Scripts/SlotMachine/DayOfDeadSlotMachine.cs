@@ -408,7 +408,7 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
         if (isFreeGame && !isRespinActive && winAmount > 0)
         {
             firstFreeSpin = false;
-            winAmount = winAmount * currentFreeSpinMultiplier;
+            //winAmount = winAmount * currentFreeSpinMultiplier;
             freeSpinWinAmount += winAmount;
             DayOfDeadUIManager.Instance.UpdateWinAmount(winAmount, true);
         }
@@ -600,6 +600,16 @@ public class DayOfDeadSlotMachine : BaseSlotMachine
         else
         {
             isRespinActive = false;
+            if (DayOfDeadAutoSpinController.isAutoSpinning)
+            {
+                Debug.Log("LovKumar 000");
+                DayOfDeadUIManager.Instance.UpdateButtons("Auto Respin End");
+            }
+            else
+            {
+                Debug.Log("LovKumar 111");
+                DayOfDeadUIManager.Instance.UpdateButtons("Single Stop");
+            }
         }
     }
     private bool AddNewExpandingWildsDuringRespins()

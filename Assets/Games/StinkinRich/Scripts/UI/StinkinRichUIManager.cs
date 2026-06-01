@@ -332,12 +332,12 @@ public class StinkinRichUIManager : GameBetServices
     #region Spin Buttons
     public void OnClickSpin()
     {
-        UpdateButtons("Spin");
-
-        StopCurrentSFX();
         float betAmount = betController.GetCurrentBet();
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
 
+        UpdateButtons("Spin");
+
+        StopCurrentSFX();
         if (textAnimationCoroutine != null)
         {
             StopCoroutine(textAnimationCoroutine);
@@ -385,7 +385,7 @@ public class StinkinRichUIManager : GameBetServices
         if (autoSpinController == null) return;
 
         autoStopPressed = true;
-        PlaySound("AutoButton_Stop");
+        PlaySound("Button");
         StopSpinMusic("Spin");
         autoSpinPopup.SetActive(false);
         autoSpinController.CancelAutoSpin();

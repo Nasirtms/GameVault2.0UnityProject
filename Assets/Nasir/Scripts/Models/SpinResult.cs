@@ -51,6 +51,7 @@ public class LifeOfLuxuryFreeSpinState
     public int remainingSpins;
     public int lineMultiplier;
 }
+
 //ZombieParadise SlotGame
 [System.Serializable]
 public class ZombieParadiseSpinResult : BaseSpinResult
@@ -129,6 +130,23 @@ public class CashVaultSpinResult : BaseSpinResult
 
 [System.Serializable]
 public class CashVaultPaylineWin
+{
+    public List<int> paylineIndex;
+    public string symbol;
+    public int count;
+    public double winAmount;
+    public int wildCount;
+}
+//BuffaloXtraReelPower SlotGame
+[System.Serializable]
+public class BuffaloXtraReelPowerSpinResult : BaseSpinResult
+{
+    public List<List<SymbolData>> reels;
+    public List<BuffaloXtraReelPowerPaylineWin> paylineWins;
+}
+
+[System.Serializable]
+public class BuffaloXtraReelPowerPaylineWin
 {
     public List<int> paylineIndex;
     public string symbol;

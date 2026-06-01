@@ -22,6 +22,7 @@ public class UltimateFireLinkRiverWalkUIManager : GameBetServices
 
     [Header("Win")]
     [SerializeField] private TMP_Text winAmount;
+    [SerializeField] private TMP_Text wildMultiplier;
 
     [Header("Bet Buttons")]
     [SerializeField] private Button decreaseBetButton;
@@ -720,6 +721,11 @@ public class UltimateFireLinkRiverWalkUIManager : GameBetServices
             UpdateButtons("Stop");
         }
         StopCoroutine(winCoroutine);
+    }
+
+    public void showFreespinMultiplier(int m)
+    {
+        wildMultiplier.text = $"{m}x";
     }
 
     #endregion

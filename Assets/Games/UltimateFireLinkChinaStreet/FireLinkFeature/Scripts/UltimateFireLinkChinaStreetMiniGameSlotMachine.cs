@@ -12,7 +12,7 @@ public class UltimateFireLinkChinaStreetMiniGameSlotMachine : MonoBehaviour
     [Header("Machine References")]
     public UltimateFireLinkChinaStreetMiniGameSettings settings;
     public List<UltimateFireLinkChinaStreetMiniGameReelScript> reels;
-    [ShowInInspector][ReadOnly] public SpinResult currentSpinResult;
+    [ShowInInspector][ReadOnly] public UltimateFireLinkChinaStreetSpinResult currentSpinResult;
     public List<List<SymbolData>> spinSymbolMatrix = new();
 
     public bool InSpin = false;
@@ -85,7 +85,7 @@ public class UltimateFireLinkChinaStreetMiniGameSlotMachine : MonoBehaviour
     public int scatterCount;
     private void OnSpinResultReceived(BaseSpinResult result)
     {
-        if (result is SpinResult normalSpin)
+        if (result is UltimateFireLinkChinaStreetSpinResult normalSpin)
         {
             currentSpinResult = normalSpin;
         }

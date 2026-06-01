@@ -31,6 +31,7 @@ public class UltimateFireLinkChinaStreetSlotMachine : BaseSlotMachine
     [HideInInspector] public bool isResultReceived;
     private bool isSettingResult;
     public bool firstFreeSpin;
+    public int freeSpinWildMultiplier;
 
     // Free Spin Game
     //[HideInInspector] public bool isFreeGame;
@@ -55,6 +56,8 @@ public class UltimateFireLinkChinaStreetSlotMachine : BaseSlotMachine
 
     public bool miniGame1;
     public List<int> miniGameLockedReels = new List<int>();
+
+    public bool testMode;
     #endregion
 
     #region Unity Methods
@@ -128,19 +131,36 @@ public class UltimateFireLinkChinaStreetSlotMachine : BaseSlotMachine
             currentSpinResult = normalSpin;
         }
 
-
-        if (currentSpinResult.scatterCount >= 3)
-            scatterCount = currentSpinResult.scatterCount;
-        else
-            scatterCount = fakeScatterCount;
-
-
-        if (currentSpinResult.isFreeSpin)
+        if (!testMode)
         {
-            if (!isFreeGame)
-                isFreeGameReady = true;
+            scatterCount = currentSpinResult.scatterCount;
+            freeSpinWildMultiplier = currentSpinResult.freeSpinMultiplier;
+        }
+        else if (testMode)
+        {
+            scatterCount = 3;
+            freeSpinWildMultiplier = 5;
+        }
+        UltimateFireLinkChinaStreetUIManager.Instance.showFreespinMultiplier(freeSpinWildMultiplier);
 
-            freeSpinCount = currentSpinResult.freeSpinCount;
+
+        if (!testMode)
+        {
+            if (currentSpinResult.isFreeSpin)
+            {
+                if (!isFreeGame)
+                    isFreeGameReady = true;
+
+                freeSpinCount = currentSpinResult.freeSpinCount;
+            }
+        }
+        else if(testMode)
+        {
+            if(!isFreeGame)
+            {
+                isFreeGameReady = true;
+                freeSpinCount = 5;
+            }
         }
 
         if (currentSpinResult.isBonusGame)
@@ -421,7 +441,7 @@ public class UltimateFireLinkChinaStreetSlotMachine : BaseSlotMachine
         }
 
 
-        if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || scatterCount >= 1)
+        if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || scatterCount >= 3)
         {
             if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0)
             {

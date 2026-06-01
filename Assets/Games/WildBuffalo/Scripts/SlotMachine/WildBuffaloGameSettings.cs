@@ -22,15 +22,12 @@ public struct WildBuffaloSlotResource
 #region Spin Settings
 public enum WildBuffaloSpinMode
 {
-    SpinAll,
-    SpinOneByOne
+    SpinAll, SpinOneByOne
 }
 
 public enum WildBuffaloSpinDirection
 {
-    Down,
-    Up,
-    Random
+    Down, Up, Random
 }
 
 [System.Serializable]

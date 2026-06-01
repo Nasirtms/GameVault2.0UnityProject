@@ -173,11 +173,11 @@ public class DayOfDeadPaylineController : MonoBehaviour
         if (DayOfDeadSlotMachine.Instance.isFreeGame || DayOfDeadSlotMachine.Instance.isRespinActive
             || DayOfDeadSlotMachine.Instance.isReSpin || DayOfDeadAutoSpinController.isAutoSpinning)
         {
-            flickerDelay = 1.5f;
+            flickerDelay = 1.25f;
         }
         else
         {
-            flickerDelay = 2.5f;
+            flickerDelay = 2f;
         }
         for (int x = 0; x < DayOfDeadSlotMachine.Instance.reels.Count; x++)
         {

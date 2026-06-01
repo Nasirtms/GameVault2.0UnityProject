@@ -114,7 +114,7 @@ public class StinkinRichFreeSpinController : MonoBehaviour
         isFreeGame = false;
         StinkinRichFreeGameTransitionController.Instance.EndFreeSpin();
         StinkinRichSlotMachine.Instance.isFreeGame = false;
-        StinkinRichUIManager.Instance.UpdateButtons("FreeSpinEnd");
+        StinkinRichUIManager.Instance.UpdateButtons("Idle");
 
         //PandaFortuneUIManager.Instance.freeGameSpinCount = 0;
         //Debug.Log("End free spins called");

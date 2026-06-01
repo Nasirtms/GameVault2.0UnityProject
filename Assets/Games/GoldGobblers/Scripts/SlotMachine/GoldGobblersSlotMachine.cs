@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
@@ -501,7 +501,7 @@ public class GoldGobblersSlotMachine : BaseSlotMachine
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
         }
 
-        if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || (scatterCount >= 3) || (isTunnelSlot))
+        if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || (scatterCount >= 0) || (isTunnelSlot))
         {
             if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0)
             {

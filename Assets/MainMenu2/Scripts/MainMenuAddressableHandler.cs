@@ -68,7 +68,7 @@ public class MainMenuAddressableHandler : MonoBehaviour
 
     private static async Task LoadMainMenuDataInternal()
     {
-        Debug.LogError($"[Addressables] Starting init for label={mainMenuLabel}");
+        Debug.Log($"[Addressables] Starting init for label={mainMenuLabel}");
         var init = Addressables.InitializeAsync();
         await init.Task;
 
@@ -76,7 +76,7 @@ public class MainMenuAddressableHandler : MonoBehaviour
         await sizeHandle.Task;
 
         if (sizeHandle.Status == AsyncOperationStatus.Succeeded)
-            Debug.LogError($"[Addressables] bytesToDownload={sizeHandle.Result}");
+            Debug.Log($"[Addressables] bytesToDownload={sizeHandle.Result}");
 
         mainMenuDataHandle = Addressables.DownloadDependenciesAsync(mainMenuLabel);
         await mainMenuDataHandle.Task;

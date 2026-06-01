@@ -8,7 +8,6 @@ public class UltimateFireLinkRiverWalkFreeSpinController : MonoBehaviour
     #region Variables
 
     [SerializeField] private TMP_Text freeSpinsText;
-    [SerializeField] private TMP_Text freeSpinsLabel;
 
     [SerializeField] private float delayBetweenSpins = 1.5f;
     private int totalFreeSpins = 0;
@@ -25,7 +24,6 @@ public class UltimateFireLinkRiverWalkFreeSpinController : MonoBehaviour
     {
         if (isFreeGame) return;
         freeSpinsText.gameObject.SetActive(true);
-        freeSpinsLabel.gameObject.SetActive(true);
         UltimateFireLinkRiverWalkSlotMachine.Instance.isFreeGame = true;
         isFreeGame = true;
         firstSpin = true;
@@ -59,30 +57,23 @@ public class UltimateFireLinkRiverWalkFreeSpinController : MonoBehaviour
 
     private IEnumerator FreeSpinLoop()
     {
-        yield return new WaitForSeconds(2.5f); // optional delay after transition in
+        yield return new WaitForSeconds(2.5f);
 
         while (freeSpinDone < totalFreeSpins)
         {
-            //Debug.Log(" Total Free Spins: " + (totalFreeSpins));
-            //Debug.Log(" Free Spins Done: " + (freeSpinDone));
-            //Debug.Log(" Free Spins Left: " + (totalFreeSpins - freeSpinDone));
             if (firstSpin)
             {
                 firstSpin = false;
             }
             else
             {
-                yield return new WaitForSeconds(delayBetweenSpins); // optional delay between spins
+                yield return new WaitForSeconds(delayBetweenSpins);
             }
 
             float betAmount = UltimateFireLinkRiverWalkUIManager.Instance.CurrentBet();
-            //Debug.Log("spining the free spi")
             SlotSpinService.Instance.Spin(betAmount);
 
-            Debug.Log("Deepak has a spin again - 10" + UltimateFireLinkRiverWalkSlotMachine.Instance.isSpinAgain);
-
             yield return new WaitUntil(() => UltimateFireLinkRiverWalkSlotMachine.Instance.isSpinAgain);
-            //yield return new WaitForSeconds(4f);
             if (freeSpinDone == 0)
             {
                 UltimateFireLinkRiverWalkSlotMachine.Instance.firstFreeSpin = false;
@@ -93,11 +84,8 @@ public class UltimateFireLinkRiverWalkFreeSpinController : MonoBehaviour
                 yield return new WaitUntil(() => UltimateFireLinkRiverWalkSlotMachine.Instance.isSlotAnimationCompleted);
             }
 
-            //yield return new WaitForSeconds(1.8f * paylinesToPlay);
-
             freeSpinDone++;
             UpdateSpinCount();
-            //Debug.Log(" Free Spin Done: " + freeSpinDone);
         }
 
         yield return new WaitForSeconds(1.5f);
@@ -108,21 +96,16 @@ public class UltimateFireLinkRiverWalkFreeSpinController : MonoBehaviour
     private void EndFreeSpins()
     {
         freeSpinsText.gameObject.SetActive(false);
-        freeSpinsLabel.gameObject.SetActive(false);
         ResetFreeSpins();
         isFreeGame = false;
         UltimateFireLinkRiverWalkFreeGameTransitionController.Instance.EndFreeSpin();
         UltimateFireLinkRiverWalkSlotMachine.Instance.isFreeGame = false;
         UltimateFireLinkRiverWalkUIManager.Instance.UpdateButtons("FreeSpinEnd");
-
-        //PandaFortuneUIManager.Instance.freeGameSpinCount = 0;
-        //Debug.Log("End free spins called");
-        //StarBurstSlotsFreeGameTransitionController.Instance.EndFreeSpinTransition();
     }
     public void UpdateSpinCount()
     {
         if (freeSpinsText != null)
-            freeSpinsText.text = $"{freeSpinDone} / {totalFreeSpins}";
+            freeSpinsText.text = $"{freeSpinDone} of {totalFreeSpins}";
     }
 
     #endregion

@@ -246,6 +246,12 @@ namespace MainMenu
                 if (SceneManagement.sceneAccessType == SceneAccessType.Publish && !game.is_publish) continue;
                 if (SceneManagement.sceneAccessType == SceneAccessType.Dev && game.is_publish) continue;
 
+                if (game.Gametitle.ToLower().Contains("comingsoon") || game.Gametitle.ToLower().Contains("coming soon") || game.Gametitle.ToLower().Contains("coming_soon"))
+                {
+                    //CasinoUIManager.Instance.ShowErrorCanvas(1, "This game will be available soon. Stay tuned.");
+                    continue;
+                }
+
                 if (condition(game, categoryName))
                 {
                     // Check if exists in MenuEnvironmentDatabase
