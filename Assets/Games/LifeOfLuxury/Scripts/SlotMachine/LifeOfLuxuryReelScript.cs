@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LifeOfLuxuryReelScript : MonoBehaviour
 {
@@ -30,7 +31,7 @@ public class LifeOfLuxuryReelScript : MonoBehaviour
 
     private List<SymbolData> finalResultSymbols;
     private bool allowSymbolChanges = true;
-
+    public Image motionBlurImage;
     public bool IsSpinning => isSpinning;
     #endregion
 
@@ -147,7 +148,8 @@ public class LifeOfLuxuryReelScript : MonoBehaviour
             topPosition.y = settings.slotSettings.TopYPosition;
             transform.localPosition = topPosition;
         }
-
+        if (motionBlurImage)
+            motionBlurImage.gameObject.SetActive(true);
         StartCoroutine(SpinCoroutine());
     }
     private IEnumerator SmoothWindUp()
@@ -260,12 +262,16 @@ public class LifeOfLuxuryReelScript : MonoBehaviour
     public void StopSpin()
     {
         if (!isSpinning) return;
+
+        if (motionBlurImage)
+            motionBlurImage.gameObject.SetActive(false);
         StartCoroutine(StopSpinCoroutine());
     }
     public void ForceStopSpin()
     {
         if (!isSpinning) return;
-
+        if (motionBlurImage)
+            motionBlurImage.gameObject.SetActive(false);
         if (clampToTopPosition)
         {
             EnsureReelEndsOnTop();

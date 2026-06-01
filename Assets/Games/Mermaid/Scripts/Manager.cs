@@ -56,6 +56,7 @@ public class Manager : MonoBehaviour
     public static double targetRTBFromBackend = 0f;
     public static Action onHealthMultiplier;
 
+    private float defaultTimeScale = 1;
 
     private void Awake()
     {
@@ -66,7 +67,9 @@ public class Manager : MonoBehaviour
         DOTween.Init();
         fishManager = GetComponent<FishManager>();
 
-        ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
+        //ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
+
+        defaultTimeScale = Time.timeScale;
     }
 
     void UpdateBalanceFromUserManager(float newBalance)
@@ -276,5 +279,20 @@ public class Manager : MonoBehaviour
             new Vector2((maxX - minX) + 2f, thickness),
             new Vector3((minX + maxX) / 2, maxY + (thickness / 2), 0)
         );
+    }
+
+    private void OnApplicationFocus(bool focus)
+    {
+        if (DeviceDetector.IsMobile())
+        {
+            if (focus)
+            {
+                Time.timeScale = defaultTimeScale;
+            }
+            else
+            {
+                Time.timeScale = 0;
+            }
+        }
     }
 }

@@ -44,6 +44,8 @@ public class KeyboardController : MonoBehaviour
         splCharsNum2.SetActive(false);
         splChars1.SetActive(false);
         splChars2.SetActive(false);
+
+        OnScreenKeyboardManager.Instance.PlayTapSound();
     }
     
     public void ShowSmallLetters() {
@@ -66,6 +68,8 @@ public class KeyboardController : MonoBehaviour
         splCharsNum2.SetActive(false);
         splChars1.SetActive(false);
         splChars2.SetActive(false);
+
+        OnScreenKeyboardManager.Instance.PlayTapSound();
     }
 
     public void ShowSpecialCharsNum() {
@@ -93,6 +97,8 @@ public class KeyboardController : MonoBehaviour
 
         splChars1.SetActive(false);
         splChars2.SetActive(false);
+
+        OnScreenKeyboardManager.Instance.PlayTapSound();
     }
 
     public void ShowSpecialChars() {
@@ -120,5 +126,7 @@ public class KeyboardController : MonoBehaviour
 
         splChars1.SetActive(true);
         splChars2.SetActive(true);
+
+        OnScreenKeyboardManager.Instance.PlayTapSound();
     }
 }

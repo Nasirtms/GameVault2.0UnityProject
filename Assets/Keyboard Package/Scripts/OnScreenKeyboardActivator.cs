@@ -45,6 +45,14 @@ public class OnScreenKeyboardActivator : MonoBehaviour
         if (OnScreenKeyboardManager.Instance == null)
             return;
 
+        StopCoroutine("TextboxSelected_Coroutine");
+        StartCoroutine("TextboxSelected_Coroutine");
+    }
+
+    IEnumerator TextboxSelected_Coroutine()
+    {
+        yield return new WaitForEndOfFrame();
+
         OnScreenKeyboardManager.Instance.ShowKeyboard(this);
     }
 }

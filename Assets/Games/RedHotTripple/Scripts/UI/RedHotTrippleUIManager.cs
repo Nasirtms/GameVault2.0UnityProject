@@ -468,7 +468,7 @@ public class RedHotTrippleUIManager : GameBetServices
             this.winAmount.text = "0.00";
         }
     }
-    public float textAnimationDelay = 1.5f;
+    public float textAnimationDelay = 0.75f;
     private void PlayTextAnimation(float winAmount)
     {
         if (textAnimationCoroutine != null)

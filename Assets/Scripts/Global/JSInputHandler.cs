@@ -7,14 +7,14 @@ public static class JSInputHandler
 {
     public static void OnLoginSuccess(string token)
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            //Application.ExternalCall("onLoginStatusChanged", "true");
-            // Send token after login
-            if (!string.IsNullOrEmpty(token))
-            {
-                Application.ExternalCall("onTokenReceived", token);
-            }
-#endif
+//#if UNITY_WEBGL && !UNITY_EDITOR
+//            //Application.ExternalCall("onLoginStatusChanged", "true");
+//            // Send token after login
+//            if (!string.IsNullOrEmpty(token))
+//            {
+//                Application.ExternalCall("onTokenReceived", token);
+//            }
+//#endif
     }
 
     public static void OnLoginField()
@@ -26,18 +26,18 @@ public static class JSInputHandler
 
     public static void OnLogoutSuccess()
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
+//#if UNITY_WEBGL && !UNITY_EDITOR
 
-        // Clear stored token
-        Application.ExternalCall("clearStoredToken");
+//        // Clear stored token
+//        Application.ExternalCall("clearStoredToken");
 
-        //        // First hide the fullscreen button
-        //        Application.ExternalCall("onLoginStatusChanged", "false");
+//        //        // First hide the fullscreen button
+//        //        Application.ExternalCall("onLoginStatusChanged", "false");
 
-        //        // Then exit fullscreen if currently in fullscreen
-        //        Application.ExternalCall("exitFullscreenIfActive");
+//        //        // Then exit fullscreen if currently in fullscreen
+//        //        Application.ExternalCall("exitFullscreenIfActive");
 
-#endif
+//#endif
     }
 
     public static void exitFullscreenIfActive()
@@ -51,23 +51,23 @@ public static class JSInputHandler
     // Send token and baseUrl to JavaScript (encrypted storage)
     public static void SendTokenToJS(string token, string baseUrl)
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
-    if (!string.IsNullOrEmpty(token))
-    {
-        // Send token immediately
-        Application.ExternalCall("onTokenReceived", token);
-    }
-    else
-    {
-        Debug.LogWarning("JSInputHandler: Attempted to send empty token");
-    }
+//#if UNITY_WEBGL && !UNITY_EDITOR
+//    if (!string.IsNullOrEmpty(token))
+//    {
+//        // Send token immediately
+//        Application.ExternalCall("onTokenReceived", token);
+//    }
+//    else
+//    {
+//        Debug.LogWarning("JSInputHandler: Attempted to send empty token");
+//    }
     
-    // Set API base URL
-    if (!string.IsNullOrEmpty(baseUrl))
-    {
-        Application.ExternalCall("setApiBaseUrl", baseUrl);
-    }
-#endif
+//    // Set API base URL
+//    if (!string.IsNullOrEmpty(baseUrl))
+//    {
+//        Application.ExternalCall("setApiBaseUrl", baseUrl);
+//    }
+//#endif
     }
 
 

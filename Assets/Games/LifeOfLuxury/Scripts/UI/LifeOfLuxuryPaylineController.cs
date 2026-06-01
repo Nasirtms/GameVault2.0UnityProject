@@ -23,7 +23,7 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
     private Coroutine animationLoop;
     private Coroutine scatterAnimation;
     public bool isShowing = false;
-    [SerializeField] private GameObject overlay;
+
     [Header("Results")]
     [ShowInInspector][ReadOnly] private List<LifeOfLuxuryPaylineResult> spinResult = new List<LifeOfLuxuryPaylineResult>();
     private bool resultfreeGameReady;
@@ -86,7 +86,6 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
         if (activePaylines.Count == 0 && !resultfreeGameReady)
         {
             LifeOfLuxurySlotMachine.Instance.isSlotAnimationCompleted = true;
-            overlay.SetActive(false);
             return;
         }
         isShowing = true;
@@ -109,7 +108,6 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
         }
 
         ResetAllSlotsToDefault();
-        overlay.SetActive(false);
     }
 
     private IEnumerator PlayPaylines()
@@ -124,7 +122,7 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
         {
             LifeOfLuxurySlotMachine.Instance.isSlotAnimationCompleted = true;
         }
-        overlay.SetActive(true);
+
         if (resultfreeGameReady)
         {
             if (scatterAnimation != null)
@@ -171,7 +169,6 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
 
                 if (entry.payline.ToMatrix()[x, y] == 1 && x < entry.reelLimit)
                 {
-                    slot.SetSpriteToPayline();
                     slot.PlayAnimation();
                 }
             }
@@ -192,7 +189,6 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
             {
                 if (slot != null)
                 {
-                    slot.SetSpriteToDefault();
                     slot.StopAnimation();
                 }
             }
@@ -210,7 +206,6 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
 
                 if (LifeOfLuxurySlotMachine.Instance.freeSpinCount > 0 && slot.slotType == LifeOfLuxurySlotType.GoldCoin)
                 {
-                    slot.SetSpriteToPayline();
                     slot.PlayAnimation();
                 }
             }

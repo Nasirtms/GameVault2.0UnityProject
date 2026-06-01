@@ -62,6 +62,7 @@ public static class ApiEndpoints
     public static string UpdateUserProfileImage => $"{BaseUrl}{ApiPrefix}/users/profile"; // PUT
     public static string CheckSession => $"{BaseUrl}{ApiPrefix}/users/check-session"; // PUT
     public static string SendFeedback => $"{BaseUrl}{ApiPrefix}/users/feedback";    // POST
+    public static string SendGameActionEvent => $"{BaseUrl}{ApiPrefix}/games/action";            // POST
 
 
     // ==============
@@ -153,7 +154,6 @@ public static class ApiEndpoints
     public static string AllEvents => $"{BaseUrl}{ApiPrefix}/event";                          // GET
     public static string ActiveEvents => $"{BaseUrl}{ApiPrefix}/event/active";                // GET
     public static string GetEventById(string eventId) => $"{BaseUrl}{ApiPrefix}/event/{eventId}"; // GET
-    public static string SendGameActionEvent => $"{BaseUrl}{ApiPrefix}/games/action";            // POST
 
     #endregion
     // Golden Dragon Mini Game

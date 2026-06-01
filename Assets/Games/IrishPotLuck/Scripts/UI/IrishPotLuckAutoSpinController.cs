@@ -67,7 +67,7 @@ public class IrishPotLuckAutoSpinController : MonoBehaviour
                 StopAutoSpin();
                 break;
             }
-            if (IrishPotLuckSlotMachine.Instance.isFreeGameReady)
+            if (IrishPotLuckSlotMachine.Instance.isFreeGameReady || IrishPotLuckSlotMachine.Instance.isJackpotGameReady)
                 break;
 
             float balance = UserManager.Instance.Coins;
@@ -94,7 +94,7 @@ public class IrishPotLuckAutoSpinController : MonoBehaviour
             }
             yield return new WaitUntil(() => IrishPotLuckUIManager.Instance.winAnimationCompleted);
 
-            if (IrishPotLuckSlotMachine.Instance.isFreeGameReady)
+            if (IrishPotLuckSlotMachine.Instance.isFreeGameReady || IrishPotLuckSlotMachine.Instance.isJackpotGameReady)
                 break;
         }
         StopAutoSpin();

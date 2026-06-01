@@ -30,6 +30,7 @@ public class KeyboardButtonController : MonoBehaviour
     public void AddLetter() {
         if(OnScreenKeyboardManager.Instance != null) {
             OnScreenKeyboardManager.Instance.AddLetter(containerText.text);
+            OnScreenKeyboardManager.Instance.PlayTapSound();
         } else {
             Debug.Log(containerText.text + " is pressed");
         }
@@ -37,6 +38,7 @@ public class KeyboardButtonController : MonoBehaviour
     public void DeleteLetter() { 
         if(OnScreenKeyboardManager.Instance != null) {
             OnScreenKeyboardManager.Instance.DeleteLetter();
+            OnScreenKeyboardManager.Instance.PlayTapSound();
         } else {
             Debug.Log("Last char deleted");
         }
@@ -44,6 +46,7 @@ public class KeyboardButtonController : MonoBehaviour
     public void SubmitWord() {
         if(OnScreenKeyboardManager.Instance != null) {
             OnScreenKeyboardManager.Instance.SubmitWord();
+            OnScreenKeyboardManager.Instance.PlayTapSound();
         } else {
             Debug.Log("Submitted successfully!");
         }

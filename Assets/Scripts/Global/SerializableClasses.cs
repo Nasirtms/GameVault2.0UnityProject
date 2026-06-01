@@ -85,12 +85,10 @@ public class SerializableClasses : MonoBehaviour
     [Serializable]
     public class LoginResponseWrapper
     {
-        public LoginUserData user;
-        public List<AvatarOption> available_avatars;
-        public string session_message;        // Add this
-        public bool is_new_session;          // Add this
-        public string previous_device_info;  // Add this
-        public string previous_login_at;     // Add this
+        public User user;
+        public string token;
+        public string refreshToken;
+        public string nextSpinTime;
     }
 
     [Serializable]
@@ -383,31 +381,16 @@ public class SerializableClasses : MonoBehaviour
         public string id;
         public string username;
         public string email;
-        public string userGameId;
-        public string avatarUrl;
         public float coinBalance;
-        public int bigWinTotal;
-        public int megaWinTotal;
-        public int totalWins;
-        public int totalLosses;
+        public string avatarUrl;
+        public string userGameId;
+        public int avatarIndex;
         public string role;
-        public string cashierId;
-        public string bio;
-        public int vipLevel;
-        public string createdAt;
-        public int loginStreak;
-        public string lastDailyClaim;
         public string sessionId;
-        public string lastLoginAt;
-        public string deviceInfo;
-        public int dailyLoginCount;
-        public string lastDailyLoginReset;
-        public int loginCount;
-        public bool isActive;
-        public bool canAddCoin;
-        public string token;
+        public string bio;
         public bool isFeedback;
         public bool hasSetAvatarOnce;
+        public bool isActive;
     }
 
 }

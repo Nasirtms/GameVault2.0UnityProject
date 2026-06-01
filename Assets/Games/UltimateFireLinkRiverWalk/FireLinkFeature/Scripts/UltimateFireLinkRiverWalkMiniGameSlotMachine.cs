@@ -12,7 +12,7 @@ public class UltimateFireLinkRiverWalkMiniGameSlotMachine : MonoBehaviour
     [Header("Machine References")]
     public UltimateFireLinkRiverWalkMiniGameSettings settings;
     public List<UltimateFireLinkRiverWalkMiniGameReelScript> reels;
-    [ShowInInspector][ReadOnly] public UltimateFireLinkRiverWalkSpinResult currentSpinResult;
+    [ShowInInspector][ReadOnly] public SpinResult currentSpinResult;
     public List<List<SymbolData>> spinSymbolMatrix = new();
 
     public bool InSpin = false;
@@ -85,7 +85,7 @@ public class UltimateFireLinkRiverWalkMiniGameSlotMachine : MonoBehaviour
     public int scatterCount;
     private void OnSpinResultReceived(BaseSpinResult result)
     {
-        if (result is UltimateFireLinkRiverWalkSpinResult normalSpin)
+        if (result is SpinResult normalSpin)
         {
             currentSpinResult = normalSpin;
         }

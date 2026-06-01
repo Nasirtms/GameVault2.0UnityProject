@@ -31,7 +31,8 @@ public class BuildConfig : ScriptableObject
     private const string publishUrl = "https://gamevault222.com";
 
     private const string LocalSocketUrl = "ws://localhost:5036";
-    private const string ProductionSocketUrl = "wss://gamevault222.com";
+    // api.gamevault222.com is DNS-only (not proxied); avoids Cloudflare WS issues on gamevault222.com
+    private const string ProductionSocketUrl = "wss://api.gamevault222.com";
 
     public string GetUrl()
     {

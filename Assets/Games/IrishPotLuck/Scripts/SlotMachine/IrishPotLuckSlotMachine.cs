@@ -3,8 +3,6 @@ using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,6 +16,9 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
     public IrishPotLuckGameSettings settings;
     public List<IrishPotLuckReelScript> reels;
     [SerializeField] private IrishPotLuckBetController betController;
+
+    [Header("Character Controller")]
+    [SerializeField] private IrishPotLuckCharacterController characterController;
 
     [Header("Spin Result - Parsed JSON")]
     [ShowInInspector][ReadOnly] public SpinResult currentSpinResult;
@@ -33,6 +34,12 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
     public bool isFreeGameReady;
     public int freeSpinCount;
     public float freeSpinWinAmount;
+
+    // Free Spin Game
+    public bool isJackpotGame;
+    public bool isJackpotGameReady;
+    public int jackpotGameIndex;
+    public float jackpotWinAmount;
 
     // Win
     private float winAmount = 0f;
@@ -57,6 +64,22 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
     private Vector3 originalMultiplierScale;
 
     public int fakeMultiplier;
+
+    [Header("Wild Slots")]
+    public List<IrishPotLuckSlotScript> wildSlots = new List<IrishPotLuckSlotScript>();
+    public List<Vector2Int> wildSlotIndexes = new List<Vector2Int>();
+    public List<Vector3> wildSlotTargetPositions = new List<Vector3>();
+
+    public List<IrishPotLuckSlotScript> scatterSlots = new List<IrishPotLuckSlotScript>();
+
+    [Header("Throw Targets")]
+    public List<IrishPotLuckThrowTarget> throwTargets = new List<IrishPotLuckThrowTarget>();
+
+    [Header("Fake Throw")]
+    public bool useFakeThrow = true;
+    public List<Vector2Int> fakeWildIndexes = new List<Vector2Int>();
+    public List<Vector2Int> fakeScatterIndexes = new List<Vector2Int>();
+
     #endregion
 
     #region Unity Methods
@@ -110,9 +133,13 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
     #endregion
 
     #region Spin Result Receive
+
     [Header("Fake Scatter")]
     public bool isFakeFreeGame;
     public int fakeFreeSpinCount;
+    public bool isFakeJackpotGame;
+    public int fakeJackpotIndex;
+    public float fakeJackpotWinAmount;
     public void SetSpinResult(SpinResult spinResult)
     {
         currentSpinResult = spinResult;
@@ -139,7 +166,14 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
 
             freeSpinCount = fakeFreeSpinCount;
         }
+        if (isFakeJackpotGame)
+        {
+            if (!isJackpotGame)
+                isJackpotGameReady = true;
 
+            //jackpotGameIndex = fakeJackpotIndex;
+            //jackpotWinAmount = fakeJackpotWinAmount;
+        }
         Debug.Log("SpinResult (parsed):\n" + JsonConvert.SerializeObject(currentSpinResult, Formatting.Indented));
 
         spinSymbolMatrix.Clear();
@@ -147,12 +181,17 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
         foreach (var reelList in currentSpinResult.reels)
         {
             List<SymbolData> symbols = new List<SymbolData>();
+
             foreach (var symbol in reelList)
             {
                 symbols.Add(symbol);
             }
+
             spinSymbolMatrix.Add(symbols);
         }
+
+        //TryPlayWildThrow();
+        TryPlayThrow();
 
         IrishPotLuckUIManager.Instance.SetStopInteractable(true);
     }
@@ -177,6 +216,12 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
 
     private IEnumerator StartSpin()
     {
+        if (characterController != null)
+        {
+            characterController.ClearSpawnedSlots();
+            characterController.PlaySpinThenNormal(2f);
+        }
+
         if (!isFreeGame || firstFreeSpin)
         {
             isFreeGameReady = false;
@@ -186,6 +231,7 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
         }
 
         // Reset Variables
+        isJackpotGameReady = false;
         freeSpinCount = 0;
         currentSpinResult = null;
         InSpin = true;
@@ -193,6 +239,7 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
         isSettingResult = false;
         isStopBtnPressed = false;
         isSlotAnimationCompleted = false;
+
         IrishPotLuckUIManager.Instance.winAnimationCompleted = true;
         IrishPotLuckUIManager.Instance.StopCurrentSFX();
         //IrishPotLuckUIManager.Instance.PlaySound("Spin");
@@ -200,6 +247,7 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
         ClearPaylines();
         IrishPotLuckPaylineController.Instance.StopPaylines();
         IrishPotLuckPaylineController.Instance.ClearPaylineData();
+
         IrishPotLuckUIManager.Instance.SetStopInteractable(false);
 
         if (settings.spinSettings.startSpin == IrishPotLuckSpinMode.SpinAll)
@@ -279,6 +327,12 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
         }
 
         yield return new WaitForSeconds(0.5f);
+
+        if (throwTargets.Count > 0 && characterController != null)
+        {
+            yield return new WaitUntil(() => !characterController.IsThrowPlaying);
+        }
+
         StopWithResult();
     }
 
@@ -349,6 +403,7 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
         if (isStopBtnPressed)
             StopButtonPressed();
 
+        StopMultiplierAnimation(GetFinalMultiplier());
         IrishPotLuckUIManager.Instance.SetStopInteractable(false);
         yield return StartCoroutine(WaitForAllReelsToStop());
 
@@ -378,7 +433,7 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
             return;
 
         winAmount = forcedWin ? forcedPrize : currentSpinResult.totalWin;
-        StopMultiplierAnimation(GetFinalMultiplier());
+        //StopMultiplierAnimation(GetFinalMultiplier());
 
         if (isFreeGame && winAmount > 0)
         {
@@ -391,45 +446,35 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
             float betAmount = IrishPotLuckUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
         }
+
+        if (winAmount > 0f && characterController != null)
+            characterController.PlayWinThenNormal(2f);
+
         bool hasPaylines = currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0;
 
-        if (hasPaylines)
+        if (hasPaylines || isFreeGameReady || isJackpotGameReady)
         {
-            foreach (var payline in currentSpinResult.paylineWins)
+            if (hasPaylines)
             {
-                IrishPotLuckPaylineResult result = new IrishPotLuckPaylineResult(
-                    payline.paylineIndex,
-                    payline.count,
-                    payline.winAmount
-                );
+                foreach (var payline in currentSpinResult.paylineWins)
+                {
+                    IrishPotLuckPaylineResult result = new IrishPotLuckPaylineResult(
+                        payline.paylineIndex,
+                        payline.count,
+                        payline.winAmount
+                    );
 
-                IrishPotLuckPaylineController.Instance.AddPaylineData(result);
+                    IrishPotLuckPaylineController.Instance.AddPaylineData(result);
+                }
             }
-        }
 
-        if (hasPaylines || isFreeGameReady)
-        {
             ShowPaylines();
         }
         else
         {
             SetSlotAnimationCompleted();
         }
-        //if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0))
-        //{
-        //    foreach (var payline in currentSpinResult.paylineWins)
-        //    {
-        //        IrishPotLuckPaylineResult result = new IrishPotLuckPaylineResult(payline.paylineIndex, payline.count, payline.winAmount);
-        //        IrishPotLuckPaylineController.Instance.AddPaylineData(result);
-        //    }
 
-        //    ShowPaylines();
-        //}
-        //else
-        //{
-        //    SetSlotAnimationCompleted();
-
-        //}
         InSpin = false;
         isSpinAgain = true;
 
@@ -452,13 +497,240 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
     }
     private void ShowPaylines()
     {
-        Debug.Log("LovKumar 5");
+        //Debug.Log("LovKumar 1");
         IrishPotLuckPaylineController.Instance.StartPayline(isFreeGameReady);
     }
     #endregion
 
-    #region Helper Functions
+    #region Wild Find
+    private void TryPlayThrow()
+    {
+        throwTargets.Clear();
 
+        if (useFakeThrow)
+        {
+            AddFakeThrowTargets(fakeWildIndexes, IrishPotLuckThrowType.Wild);
+            AddFakeThrowTargets(fakeScatterIndexes, IrishPotLuckThrowType.Scatter);
+        }
+        else
+        {
+            AddRealThrowTargets();
+        }
+
+        if (throwTargets.Count > 0 && characterController != null)
+        {
+            characterController.PlayThrowTargets(throwTargets);
+        }
+    }
+    private void AddFakeThrowTargets(List<Vector2Int> indexes, IrishPotLuckThrowType throwType)
+    {
+        if (indexes == null || indexes.Count == 0)
+            return;
+
+        foreach (Vector2Int index in indexes)
+        {
+            TryAddThrowTarget(index.x, index.y, throwType);
+        }
+    }
+    private void AddRealThrowTargets()
+    {
+        if (currentSpinResult == null || currentSpinResult.reels == null)
+            return;
+
+        const int visibleOffset = 1;
+
+        for (int reelIndex = 0; reelIndex < currentSpinResult.reels.Count; reelIndex++)
+        {
+            var reelList = currentSpinResult.reels[reelIndex];
+
+            if (reelList == null)
+                continue;
+
+            for (int row = 0; row < reelList.Count; row++)
+            {
+                SymbolData symbol = reelList[row];
+
+                if (symbol == null || !symbol.isBonus)
+                    continue;
+
+                var res = GetResourceById(symbol.id);
+
+                if (!res.HasValue)
+                    continue;
+
+                IrishPotLuckThrowType? throwType = GetThrowType(res.Value.slotType);
+
+                if (!throwType.HasValue)
+                    continue;
+
+                int slotIndex = row + visibleOffset;
+
+                TryAddThrowTarget(reelIndex, slotIndex, throwType.Value);
+            }
+        }
+    }
+    private IrishPotLuckThrowType? GetThrowType(IrishPotLuckSlotType slotType)
+    {
+        if (isWildSlot(slotType))
+            return IrishPotLuckThrowType.Wild;
+
+        if (isScattterSlot(slotType))
+            return IrishPotLuckThrowType.Scatter;
+
+        return null;
+    }
+    private void TryAddThrowTarget(int reelIndex, int slotIndex, IrishPotLuckThrowType throwType)
+    {
+        if (reels == null || reelIndex < 0 || reelIndex >= reels.Count)
+            return;
+
+        IrishPotLuckReelScript reel = reels[reelIndex];
+
+        if (reel == null || reel.slots == null)
+            return;
+
+        if (slotIndex < 0 || slotIndex >= reel.slots.Count)
+            return;
+
+        IrishPotLuckSlotScript slot = reel.slots[slotIndex];
+
+        if (slot == null)
+            return;
+
+        slot.reelIndex = reelIndex;
+        slot.slotIndex = slotIndex;
+
+        Vector3 targetPosition = GetOriginalWorldPosition(reel, slot, slotIndex);
+
+        throwTargets.Add(new IrishPotLuckThrowTarget(slot, targetPosition, throwType));
+
+        Debug.Log($"Throw Target Added | Type: {throwType}, Reel: {reelIndex}, Slot: {slotIndex}, Pos: {targetPosition}");
+    }
+    private Vector3 GetOriginalWorldPosition(IrishPotLuckReelScript reel, IrishPotLuckSlotScript slot, int slotIndex)
+    {
+        if (reel != null &&
+            reel.originalWorldPositions != null &&
+            slotIndex >= 0 &&
+            slotIndex < reel.originalWorldPositions.Count)
+        {
+            return reel.originalWorldPositions[slotIndex];
+        }
+
+        return slot != null ? slot.transform.position : Vector3.zero;
+    }
+    public bool SetSpawnedSlotPaylineAnimation(IrishPotLuckSlotScript slot, bool play)
+    {
+        if (characterController == null)
+            return false;
+
+        return characterController.SetSpawnedSlotPaylineAnimation(slot, play);
+    }
+    #endregion
+
+    #region Multiplier Animation
+
+    private bool stopRequested;
+    private int targetMultiplier;
+    private void StartMultiplierAnimation()
+    {
+        if (multiplierImage == null)
+            return;
+
+        if (originalMultiplierScale == Vector3.zero)
+            originalMultiplierScale = multiplierImage.localScale;
+
+        ResetMultiplier(GetDefaultMultiplier(), true);
+
+        stopRequested = false;
+
+        int[] values = isFreeGame ? freeGameMultipliers : mainGameMultipliers;
+        int index = 0;
+
+        multiplierScaleSequence = DOTween.Sequence();
+
+        multiplierScaleSequence
+            .Append(multiplierImage.DOScaleX(0f, multiplierScaleDuration).SetEase(Ease.InOutSine))
+            .AppendCallback(() =>
+            {
+                if (multiplierText == null || values == null || values.Length == 0)
+                    return;
+
+                if (stopRequested)
+                {
+                    multiplierText.text = "X" + targetMultiplier;
+                }
+                else
+                {
+                    multiplierText.text = "X" + values[index];
+                    index = (index + 1) % values.Length;
+                }
+            })
+            .Append(multiplierImage.DOScaleX(originalMultiplierScale.x, multiplierScaleDuration).SetEase(Ease.InOutSine))
+            .AppendCallback(() =>
+            {
+                if (stopRequested)
+                {
+                    multiplierScaleSequence.Kill();
+                    multiplierScaleSequence = null;
+                    multiplierImage.localScale = originalMultiplierScale;
+                }
+            })
+            .SetLoops(-1, LoopType.Restart);
+    }
+    private void StopMultiplierAnimation(int finalMultiplier, bool setFinalText = true)
+    {
+        if (multiplierScaleSequence == null)
+        {
+            if (setFinalText && multiplierText != null)
+                multiplierText.text = "X" + finalMultiplier;
+
+            if (multiplierImage != null)
+                multiplierImage.localScale = originalMultiplierScale;
+
+            return;
+        }
+
+        targetMultiplier = finalMultiplier;
+        stopRequested = true;
+    }
+    private void ResetMultiplier(int multiplier, bool setText = true)
+    {
+        if (multiplierScaleSequence != null)
+        {
+            multiplierScaleSequence.Kill();
+            multiplierScaleSequence = null;
+        }
+
+        multiplierImage.DOKill();
+
+        if (originalMultiplierScale != Vector3.zero)
+            multiplierImage.localScale = originalMultiplierScale;
+
+        if (setText && multiplierText != null)
+            multiplierText.text = "X" + multiplier;
+    }
+
+    private int GetDefaultMultiplier()
+    {
+        return isFreeGame ? 2 : 1;
+    }
+
+    private int GetFinalMultiplier()
+    {
+        if (fakeMultiplier > 0)
+            return fakeMultiplier;
+
+        return GetDefaultMultiplier();
+    }
+
+    #endregion
+
+    #region Helper Functions
+    public void PlayCharacterNormal()
+    {
+        if (characterController != null)
+            characterController.PlayNormal();
+    }
     private IEnumerator WaitForAllReelsToStop()
     {
         bool allStopped = false;
@@ -587,74 +859,33 @@ public class IrishPotLuckSlotMachine : BaseSlotMachine
             return currentSpinResult.totalWin;
         }
     }
-    #endregion
 
-    #region Multiplier Animation
-
-    private void StartMultiplierAnimation()
+    public bool isWildSlot(IrishPotLuckSlotType slotType)
     {
-        if (multiplierImage == null)
-            return;
-
-        if (originalMultiplierScale == Vector3.zero)
-            originalMultiplierScale = multiplierImage.localScale;
-
-        StopMultiplierAnimation(GetDefaultMultiplier(), false);
-
-        int[] values = isFreeGame ? freeGameMultipliers : mainGameMultipliers;
-        int index = 0;
-
-        multiplierImage.localScale = originalMultiplierScale;
-
-        multiplierScaleSequence = DOTween.Sequence();
-
-        multiplierScaleSequence
-            .Append(multiplierImage.DOScaleX(0f, multiplierScaleDuration).SetEase(Ease.InOutSine))
-            .AppendCallback(() =>
-            {
-                if (multiplierText != null && values != null && values.Length > 0)
-                {
-                    multiplierText.text = "X" + values[index];
-
-                    index++;
-                    if (index >= values.Length)
-                        index = 0;
-                }
-            })
-            .Append(multiplierImage.DOScaleX(originalMultiplierScale.x, multiplierScaleDuration).SetEase(Ease.InOutSine))
-            .SetLoops(-1, LoopType.Restart);
-    }
-
-    private void StopMultiplierAnimation(int finalMultiplier, bool setFinalText = true)
-    {
-        if (multiplierScaleSequence != null)
+        if (slotType == IrishPotLuckSlotType.Wild)
         {
-            multiplierScaleSequence.Kill();
-            multiplierScaleSequence = null;
+            return true;
         }
 
-        if (multiplierImage != null && originalMultiplierScale != Vector3.zero)
+        return false;
+    }
+    public bool isScattterSlot(IrishPotLuckSlotType slotType)
+    {
+        if (slotType == IrishPotLuckSlotType.Scatter)
         {
-            multiplierImage.localScale = originalMultiplierScale;
+            return true;
         }
 
-        if (setFinalText && multiplierText != null)
+        return false;
+    }
+    public bool isJackpotSlot(IrishPotLuckSlotType slotType)
+    {
+        if (slotType == IrishPotLuckSlotType.Jackpot)
         {
-            multiplierText.text = "X" + finalMultiplier;
+            return true;
         }
-    }
 
-    private int GetDefaultMultiplier()
-    {
-        return isFreeGame ? 2 : 1;
-    }
-
-    private int GetFinalMultiplier()
-    {
-        if (fakeMultiplier > 0)
-            return fakeMultiplier;
-
-        return GetDefaultMultiplier();
+        return false;
     }
 
     #endregion

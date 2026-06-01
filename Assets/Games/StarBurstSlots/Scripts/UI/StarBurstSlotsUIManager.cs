@@ -609,6 +609,7 @@ public class StarBurstSlotsUIManager : GameBetServices
     {
         autoSpinController.CancelAutoSpin();
     }
+
     #endregion
 
     #region Win Animations

@@ -327,6 +327,10 @@ public class LifeOfLuxuryUIManager : GameBetServices
         //PlaySound("Button");
         //StopSpinMusic("Spin");
         autoSpinController.CancelAutoSpin();
+
+        autoButton.SetActive(true);
+        autoStopButton.SetActive(false);
+        SetAutoInteractable(false);
     }
     #endregion
 
@@ -426,7 +430,7 @@ public class LifeOfLuxuryUIManager : GameBetServices
                 break;
 
             case "Auto":
-                interactable = true;
+                interactable = false;
                 spinButton.SetActive(false);
                 stopButton.SetActive(true);
                 autoButton.SetActive(false);

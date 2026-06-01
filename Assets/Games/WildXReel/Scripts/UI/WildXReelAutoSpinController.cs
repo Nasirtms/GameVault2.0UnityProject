@@ -7,7 +7,7 @@ public class WildXReelAutoSpinController : MonoBehaviour
     #region Variables
 
     [Header("Settings")]
-    [SerializeField] private float delayBetweenSpins = 2.5f;
+    [SerializeField] private float delayBetweenSpins = 1.5f;
 
     private bool firstAuto;
     private bool isAutoRunning = false;

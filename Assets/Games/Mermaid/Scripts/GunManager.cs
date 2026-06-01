@@ -391,6 +391,8 @@ public class GunManager : MonoBehaviour
         {
             //Manager.Instance.balance = response.newBalance;
             Manager.Instance.balance -= response.bulletCost;
+            if (Manager.Instance.balance < 0)
+                Manager.Instance.balance = 0;
             Manager.Instance.UpdateBalanceUI();
         }
     }

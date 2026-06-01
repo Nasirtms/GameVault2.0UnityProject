@@ -315,6 +315,24 @@ public class MainMenuUIManager : MonoBehaviour
             rt.anchorMax = new Vector2(1f, 0f);
             rt.pivot = new Vector2(1f, 0f);
 
+            EventAndNotification_Controller enc = btn.GetComponent<EventAndNotification_Controller>();
+            Image img = btn.GetComponent<Image>();
+
+            if (img != null)
+            {
+                if (enc != null)
+                {
+                    if (shouldShowForNotification)
+                    {
+                        img.sprite = enc.notificationButtonImage;
+                    }
+                    else if (shouldShowForEvent)
+                    {
+                        img.sprite = enc.eventButtonImage;
+                    }
+                }
+            }
+
             if (SceneManagement.isShowSpinWheel)
             {
                 // Position relative to bottom-right

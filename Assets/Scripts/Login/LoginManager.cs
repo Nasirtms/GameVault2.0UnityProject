@@ -68,7 +68,7 @@ public class LoginManager : MonoBehaviour
     {
         DoTweenAnim(TweenType.Login, login, 1.1f, 0.3f);
         loginButton.onClick.AddListener(HandleLogin);
-        emailInput.onSubmit.AddListener((str) => HandleLogin());
+        emailInput.onSubmit.AddListener((str) => EmailFieldSubmit());
         passwordInput.onSubmit.AddListener((str) => HandleLogin());
         //forgotPasswordButton.onClick.AddListener(HandleForgotPassword);
 
@@ -76,6 +76,11 @@ public class LoginManager : MonoBehaviour
         passwordInput.onSelect.AddListener(OnPasswordSelect);
 
         LoadSavedCredentials();
+
+//        // Only executes when running as a WebGL build
+//#if UNITY_WEBGL && !UNITY_EDITOR
+//        WebGLInput.mobileKeyboardSupport = false;
+//#endif
     }
 
     private void Update()
@@ -96,7 +101,21 @@ public class LoginManager : MonoBehaviour
     #endregion
 
     #region UI Logic
-    
+
+    private void EmailFieldSubmit()
+    {
+        StopCoroutine("EmailFieldSubmit_Coroutine");
+        StartCoroutine("EmailFieldSubmit_Coroutine");
+    }
+
+    IEnumerator EmailFieldSubmit_Coroutine()
+    {
+        yield return new WaitForSeconds(.6f);
+        passwordInput.Select();
+        passwordInput.ActivateInputField();
+    }
+
+
     private void HandleLogin()
     {
         if (UserManager.Instance != null)
@@ -321,7 +340,7 @@ public class LoginManager : MonoBehaviour
             try
             {
                 string responseText = www.downloadHandler.text;
-
+                Debug.Log("responseText: " + responseText);
                 // Check for region-block response (200 OK with only "message", no "user")
                 var regionBlock = JsonConvert.DeserializeObject<RegionBlockResponse>(responseText);
                 if (regionBlock != null && !string.IsNullOrEmpty(regionBlock.message) &&
@@ -333,7 +352,7 @@ public class LoginManager : MonoBehaviour
 
                 loginResponse = JsonConvert.DeserializeObject<SerializableClasses.LoginResponseWrapper>(responseText);
                 DateTime nextUtc;
-                if (DateTime.TryParse(loginResponse.user.nextSpinTime, null,
+                if (DateTime.TryParse(loginResponse.nextSpinTime, null,
                     System.Globalization.DateTimeStyles.AdjustToUniversal, out nextUtc))
                 {
                     PlayerPrefs.SetString("FreeSpinNextUtcTicks", nextUtc.Ticks.ToString());
@@ -350,13 +369,13 @@ public class LoginManager : MonoBehaviour
                     yield break;
                 }
                 JSInputHandler.OnLoginSuccess(ApiEndpoints.AuthToken);
-                loginResponse.user.EnsureDefaults();
-                ApiEndpoints.AuthToken = loginResponse.user.token;
-                ApiEndpoints.RefreshToken = loginResponse.user.refreshToken;
+                //loginResponse.user.EnsureDefaults();
+                ApiEndpoints.AuthToken = loginResponse.token;
+                ApiEndpoints.RefreshToken = loginResponse.refreshToken;
                 PlayerPrefs.SetString("userId", loginResponse.user.id);
                 PlayerPrefs.SetString("profileImageUrl", loginResponse.user.avatarUrl);
                 UserManager.Instance.isLoginProcess = true;
-                SceneManagement.profile_iconUrls.AddRange(loginResponse.available_avatars.Select(a => a.image_url));
+                //SceneManagement.profile_iconUrls.AddRange(loginResponse.available_avatars.Select(a => a.image_url));
                 ApiEndpoints.updateTokenIntoJSFile();
                 LoginSuccess();
                 StartCoroutine(GetMainMenuData());
@@ -376,9 +395,13 @@ public class LoginManager : MonoBehaviour
 
     private IEnumerator GetMainMenuData()
     {
+        //StartCoroutine(GetGamesData());
         yield return SendAuthorizedRequest(ApiEndpoints.SceneData, json =>
         {
+            Debug.Log($"SceneData Response: {json}");
             sceneData = JsonConvert.DeserializeObject<SerializableClasses.SceneDataResponse>(json);
+            Debug.Log($"SceneData: {JsonConvert.SerializeObject(sceneData)}");
+
             isGetMainMenuData = true;
             StartCoroutine(GetGamesData());
         });
@@ -397,46 +420,48 @@ public class LoginManager : MonoBehaviour
 
     private IEnumerator GetEventData()
     {
-        yield return SendAuthorizedRequest(ApiEndpoints.ActiveEvents, json =>
-        {
-            var eventsList = JsonConvert.DeserializeObject<List<SerializableClasses.Events>>(json);
+        ApplySceneData();
+        yield return null;
+        //yield return SendAuthorizedRequest(ApiEndpoints.ActiveEvents, json =>
+        //{
+        //    var eventsList = JsonConvert.DeserializeObject<List<SerializableClasses.Events>>(json);
 
-            if (eventsList != null && eventsList.Count > 0)
-            {
-                Debug.Log("Event Data Count: " + eventsList.Count);
+        //    if (eventsList != null && eventsList.Count > 0)
+        //    {
+        //        Debug.Log("Event Data Count: " + eventsList.Count);
 
-                // Store the full list
-                SceneManagement.events = eventsList;
+        //        // Store the full list
+        //        SceneManagement.events = eventsList;
 
-                // Take the first event
-                var firstEvent = eventsList[0];
+        //        // Take the first event
+        //        var firstEvent = eventsList[0];
 
-                // ✅ Assign values into your static fields
-                SceneManagement.EventshowOnce = firstEvent.showOnce;
-                SceneManagement.eventIsActive = firstEvent.isActive;
+        //        // ✅ Assign values into your static fields
+        //        SceneManagement.EventshowOnce = firstEvent.showOnce;
+        //        SceneManagement.eventIsActive = firstEvent.isActive;
 
-                // ended = check if event end time is in the past
-                DateTime endTime;
-                if (DateTime.TryParse(firstEvent.endTime, out endTime))
-                    SceneManagement.eventIsEnded = DateTime.UtcNow > endTime;
-                else
-                    SceneManagement.eventIsEnded = false;
+        //        // ended = check if event end time is in the past
+        //        DateTime endTime;
+        //        if (DateTime.TryParse(firstEvent.endTime, out endTime))
+        //            SceneManagement.eventIsEnded = DateTime.UtcNow > endTime;
+        //        else
+        //            SceneManagement.eventIsEnded = false;
 
-                SceneManagement.EventtargetUser = firstEvent.targetType;
-                SceneManagement.eventHeading = firstEvent.title;
-                SceneManagement.evntBottom = firstEvent.eventBottom;
-                SceneManagement.evntMassage = firstEvent.description;
+        //        SceneManagement.EventtargetUser = firstEvent.targetType;
+        //        SceneManagement.eventHeading = firstEvent.title;
+        //        SceneManagement.evntBottom = firstEvent.eventBottom;
+        //        SceneManagement.evntMassage = firstEvent.description;
 
-                isGetEventData = true;
+        //        isGetEventData = true;
                 
-            }
-            else
-            {
-                Debug.LogWarning("No event data found.");
-                isGetEventData = false;
-            }
-            ApplySceneData();
-        });
+        //    }
+        //    else
+        //    {
+        //        Debug.LogWarning("No event data found.");
+        //        isGetEventData = false;
+        //    }
+        //    ApplySceneData();
+        //});
     }
 
 

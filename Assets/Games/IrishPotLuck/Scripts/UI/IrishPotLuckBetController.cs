@@ -35,7 +35,6 @@ public class IrishPotLuckBetController : MonoBehaviour
 
     public void IncreaseChipValue()
     {
-        Debug.Log("LovKumar Iecrease");
         currentIndex = (currentIndex + 1) % betValues.Length;
         UpdateBetUI();
         UpdateDisplay();
@@ -57,7 +56,6 @@ public class IrishPotLuckBetController : MonoBehaviour
     private void UpdateBetUI()
     {
         float bet = betValues[currentIndex];
-        Debug.Log("LovKumar Iecrease UI");
         betText.text = bet.ToString("0.00");
     }
     public void UpdateDisplay()

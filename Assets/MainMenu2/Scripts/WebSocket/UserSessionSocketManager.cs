@@ -94,7 +94,8 @@ public class UserSessionSocketManager : MonoBehaviour
             }
 
             wsBaseUrl = wsBaseUrl.TrimEnd('/');
-            var wsUrl = $"{wsBaseUrl}/ws/user-session";
+            // Use /ws/session — Cloudflare blocks WebSocket upgrade on /ws/user-session (503).
+            var wsUrl = $"{wsBaseUrl}/ws/session";
 
             Debug.Log("Connecting UserSession socket: " + wsUrl);
 

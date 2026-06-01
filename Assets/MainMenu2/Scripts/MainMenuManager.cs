@@ -56,7 +56,7 @@ namespace MainMenu
             InternetWatchdog internetWatchdogPrefab = Resources.Load<InternetWatchdog>("InternetWatchdog");
             if (internetWatchdogPrefab != null)
             {
-                Instantiate(internetWatchdogPrefab);
+                //Instantiate(internetWatchdogPrefab);
             }
         }
 
@@ -109,6 +109,11 @@ namespace MainMenu
 
             if (InternetWatchdog.Instance != null)
                 InternetWatchdog.Instance.isWatchdogActive = false;
+
+//            // Only executes when running as a WebGL build
+//#if UNITY_WEBGL && !UNITY_EDITOR
+//        WebGLInput.mobileKeyboardSupport = false;
+//#endif
         }
 
         //void HandleDrag()
@@ -252,6 +257,8 @@ namespace MainMenu
         private IEnumerator OpenLevel_Coroutine(string sceneName, string gameID, string addressableLabel, string gameTitle)
         {
             loadingPanel.OpenPanel(.5f, 1f);
+
+            ApiHandler.instance?.GameStarted(gameID);
 
             Coroutine _loadRoutine;
             Vector3 loadingBarFillTargetScale = Vector3.one;

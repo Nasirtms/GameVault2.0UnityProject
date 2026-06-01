@@ -1,7 +1,5 @@
-using Coffee.UIEffects;
 using DG.Tweening;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,15 +12,19 @@ public class IrishPotLuckFreeGameTransitionController : MonoBehaviour
 
     [SerializeField] private SpriteRenderer normalBackgroundImage;
     [SerializeField] private SpriteRenderer freeSpinBackgroundImage;
-    [SerializeField] private GameObject freeSpinWinFrame;
-    [SerializeField] private GameObject freeSpinStartFrame;
-    //[SerializeField] private Animator freeSpinAnimator;
-    public GameObject freeSpinsCountText;
 
+    [SerializeField] private GameObject freeSpinStartFrame;
+    [SerializeField] private GameObject freeSpinEndFrame;
+    [SerializeField] private Animator freeSpinAnimator;
+
+    [SerializeField] private Button freeSpinStartContinueButton;
+    [SerializeField] private Button freeSpinEndContinueButton;
+    public GameObject freeSpinsCount;
+    public TMP_Text freeSpinsCountText;
     public TMP_Text freeSpinWinText;
 
     private IrishPotLuckFreeSpinController freeSpinController;
-
+    private bool continueClicked;
     #endregion
 
     #region Unity Methods
@@ -36,6 +38,11 @@ public class IrishPotLuckFreeGameTransitionController : MonoBehaviour
     private void Start()
     {
         freeSpinController = GetComponent<IrishPotLuckFreeSpinController>();
+
+        freeSpinStartFrame.SetActive(false);
+        freeSpinEndFrame.SetActive(false);
+        freeSpinStartContinueButton.onClick.AddListener(OnContinueButtonClicked);
+        freeSpinEndContinueButton.onClick.AddListener(OnContinueButtonClicked);
     }
 
     #endregion
@@ -65,6 +72,11 @@ public class IrishPotLuckFreeGameTransitionController : MonoBehaviour
     {
         freeSpinController.ErrorFreeSpinReturn();
     }
+    public void OnContinueButtonClicked()
+    {
+        continueClicked = true;
+    }
+
     #endregion
 
     #region Game Transition
@@ -77,16 +89,21 @@ public class IrishPotLuckFreeGameTransitionController : MonoBehaviour
         IrishPotLuckPaylineController.Instance.StopPaylines();
         IrishPotLuckPaylineController.Instance.ClearPaylineData();
         yield return new WaitForSeconds(1f);
+
+        freeSpinsCountText.text = $"{IrishPotLuckSlotMachine.Instance.freeSpinCount}";
         ShowBackground();
-        //IrishPotLuckUIManager.Instance.PlaySound("FreeSpinPopup");
-        PopupAnimation(freeSpinStartFrame, 2f, 0.5f, true);
 
-        yield return new WaitForSeconds(2.5f);
-
-        PopupAnimation(freeSpinStartFrame, 0f, 0.5f, false);
+        continueClicked = false;
+        freeSpinStartFrame.SetActive(true);
+        freeSpinAnimator.SetBool("FreeSpinStart", true);
 
         yield return new WaitForSeconds(1f);
-        freeSpinsCountText.SetActive(true);
+        yield return new WaitUntil(() => continueClicked);
+
+        freeSpinAnimator.SetBool("FreeSpinStart", false);
+        freeSpinStartFrame.SetActive(false);
+
+        freeSpinsCount.SetActive(true);
         freeSpinController.InitialFreeSpinText();
 
         IrishPotLuckUIManager.Instance.UpdateButtons("Free Spin");
@@ -107,22 +124,26 @@ public class IrishPotLuckFreeGameTransitionController : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
         HideBackground();
-        //gameTitle.SetActive(true);
-        freeSpinsCountText.SetActive(false);
+        freeSpinsCount.SetActive(false);
 
         yield return new WaitForSeconds(2f);
 
         IrishPotLuckUIManager.Instance.UpdateButtons("Transition End");
-        //PiratesOfTheCaribbeanUIManager.Instance.PlaySound("FreeSpinWin");
-        PopupAnimation(freeSpinWinFrame, 2f, 0.5f, true);
+        continueClicked = false;
+
+        freeSpinStartFrame.SetActive(false);
+        freeSpinEndFrame.SetActive(true);
+        freeSpinAnimator.SetBool("FreeSpinEnd", true);
 
         yield return new WaitForSeconds(1f);
 
         IrishPotLuckUIManager.Instance.TextAnimation(IrishPotLuckSlotMachine.Instance.freeSpinWinAmount, 2.5f, freeSpinWinText);
 
-        yield return new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(2f);
+        yield return new WaitUntil(() => continueClicked);
 
-        PopupAnimation(freeSpinWinFrame, 0f, 1f, false);
+        freeSpinAnimator.SetBool("FreeSpinEnd", false);
+        freeSpinEndFrame.SetActive(false);
 
         freeSpinWinText.text = "0.00";
 
@@ -149,15 +170,7 @@ public class IrishPotLuckFreeGameTransitionController : MonoBehaviour
             IrishPotLuckUIManager.Instance.UpdateButtons("Stop");
         }
     }
-    private void PopupAnimation(GameObject obj, float scale, float duration, bool state)
-    {
-        obj.transform.parent.gameObject.SetActive(state);
 
-        obj.transform.localScale = Vector3.one * 0.5f;
-
-        obj.transform.DOScale(scale, duration * 1.2f)
-            .SetEase(Ease.OutBack);
-    }
     #endregion
 
     #region Helper Functions

@@ -97,6 +97,7 @@ public class IrishPotLuckUIManager : GameBetServices
         UpdateCoins();
         SetupInputButtons();
         UserManager.Instance.UpdateGameCoins += UpdateCoins;
+        IrishPotLuckSlotMachine.Instance.PlayCharacterNormal();
         //PlayMusic("BG");
     }
 
@@ -132,7 +133,6 @@ public class IrishPotLuckUIManager : GameBetServices
     }
     private void SetupInputButtons()
     {
-        Debug.Log("LovKumar SetupInputButtons");
         spinButton.onClick.AddListener(OnClickSpin);
         stopButton.onClick.AddListener(OnClickStop);
         autoButton.onClick.AddListener(OnClickAuto);
@@ -231,19 +231,15 @@ public class IrishPotLuckUIManager : GameBetServices
     #region Bet Control
     private void IncreaseBetAmount()
     {
-        Debug.Log("LovKumar Increase 11");
         if (betController == null) return;
         //PlaySound("Bet");
-        Debug.Log("LovKumar Increase 22");
         betController.IncreaseChipValue();
     }
 
     private void DecreaseBetAmount()
     {
-        Debug.Log("LovKumar Decrease 11");
         if (betController == null) return;
         //PlaySound("Bet");
-        Debug.Log("LovKumar Decrease 22");
         betController.DecreaseChipValue();
     }
 
@@ -324,6 +320,9 @@ public class IrishPotLuckUIManager : GameBetServices
         //PlaySound("Button");
         //StopSpinMusic("Spin");
         autoSpinController.CancelAutoSpin();
+        autoButton.SetActive(true);
+        autoStopButton.SetActive(false);
+        SetAutoInteractable(false);
     }
     #endregion
 
@@ -356,7 +355,7 @@ public class IrishPotLuckUIManager : GameBetServices
                 break;
 
             case "Auto":
-                interactable = true;
+                interactable = false;
                 spinButton.SetActive(false);
                 stopButton.SetActive(true);
                 autoButton.SetActive(false);

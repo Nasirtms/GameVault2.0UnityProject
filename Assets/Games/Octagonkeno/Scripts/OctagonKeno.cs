@@ -132,7 +132,7 @@ public class OctagonKeno : MonoBehaviour
         SetGameButtons();
 
 
-        ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
+        //ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
     }
 
     void Start()

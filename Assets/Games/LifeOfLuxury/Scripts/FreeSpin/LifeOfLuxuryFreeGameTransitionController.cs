@@ -14,6 +14,8 @@ public class LifeOfLuxuryFreeGameTransitionController : MonoBehaviour
 
     [SerializeField] private SpriteRenderer normalBackgroundImage;
     [SerializeField] private SpriteRenderer freeSpinBackgroundImage;
+    [SerializeField] private SpriteRenderer normalBackgroundImage1;
+    [SerializeField] private SpriteRenderer freeSpinBackgroundImage1;
     [SerializeField] private SpriteRenderer normalMachineBgImage;
     [SerializeField] private SpriteRenderer freeSpinMachineBgImage;
     [SerializeField] private GameObject freeSpinWinFrame;
@@ -86,16 +88,15 @@ public class LifeOfLuxuryFreeGameTransitionController : MonoBehaviour
 
         freeSpinLineMultiplier.text = $"{LifeOfLuxurySlotMachine.Instance.freeSpinLineMultiplier}";
 
-        LifeOfLuxuryPaylineController.Instance.StopPaylines();
-        LifeOfLuxuryPaylineController.Instance.ClearPaylineData();
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
         ShowBackground();
         //IrishPotLuckUIManager.Instance.PlaySound("FreeSpinPopup");
-        PopupAnimation(freeSpinStartFrame, 1f, 0.5f, true);
+        PopupAnimation(freeSpinStartFrame, 1f, 1f, true);
         lineMultiplierObject.SetActive(true);
         yield return new WaitForSeconds(2.5f);
-
-        PopupAnimation(freeSpinStartFrame, 0f, 0.5f, false);
+        LifeOfLuxuryPaylineController.Instance.StopPaylines();
+        LifeOfLuxuryPaylineController.Instance.ClearPaylineData();
+        PopupAnimation(freeSpinStartFrame, 0f, 1f, false);
 
         yield return new WaitForSeconds(1f);
         freeSpinsCountText.SetActive(true);
@@ -112,19 +113,15 @@ public class LifeOfLuxuryFreeGameTransitionController : MonoBehaviour
     {
         //IrishPotLuckUIManager.Instance.StopMusic("FreeSpin_Background");
         //IrishPotLuckUIManager.Instance.PlayMusic("Background");
-
         yield return new WaitForSeconds(1.5f);
-        LifeOfLuxuryPaylineController.Instance.StopPaylines();
-        LifeOfLuxuryPaylineController.Instance.ClearPaylineData();
-
-        yield return new WaitForSeconds(1f);
         HideBackground();
         LifeOfLuxuryUIManager.Instance.UpdateButtons("Transition End");
         //PiratesOfTheCaribbeanUIManager.Instance.PlaySound("FreeSpinWin");
-        PopupAnimation(freeSpinWinFrame, 1f, 0.5f, true);
+        PopupAnimation(freeSpinWinFrame, 1f, 1f, true);
 
         yield return new WaitForSeconds(1f);
-
+        LifeOfLuxuryPaylineController.Instance.StopPaylines();
+        LifeOfLuxuryPaylineController.Instance.ClearPaylineData();
         LifeOfLuxuryUIManager.Instance.TextAnimation(LifeOfLuxurySlotMachine.Instance.freeSpinWinAmount, 2.5f, freeSpinWinText);
         lineMultiplierObject.SetActive(false);
         freeSpinsCountText.SetActive(false);
@@ -173,11 +170,11 @@ public class LifeOfLuxuryFreeGameTransitionController : MonoBehaviour
     private void ShowBackground()
     {
         Sequence seq = DOTween.Sequence();
-        normalBackgroundImage.gameObject.SetActive(true);
-        freeSpinBackgroundImage.gameObject.SetActive(true);
 
         seq.Append(normalBackgroundImage.DOFade(0f, 1f).SetEase(Ease.InOutSine));
         seq.Join(freeSpinBackgroundImage.DOFade(1f, 1f).SetEase(Ease.InOutSine));
+        seq.Append(normalBackgroundImage1.DOFade(0f, 1f).SetEase(Ease.InOutSine));
+        seq.Join(freeSpinBackgroundImage1.DOFade(1f, 1f).SetEase(Ease.InOutSine));
         seq.Append(normalMachineBgImage.DOFade(0f, 1f).SetEase(Ease.InOutSine));
         seq.Join(freeSpinMachineBgImage.DOFade(1f, 1f).SetEase(Ease.InOutSine));
     }
@@ -185,11 +182,11 @@ public class LifeOfLuxuryFreeGameTransitionController : MonoBehaviour
     private void HideBackground()
     {
         Sequence seq = DOTween.Sequence();
-        normalBackgroundImage.gameObject.SetActive(true);
-        freeSpinBackgroundImage.gameObject.SetActive(true);
 
         seq.Append(normalBackgroundImage.DOFade(1f, 1f).SetEase(Ease.InOutSine));
         seq.Join(freeSpinBackgroundImage.DOFade(0f, 1f).SetEase(Ease.InOutSine));
+        seq.Append(normalBackgroundImage1.DOFade(1f, 1f).SetEase(Ease.InOutSine));
+        seq.Join(freeSpinBackgroundImage1.DOFade(0f, 1f).SetEase(Ease.InOutSine));
         seq.Append(normalMachineBgImage.DOFade(1f, 1f).SetEase(Ease.InOutSine));
         seq.Join(freeSpinMachineBgImage.DOFade(0f, 1f).SetEase(Ease.InOutSine));
     }

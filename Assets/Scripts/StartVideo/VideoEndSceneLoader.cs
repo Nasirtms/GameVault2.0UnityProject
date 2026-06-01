@@ -61,6 +61,11 @@ public class VideoEndSceneLoader : MonoBehaviour
 
         Instantiate(onScreenKeyboardManagerPrefab);
         Instantiate(webGlClipboardPrefab);
+
+//        // Only executes when running as a WebGL build
+//#if UNITY_WEBGL && !UNITY_EDITOR
+//        WebGLInput.mobileKeyboardSupport = false;
+//#endif
     }
 
     private void OnVideoPrepared(VideoPlayer vp)

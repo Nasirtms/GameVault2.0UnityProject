@@ -128,7 +128,7 @@ public class HexagonKeno : MonoBehaviour
         }
 
 
-        ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
+        //ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
     }
     #endregion
 

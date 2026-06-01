@@ -261,6 +261,9 @@ public class GameCatalogueController : MonoBehaviour
         LoadingBridge.IsAddressableScene = true;
         LoadingBridge.pauseProfileApiCall = true;
         SceneManagement.currentGameID = sceneID;
+
+        //ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
+
         Addressables.LoadSceneAsync(MainMenuAddressableHandler.sceneLoaderSceneKey, LoadSceneMode.Single, true);    //SceneManager.LoadScene("SceneLoader");
         //}
         //else

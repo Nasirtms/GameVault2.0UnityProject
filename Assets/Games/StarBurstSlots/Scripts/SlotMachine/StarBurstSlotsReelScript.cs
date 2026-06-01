@@ -15,6 +15,7 @@ public class StarBurstSlotsReelScript : MonoBehaviour
     private RectTransform _rectTransform;
     private StarBurstSlotsSpinSettings _spinSettings;
     private Vector2 _targetPos;
+    public Image motionBlurImage;
 
     // State Variables
     private bool _inSpin;
@@ -198,6 +199,9 @@ public class StarBurstSlotsReelScript : MonoBehaviour
         _forceStop = false;
 
         OnSpinStart?.Invoke(this._index);
+
+        if (motionBlurImage)
+            motionBlurImage.gameObject.SetActive(true);
     }
 
     public void Stop()
@@ -212,6 +216,9 @@ public class StarBurstSlotsReelScript : MonoBehaviour
 
         var disTop = Vector3.Distance(_rectTransform.anchoredPosition, topPos);
         var disBot = Vector3.Distance(_rectTransform.anchoredPosition, bottomPos);
+
+        if (motionBlurImage)
+            motionBlurImage.gameObject.SetActive(false);
 
         if (Vector3.Distance(_rectTransform.anchoredPosition, topPos) <
         Vector3.Distance(_rectTransform.anchoredPosition, bottomPos))

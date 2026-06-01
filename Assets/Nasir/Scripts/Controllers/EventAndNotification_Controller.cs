@@ -19,6 +19,9 @@ public class EventAndNotification_Controller : MonoBehaviour
     [SerializeField] private GameObject notificationPanel;
     [SerializeField] private GameObject TextNotificationPanel;
 
+    public Sprite eventButtonImage;
+    public Sprite notificationButtonImage;
+
     public float delayBeforeFirstPopup = 1f;
     public float delayBetweenPopups = 1f;
 
@@ -104,7 +107,7 @@ public class EventAndNotification_Controller : MonoBehaviour
                     closeBtn.onClick.AddListener(() => HidePopup(popupNotification));
 
                     if (notificationSprite != null)
-                        popupNotification.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = notificationSprite;
+                        popupNotification.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = notificationSprite;
                     break;
                 case "text":
                     SetMidNightData(data);

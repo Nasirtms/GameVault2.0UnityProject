@@ -1,5 +1,6 @@
 using NativeWebSocket;
 using System;
+using System.Collections;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -114,6 +115,34 @@ public class FishWSNetworkManager : MonoBehaviour
             //FishWSNetworkMessages.FishHidden_Response response = (FishWSNetworkMessages.FishHidden_Response)base_response;
             var response = JsonUtility.FromJson<FishWSNetworkMessages.FishDespawn_Response>(json);
             //FishManager.Instance.OnHitResult(response);
+        }
+    }
+
+    private void OnApplicationFocus(bool focus)
+    {
+        if (focus)
+        {
+            StopCoroutine("ReconnectIfDisconnectedAfterFocus");
+            StartCoroutine("ReconnectIfDisconnectedAfterFocus");
+        }
+    }
+
+    IEnumerator ReconnectIfDisconnectedAfterFocus()
+    {
+        float timer = 0;
+        float totalTime = 5;
+
+        while (timer < totalTime)
+        {
+            yield return new WaitForEndOfFrame();
+
+            timer += Time.deltaTime;
+
+            if (!IsConnected)
+            {
+                Connect();
+                timer = totalTime;
+            }
         }
     }
 }

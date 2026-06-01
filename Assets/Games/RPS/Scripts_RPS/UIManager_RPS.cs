@@ -105,7 +105,7 @@ public class UIManager_RPS : MonoBehaviour
         messageRoot.gameObject.SetActive(false);
 
 
-        ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
+        //ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
     }
     public void PlaySound(string soundName)
     {

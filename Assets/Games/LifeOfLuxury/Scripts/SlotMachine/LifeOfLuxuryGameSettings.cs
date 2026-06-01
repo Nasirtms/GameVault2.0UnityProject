@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 
 #region Slot Settings
 public enum LifeOfLuxurySlotType
@@ -14,7 +12,8 @@ public enum LifeOfLuxurySlotType
 public struct LifeOfLuxurySlotResource
 {
     public LifeOfLuxurySlotType slotType;
-    public string slotAnimationBool;
+    public string baseGameAnimationBool;
+    public string freeGameAnimationBool;
     public int slotTypeIndex;
 }
 #endregion

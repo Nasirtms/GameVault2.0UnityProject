@@ -2,7 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class IrishPotLuckReelScript : MonoBehaviour
 {
     #region Variables
@@ -15,8 +15,8 @@ public class IrishPotLuckReelScript : MonoBehaviour
     public List<IrishPotLuckSlotScript> slots;
 
     private bool isSpinning = false;
-    private List<Vector3> originalPositions;
-
+    public List<Vector3> originalPositions;
+    public List<Vector3> originalWorldPositions;
     // Cached settings values
     public float spinSpeed;
     public float slowDownDuration;
@@ -31,6 +31,7 @@ public class IrishPotLuckReelScript : MonoBehaviour
     private List<SymbolData> finalResultSymbols;
     private bool allowSymbolChanges = true;
 
+    public Image motionBlurImage;
     public bool IsSpinning => isSpinning;
     #endregion
 
@@ -60,12 +61,18 @@ public class IrishPotLuckReelScript : MonoBehaviour
         if (originalPositions == null)
             originalPositions = new List<Vector3>();
 
+        if (originalWorldPositions == null)
+            originalWorldPositions = new List<Vector3>();
+
         originalPositions.Clear();
+        originalWorldPositions.Clear();
+
         foreach (var slot in slots)
         {
             if (slot != null)
             {
                 originalPositions.Add(slot.transform.localPosition);
+                originalWorldPositions.Add(slot.transform.position);
             }
         }
     }
@@ -147,7 +154,8 @@ public class IrishPotLuckReelScript : MonoBehaviour
             topPosition.y = settings.slotSettings.TopYPosition;
             transform.localPosition = topPosition;
         }
-
+        if (motionBlurImage)
+            motionBlurImage.gameObject.SetActive(true);
         StartCoroutine(SpinCoroutine());
     }
     private IEnumerator SmoothWindUp()
@@ -260,11 +268,17 @@ public class IrishPotLuckReelScript : MonoBehaviour
     public void StopSpin()
     {
         if (!isSpinning) return;
+
+        if (motionBlurImage)
+            motionBlurImage.gameObject.SetActive(false);
         StartCoroutine(StopSpinCoroutine());
     }
     public void ForceStopSpin()
     {
         if (!isSpinning) return;
+
+        if (motionBlurImage)
+            motionBlurImage.gameObject.SetActive(false);
 
         if (clampToTopPosition)
         {

@@ -79,7 +79,7 @@ namespace HeadTailGame
                 tailsButton.onClick.AddListener(HideWinAmountBanner);
 
 
-            ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
+            //ApiHandler.instance?.GameStarted(SceneManagement.currentGameID);
         }
         private void Start()
         {

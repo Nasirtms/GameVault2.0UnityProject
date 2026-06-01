@@ -85,6 +85,39 @@ public class GoldGobblersPaylineWin
     public double winAmount;
     public int wildCount;
 }
+[System.Serializable]
+public class UltimateFireLinkOlveraStreetSpinResult : BaseSpinResult
+{
+    public List<List<SymbolData>> reels;
+    public List<UltimateFireLinkOlveraStreetPaylineWin> paylineWins;
+}
+
+[System.Serializable]
+public class UltimateFireLinkOlveraStreetPaylineWin
+{
+    public List<int> paylineIndex;
+    public string symbol;
+    public int count;
+    public double winAmount;
+    public int wildCount;
+}
+
+[System.Serializable]
+public class UltimateFireLinkRueRoyaleSpinResult : BaseSpinResult
+{
+    public List<List<SymbolData>> reels;
+    public List<UltimateFireLinkRueRoyalePaylineWin> paylineWins;
+}
+
+[System.Serializable]
+public class UltimateFireLinkRueRoyalePaylineWin
+{
+    public List<int> paylineIndex;
+    public string symbol;
+    public int count;
+    public double winAmount;
+    public int wildCount;
+}
 
 //CashVault SlotGame
 [System.Serializable]

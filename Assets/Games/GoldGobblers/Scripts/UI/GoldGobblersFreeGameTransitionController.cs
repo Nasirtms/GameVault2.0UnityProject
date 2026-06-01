@@ -163,6 +163,7 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
 
+        freeSpinWinText.text = GoldGobblersSlotMachine.Instance.freeSpinWinAmount.ToString("F2");
         freeSpinEnd.gameObject.SetActive(true);
         freeSpinEnd.gameObject.transform.GetComponent<Animator>().SetBool("freespinend", true);
         yield return new WaitForSeconds(1.3f);
@@ -208,7 +209,6 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
 
         GoldGobblersUIManager.Instance.UpdateButtons("Transition End");
         GoldGobblersPaylineController.Instance.StopPaylines();
-        freeSpinWinText.text = GoldGobblersSlotMachine.Instance.freeSpinWinAmount.ToString("F2");
 
         if (GoldGobblersSlotMachine.Instance.freeSpinWinAmount > 0)
         {
@@ -289,16 +289,19 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
             {
                 GoldGobblersSlotMachine.Instance.hasGreenFreeGameStarted = true;
                 GoldGobblersSlotMachine.Instance.hasBlueFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("red&green&blue");
                 ShowGreenAndBlueLable("green&blue");
             }
             else if (gameType.Equals("blue"))
             {
                 GoldGobblersSlotMachine.Instance.hasBlueFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("red&blue");
                 ShowGreenAndBlueLable("blue");
             }
             else if (gameType.Equals("green"))
             {
                 GoldGobblersSlotMachine.Instance.hasGreenFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("red&green");
                 ShowGreenAndBlueLable("green");
             }
         }
@@ -308,16 +311,19 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
             {
                 GoldGobblersSlotMachine.Instance.hasBlueFreeGameStarted = true;
                 GoldGobblersSlotMachine.Instance.hasRedFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("red&green&blue");
                 ConvertGameForRedFreeSpinInMiddle("blue", true);
             }
             else if (gameType.Equals("blue"))
             {
                 GoldGobblersSlotMachine.Instance.hasBlueFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("green&blue");
                 ShowGreenAndBlueLable("blue");
             }
             else if (gameType.Equals("red"))
             {
                 GoldGobblersSlotMachine.Instance.hasRedFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("red&green");
                 ConvertGameForRedFreeSpinInMiddle("", false);
             }
         }
@@ -327,16 +333,19 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
             {
                 GoldGobblersSlotMachine.Instance.hasGreenFreeGameStarted = true;
                 GoldGobblersSlotMachine.Instance.hasRedFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("red&green&blue");
                 ConvertGameForRedFreeSpinInMiddle("green", true);
             }
             else if (gameType.Equals("green"))
             {
                 GoldGobblersSlotMachine.Instance.hasGreenFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("green&blue");
                 ShowGreenAndBlueLable("green");
             }
             else if (gameType.Equals("red"))
             {
                 GoldGobblersSlotMachine.Instance.hasRedFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("red&blue");
                 ConvertGameForRedFreeSpinInMiddle("", false);
             }
         }
@@ -345,6 +354,7 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
             if (gameType.Equals("blue"))
             {
                 GoldGobblersSlotMachine.Instance.hasBlueFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("red&green&blue");
                 ShowGreenAndBlueLable("blue");
             }
         }
@@ -353,6 +363,7 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
             if (gameType.Equals("green"))
             {
                 GoldGobblersSlotMachine.Instance.hasGreenFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("red&green&blue");
                 ShowGreenAndBlueLable("green");
             }
         }
@@ -361,6 +372,7 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
             if (gameType.Equals("red"))
             {
                 GoldGobblersSlotMachine.Instance.hasRedFreeGameStarted = true;
+                GoldGobblersUIManager.Instance.PlayGobblerAnimations("red&green&blue");
                 ConvertGameForRedFreeSpinInMiddle("", false);
             }
         }

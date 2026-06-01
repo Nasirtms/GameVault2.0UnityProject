@@ -65,17 +65,16 @@ public class IrishPotLuckSlotScript : MonoBehaviour
 
     public void PlayAnimation()
     {
-        //StopAnimation();
-        //slotAnimator = slots[currentResource.slotTypeIndex].GetComponentInParent<Animator>();
-        //slotAnimator.SetBool(slotAnimationBool, true);
-
+        StopAnimation();
+        slotAnimator = slots[currentResource.slotTypeIndex].GetComponentInParent<Animator>();
+        slotAnimator.SetBool(slotAnimationBool, true);
     }
     public void StopAnimation()
     {
-        //if (slotAnimator != null)
-        //{
-        //    slotAnimator.SetBool(slotAnimationBool, false);
-        //}
+        if (slotAnimator != null)
+        {
+            slotAnimator.SetBool(slotAnimationBool, false);
+        }
     }
     #endregion
 

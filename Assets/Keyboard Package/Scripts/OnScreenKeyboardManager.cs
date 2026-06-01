@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using TMPro;
 using UnityEngine;
@@ -9,15 +10,24 @@ public class OnScreenKeyboardManager : MonoBehaviour
     //[SerializeField] TextMeshProUGUI textBox;
     //[SerializeField] TextMeshProUGUI printBox;
 
+    [Header("UI References")]
     public KeyboardController keyboard;
     public Button blockerBG;
     public GameObject textPanel;
     public TextMeshProUGUI textPreviewBox;
+    public GameObject clickBlocker;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip keyTapAudioClip;
+
+    [Header("Runtime Values")]
+    public bool useOnScreenKeyboard;
     public OnScreenKeyboardActivator currentActivator;
     public TMP_InputField currentInpuField;
 
-    public bool useOnScreenKeyboard;
+    private RectTransform keyboardRectTransform;
+    private RectTransform textPanelRectTransform;
 
     private void Awake()
     {
@@ -40,6 +50,9 @@ public class OnScreenKeyboardManager : MonoBehaviour
         textPreviewBox.text = "";
         //printBox.text = "";
         //textBox.text = "";
+
+        keyboardRectTransform = keyboard.GetComponent<RectTransform>();
+        textPanelRectTransform = textPanel.GetComponent<RectTransform>();
     }
 
     public void DeleteLetter()
@@ -69,6 +82,8 @@ public class OnScreenKeyboardManager : MonoBehaviour
         if (currentInpuField == null)
             return;
 
+        currentInpuField.onSubmit.Invoke(currentInpuField.text);
+
         //printBox.text = textBox.text;
         //textBox.text = "";
         // Debug.Log("Text submitted successfully!");
@@ -84,24 +99,50 @@ public class OnScreenKeyboardManager : MonoBehaviour
         if (activator == null)
             return;
 
+        clickBlocker.SetActive(true);
         blockerBG.gameObject.SetActive(true);
         textPanel.SetActive(true);
+        keyboard.gameObject.SetActive(true);
         currentActivator = activator;
         currentInpuField = currentActivator.inputField;
-        keyboard.gameObject.SetActive(true);
         keyboard.ShowSmallLetters();
         //textPreviewBox.text = currentInpuField.text;
         SetPreviewText(currentInpuField.text);
+
+        keyboardRectTransform.anchoredPosition = new Vector2(0, -592.78f);
+        textPanelRectTransform.anchoredPosition = new Vector2(0, -100);
+
+        keyboardRectTransform.DOAnchorPosY(0, .3f).SetEase(Ease.InOutCirc);
+        textPanelRectTransform.DOAnchorPosY(492.78f, .3f).SetEase(Ease.InOutCirc).OnComplete(() =>
+        {
+            keyboardRectTransform.anchoredPosition = new Vector2(0, 0);
+            textPanelRectTransform.anchoredPosition = new Vector2(0, 492.78f);
+            clickBlocker.SetActive(false);
+        });
     }
 
     public void HideKeyboard()
     {
-        textPreviewBox.text = "";
-        keyboard.gameObject.SetActive(false);
-        currentActivator = null;
-        currentInpuField = null;
-        blockerBG.gameObject.SetActive(false);
-        textPanel.SetActive(false);
+        clickBlocker.SetActive(true);
+
+        keyboardRectTransform.anchoredPosition = new Vector2(0, 0);
+        textPanelRectTransform.anchoredPosition = new Vector2(0, 492.78f);
+
+        keyboardRectTransform.DOAnchorPosY(-592.78f, .3f).SetEase(Ease.InOutCirc);
+        textPanelRectTransform.DOAnchorPosY(-100, .3f).SetEase(Ease.InOutCirc).OnComplete(() =>
+        {
+            keyboardRectTransform.anchoredPosition = new Vector2(0, -592.78f);
+            textPanelRectTransform.anchoredPosition = new Vector2(0, -100);
+
+            textPreviewBox.text = "";
+            keyboard.gameObject.SetActive(false);
+            currentActivator = null;
+            currentInpuField = null;
+            blockerBG.gameObject.SetActive(false);
+            textPanel.SetActive(false);
+
+            clickBlocker.SetActive(false);
+        });
     }
 
     public void Copy()
@@ -116,6 +157,8 @@ public class OnScreenKeyboardManager : MonoBehaviour
             return;
 
         WebGLClipboard.Instance.Copy(currentInpuField.text);
+
+        OnScreenKeyboardManager.Instance.PlayTapSound();
     }
 
     public void Paste()
@@ -133,6 +176,8 @@ public class OnScreenKeyboardManager : MonoBehaviour
         {
             AddLetter(str);
         });
+
+        OnScreenKeyboardManager.Instance.PlayTapSound();
     }
 
     public void ClearTextbox()
@@ -149,6 +194,8 @@ public class OnScreenKeyboardManager : MonoBehaviour
         currentInpuField.text = "";
         //textPreviewBox.text = currentInpuField.text;
         SetPreviewText(currentInpuField.text);
+
+        OnScreenKeyboardManager.Instance.PlayTapSound();
     }
 
     void SetPreviewText(string str)
@@ -162,5 +209,11 @@ public class OnScreenKeyboardManager : MonoBehaviour
                 textPreviewBox.text = new string('x', textPreviewBox.text.Length);
             }
         }
+    }
+
+    public void PlayTapSound()
+    {
+        if (audioSource != null)
+            audioSource.PlayOneShot(keyTapAudioClip);
     }
 }

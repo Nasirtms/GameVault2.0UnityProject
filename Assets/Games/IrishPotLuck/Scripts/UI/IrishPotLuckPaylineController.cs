@@ -25,6 +25,7 @@ public class IrishPotLuckPaylineController : MonoBehaviour
     [Header("Results")]
     [ShowInInspector][ReadOnly] private List<IrishPotLuckPaylineResult> spinResult = new List<IrishPotLuckPaylineResult>();
     private bool resultfreeGameReady;
+    private bool resultJackpotGameReady;
     #endregion
 
     #region Unity Methods
@@ -41,6 +42,7 @@ public class IrishPotLuckPaylineController : MonoBehaviour
     public void StartPayline(bool freeSpinReady)
     {
         resultfreeGameReady = freeSpinReady;
+        resultJackpotGameReady = IrishPotLuckSlotMachine.Instance.isJackpotGameReady;
         StartPaylineDisplay(spinResult);
     }
 
@@ -81,7 +83,7 @@ public class IrishPotLuckPaylineController : MonoBehaviour
                 ));
             }
         }
-        if (activePaylines.Count == 0 && !resultfreeGameReady)
+        if (activePaylines.Count == 0 && !resultfreeGameReady && !resultJackpotGameReady)
         {
             IrishPotLuckSlotMachine.Instance.isSlotAnimationCompleted = true;
             return;
@@ -110,7 +112,7 @@ public class IrishPotLuckPaylineController : MonoBehaviour
 
     private IEnumerator PlayPaylines()
     {
-        if ((activePaylines == null || activePaylines.Count == 0) && !resultfreeGameReady)
+        if ((activePaylines == null || activePaylines.Count == 0) && !resultfreeGameReady  && !resultJackpotGameReady)
         {
             IrishPotLuckSlotMachine.Instance.isSlotAnimationCompleted = true;
             yield break;
@@ -120,22 +122,14 @@ public class IrishPotLuckPaylineController : MonoBehaviour
         {
             IrishPotLuckSlotMachine.Instance.isSlotAnimationCompleted = true;
         }
-        if (resultfreeGameReady)
-        {
-            Debug.Log("LovKumar 6");
-            if (scatterAnimation != null)
-            {
-                StopCoroutine(scatterAnimation);
-            }
-            scatterAnimation = StartCoroutine(ScatterAnimation());
-        }
+
         if (activePaylines.Count == 1)
         {
             yield return PlaySinglePayline(activePaylines[0]);
         }
         else
         {
-            if (IrishPotLuckAutoSpinController.isAutoSpinning || IrishPotLuckSlotMachine.Instance.isFreeGame)
+            if (IrishPotLuckAutoSpinController.isAutoSpinning || IrishPotLuckSlotMachine.Instance.isFreeGame || resultJackpotGameReady)
             {
                 foreach (var entry in activePaylines)
                 {
@@ -153,6 +147,14 @@ public class IrishPotLuckPaylineController : MonoBehaviour
                 }
             }
         }
+        if (resultfreeGameReady || resultJackpotGameReady)
+        {
+            if (scatterAnimation != null)
+            {
+                StopCoroutine(scatterAnimation);
+            }
+            scatterAnimation = StartCoroutine(ScatterAnimation());
+        }
         IrishPotLuckSlotMachine.Instance.isSlotAnimationCompleted = true;
     }
 
@@ -167,7 +169,13 @@ public class IrishPotLuckPaylineController : MonoBehaviour
 
                 if (entry.payline.ToMatrix()[x, y] == 1 && x < entry.reelLimit)
                 {
-                    slot.PlayAnimation();
+                    //slot.PlayAnimation();
+                    bool spawnedAnimated = IrishPotLuckSlotMachine.Instance.SetSpawnedSlotPaylineAnimation(slot, true);
+
+                    if (!spawnedAnimated)
+                    {
+                        slot.PlayAnimation();
+                    }
                 }
             }
         }
@@ -187,6 +195,7 @@ public class IrishPotLuckPaylineController : MonoBehaviour
             {
                 if (slot != null)
                 {
+                    IrishPotLuckSlotMachine.Instance.SetSpawnedSlotPaylineAnimation(slot, false);
                     slot.StopAnimation();
                 }
             }
@@ -202,13 +211,31 @@ public class IrishPotLuckPaylineController : MonoBehaviour
                 var slot = IrishPotLuckSlotMachine.Instance.reels[x].slots[y + 1];
                 if (slot == null) continue;
 
-                if (IrishPotLuckSlotMachine.Instance.freeSpinCount > 0 && slot.slotType == IrishPotLuckSlotType.Scatter)
+                if (resultfreeGameReady)
                 {
-                    slot.PlayAnimation();
+                    if (IrishPotLuckSlotMachine.Instance.freeSpinCount > 0 && slot.slotType == IrishPotLuckSlotType.Scatter)
+                    {
+                        slot.PlayAnimation();
+                    }
+                }
+                if (resultJackpotGameReady)
+                {
+                    if(slot.slotType == IrishPotLuckSlotType.Jackpot)
+                    {
+                        slot.PlayAnimation();
+                    }
                 }
             }
         }
-        Debug.Log("LovKumar 7");
+
+        if (resultJackpotGameReady)
+        {
+            //Debug.Log("LovKumar 3");
+            IrishPotLuckUIManager.Instance.UpdateButtons("Transition Start");
+            IrishPotLuckJackpotWheelTransition.Instance.StartJackpotWheelTransition();
+        }
+
+        //Debug.Log("LovKumar 7");
         if (IrishPotLuckSlotMachine.Instance.freeSpinCount > 0 && !IrishPotLuckSlotMachine.Instance.isFreeGame)
         {
             IrishPotLuckSlotMachine.Instance.firstFreeSpin = true;
