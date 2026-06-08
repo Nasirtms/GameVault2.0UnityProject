@@ -476,6 +476,7 @@ public class RedHotTrippleSlotMachine : BaseSlotMachine
         if (isStopBtnPressed)
             StopButtonPressed();
 
+        RedHotTrippleUIManager.Instance.SetStopInteractable(false);
         RedHotTrippleUIManager.Instance.StopSpinMusic("Spin");
         ProcessSpinResult();
         InSpin = false;

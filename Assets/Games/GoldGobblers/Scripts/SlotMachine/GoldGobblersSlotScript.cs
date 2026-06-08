@@ -234,7 +234,7 @@ public class GoldGobblersSlotScript : MonoBehaviour
 
     public void PlayScatterParticleTrail()
     {
-        ScatterParticles.gameObject.transform.position = new Vector3(0,0,0);
+        ScatterParticles.gameObject.transform.localPosition= new Vector3(0,0,0);
         ScatterParticles.gameObject.SetActive(true);
         ScatterParticles.Play();
 

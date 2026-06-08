@@ -304,7 +304,7 @@ public class DayOfDeadUIManager : GameBetServices
         if (DayOfDeadSlotMachine.Instance.isRespinActive)
             return;
         autoSpinController.StartAutoSpin(betAmount);
-        UpdateButtons("Auto Start");
+        //UpdateButtons("Auto Start");
     }
     private void OnClickAutoStop()
     {
@@ -351,7 +351,7 @@ public class DayOfDeadUIManager : GameBetServices
                 autoButton.GetButtonComponent().interactable = true;
                 break;
 
-            case "Auto Start":
+            case "Auto":
                 inSpin = true;
                 spinButton.ShowButton(false);
                 stopButton.ShowButton(true);
