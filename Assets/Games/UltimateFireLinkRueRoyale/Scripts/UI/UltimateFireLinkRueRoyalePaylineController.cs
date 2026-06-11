@@ -152,12 +152,6 @@ public class UltimateFireLinkRueRoyalePaylineController : MonoBehaviour
             scatterAnimation = StartCoroutine(ScatterAnimation());
         }
 
-        if((UltimateFireLinkRueRoyaleSlotMachine.Instance.isFreeGameReady && !UltimateFireLinkRueRoyaleSlotMachine.Instance.isFreeGame) || (!UltimateFireLinkRueRoyaleSlotMachine.Instance.isFreeGameReady && UltimateFireLinkRueRoyaleSlotMachine.Instance.isFreeGame))
-        {
-            scatterAnimation = StartCoroutine(ScatterAnimation());
-        }
-
-
         if (activePaylines.Count == 0)
         {
             UltimateFireLinkRueRoyaleSlotMachine.Instance.isSlotAnimationCompleted = true;

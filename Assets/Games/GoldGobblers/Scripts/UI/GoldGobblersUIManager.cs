@@ -61,7 +61,9 @@ public class GoldGobblersUIManager : GameBetServices
     [SerializeField] private Sprite threeByFiveMachineFrame;
     [SerializeField] private GameObject threeByFiveMachine;
     public float slotScaleYForFiveByFive = 0.12f;
+    public float slotScaleXForFiveByFive = 0.5f;
     public float slotScaleYForThreeByFive = 0.2f;
+    public float slotScaleXForThreeByFive = 0.7f;
     public float bottomYForFiveByFive = -0.685f;
     public float bottomYForThreeByFive = -0.368f;
 

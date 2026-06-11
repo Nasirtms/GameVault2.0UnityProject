@@ -89,7 +89,7 @@ public class DayOfDeadFreeGameTransitionController : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        freeSpinController.InitialFreeSpinText();
+        //freeSpinController.InitialFreeSpinText();
 
         yield return new WaitForSeconds(1.5f);
 

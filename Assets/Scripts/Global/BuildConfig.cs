@@ -3,6 +3,7 @@
 public enum UrlType
 {
     Local,
+    LocalTestServer,
     Production
 }
 
@@ -29,19 +30,36 @@ public class BuildConfig : ScriptableObject
 
     private const string localUrl = "http://localhost:5036";
     private const string publishUrl = "https://gamevault222.com";
+    private const string localTestServerUrl = "http://192.168.2.200:5036";
 
     private const string LocalSocketUrl = "ws://localhost:5036";
-    // api.gamevault222.com is DNS-only (not proxied); avoids Cloudflare WS issues on gamevault222.com
-    private const string ProductionSocketUrl = "wss://api.gamevault222.com";
+    private const string ProductionSocketUrl = "wss://gamevault222.com";
+    private const string LocalTestServerSocketUrl = "ws://192.168.2.200:5036";
 
     public string GetUrl()
     {
-        return urlType == UrlType.Production ? publishUrl : localUrl;
+        return urlType switch
+        {
+            UrlType.Local => localUrl,
+            UrlType.LocalTestServer => localTestServerUrl,
+            UrlType.Production => publishUrl,
+            _ => publishUrl
+        };
+
+        //return urlType == UrlType.Production ? publishUrl : localUrl;
     }
 
     public string GetSocketBaseUrl()
     {
-        return urlType == UrlType.Production ? ProductionSocketUrl : LocalSocketUrl;
+        return urlType switch
+        {
+            UrlType.Local => LocalSocketUrl,
+            UrlType.LocalTestServer => LocalTestServerSocketUrl,
+            UrlType.Production => ProductionSocketUrl,
+            _ => ProductionSocketUrl
+        };
+
+        //return urlType == UrlType.Production ? ProductionSocketUrl : LocalSocketUrl;
     }
 
     public bool IsProduction() => gameType == SceneAccessType.Publish;

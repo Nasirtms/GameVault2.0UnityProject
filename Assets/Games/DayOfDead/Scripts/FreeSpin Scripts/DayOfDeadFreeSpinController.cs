@@ -24,7 +24,7 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
     [Header("Walking Wild Settings")]
     [SerializeField] private GameObject walkingWildPrefab;
 
-    public int currentMultiplier = 2;
+    public int currentMultiplier = 1;
 
     public int reelIndex = 0;
     public int slotIndex = 0;
@@ -71,8 +71,8 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
         if (topbar != null)
             topbar.CreateInitialTokens(initialTopbarTokens);
 
-        currentMultiplier = 2;
-        UpdateSpinText();
+        currentMultiplier = 1;
+        //UpdateSpinText();
 
         freeSpinRoutine = StartCoroutine(FreeSpinLoop());
     }
@@ -85,19 +85,19 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
             topbar.ClearAllTokens();
 
         currentMultiplier = 1;
-        UpdateSpinText();
+        //UpdateSpinText();
 
         isFreeGame = false;
     }
 
     public void InitialFreeSpinText()
     {
-        currentMultiplier = 2;
-        UpdateSpinText();
+        currentMultiplier = 1;
+        //UpdateSpinText();
     }
     public void ErrorFreeSpinReturn()
     {
-        UpdateSpinText();
+        //UpdateSpinText();
     }
     private void UpdateSpinText()
     {
@@ -145,7 +145,7 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
 
                 toRemove.Add(wild);
 
-                currentMultiplier++;
+                //currentMultiplier++;
             }
         }
 
@@ -256,7 +256,7 @@ public class DayOfDeadFreeSpinController : MonoBehaviour
                 break;
 
             DayOfDeadSlotMachine.Instance.currentFreeSpinMultiplier = currentMultiplier;
-            UpdateSpinText();
+            //UpdateSpinText();
 
             yield return new WaitUntil(() => isWildParticle);
 

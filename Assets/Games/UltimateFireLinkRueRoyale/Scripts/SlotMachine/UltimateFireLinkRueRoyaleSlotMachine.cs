@@ -129,12 +129,7 @@ public class UltimateFireLinkRueRoyaleSlotMachine : BaseSlotMachine
             currentSpinResult = normalSpin;
         }
 
-
-        if (currentSpinResult.scatterCount >= 3)
-            scatterCount = currentSpinResult.scatterCount;
-        else
-            scatterCount = fakeScatterCount;
-
+        scatterCount = currentSpinResult.scatterCount;
 
         if (currentSpinResult.isFreeSpin)
         {
@@ -422,7 +417,7 @@ public class UltimateFireLinkRueRoyaleSlotMachine : BaseSlotMachine
         }
 
 
-        if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || scatterCount >= 1)
+        if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0) || scatterCount >= 3)
         {
             if (currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0)
             {

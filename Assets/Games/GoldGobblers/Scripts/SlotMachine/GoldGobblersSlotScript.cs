@@ -197,14 +197,14 @@ public class GoldGobblersSlotScript : MonoBehaviour
         {
             for (int i = 0; i < slots.Length; i++)
             {
-                slots[i].transform.localScale = new Vector3(0.7f, GoldGobblersUIManager.Instance.slotScaleYForFiveByFive, 1f);
+                slots[i].transform.localScale = new Vector3(GoldGobblersUIManager.Instance.slotScaleXForFiveByFive, GoldGobblersUIManager.Instance.slotScaleYForFiveByFive, 1f);
             }
         }
         else
         {
             for (int i = 0; i < slots.Length; i++)
             {
-                slots[i].transform.localScale = new Vector3(0.7f, GoldGobblersUIManager.Instance.slotScaleYForThreeByFive, 1f);
+                slots[i].transform.localScale = new Vector3(GoldGobblersUIManager.Instance.slotScaleXForThreeByFive, GoldGobblersUIManager.Instance.slotScaleYForThreeByFive, 1f);
             }
         }
     }

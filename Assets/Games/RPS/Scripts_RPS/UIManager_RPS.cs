@@ -215,7 +215,15 @@ public class UIManager_RPS : MonoBehaviour
     }
     public void HideMessageImmediate()
     {
-        if (seq != null && seq.IsActive()) seq.Kill();
+        if (seq != null && seq.IsActive())
+        {
+            seq.Kill();
+            seq = null;
+        }
+
+        DOTween.Kill(messageRoot);
+        cg.DOKill();
+
         cg.alpha = 0f;
         messageRoot.anchoredPosition = baseAnchoredPos;
         messageRoot.gameObject.SetActive(false);

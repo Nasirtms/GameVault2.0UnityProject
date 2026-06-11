@@ -19,7 +19,7 @@ public class SaharaRichesPaylineController : MonoBehaviour
     public List<SaharaRichesPaylineEntry> activePaylines = new List<SaharaRichesPaylineEntry>();
 
     [Header("Animation Settings")]
-    [SerializeField] private float flickerDelay = 2.5f;         // Each payline duration
+    [SerializeField] private float flickerDelay = 1.5f;         // Each payline duration
     private Coroutine animationLoop;
     private Coroutine scatterAnimation;
     public bool isShowing = false;                             // Paylines will be continue as long as it is true

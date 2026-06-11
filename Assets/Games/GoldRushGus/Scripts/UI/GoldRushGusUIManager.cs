@@ -403,8 +403,8 @@ public class GoldRushGusUIManager : GameBetServices
         PlaySound("Button");
         //StopSpinMusic("Spin");
         autoSpinController.CancelAutoSpin();
-        autoStopButton.ShowButton(false);
         autoButton.ShowButton(true);
+        autoStopButton.ShowButton(false);
         SetAutoInteractable(false);
     }
     #endregion

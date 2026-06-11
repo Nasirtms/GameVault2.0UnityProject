@@ -13,43 +13,19 @@ public class UltimateFireLinkRueRoyaleFreeGameTransitionController : MonoBehavio
     public float duration = 0.6f;
     public Ease ease = Ease.OutQuad;
 
-    [SerializeField] private GameObject FreeSpinStart;
-    //[SerializeField] private GameObject FreeSpinEnd;
     [SerializeField] private GameObject FreeSpinParent;
+    [SerializeField] private GameObject FreeSpinStart;
+    [SerializeField] private GameObject FreeSpinEnd;
     [SerializeField] private TMP_Text freeSpinWin;
-
+    [SerializeField] private GameObject jackpots;
+    [SerializeField] private GameObject logo;
+    [SerializeField] private GameObject freeSpinCount;
     [SerializeField] private Button startFreeSpins;
-    [SerializeField] private TMP_Text startFreeSpinsText;
-    private Tween startFreeSpinsTween;
-    [SerializeField] private Button endFreeSpins;
-    [SerializeField] private TMP_Text endFreeSpinsText;
-    private Tween endFreeSpinsTween;
-    [SerializeField] private GameObject freeSpinParent;
-    [SerializeField] private GameObject freeSpin;
-    [SerializeField] private SpriteRenderer logo;
-    [SerializeField] private Sprite normalLogo;
-    [SerializeField] private Sprite freeSpinLogo;
-    [SerializeField] private GameObject freeSpinPopupParent;
-    [SerializeField] private GameObject freeSpinStartPopup;
-    [SerializeField] private GameObject freeSpinEndPopup;
-    [SerializeField] private SpriteRenderer slotMachine;
-    [SerializeField] private Sprite normalSlotMachine;
-    [SerializeField] private Sprite freeSlotMachine;
-    //[SerializeField] private SpriteRenderer slotMachineTopCover;
-    [SerializeField] private Sprite normalslotMachineTopCover;
-    [SerializeField] private Sprite freeslotMachineTopCover;
-    //[SerializeField] private SpriteRenderer slotMachineBottomCover;
-    [SerializeField] private Sprite normalSlotMachineBottomCover;
-    [SerializeField] private Sprite freeSlotMachineBottomCover;
-    [SerializeField] private GameObject freeSpinTextPrefabParent;
-    [SerializeField] private GameObject freeSpinTextPrefab;
-    [SerializeField] private TMP_Text totalFreeSpin;
+    [SerializeField] private SpriteRenderer bg;
+    [SerializeField] private SpriteRenderer freeSpinBg;
+    private Tween freeSpinsTween;
 
     private bool canStartFreeSpin = false;
-    private bool canEndFreeSpin = false;
-
-
-    private Animator FreeSpinAnimator;
 
     private UltimateFireLinkRueRoyaleFreeSpinController freeSpinController;
     private void Awake()
@@ -60,9 +36,7 @@ public class UltimateFireLinkRueRoyaleFreeGameTransitionController : MonoBehavio
     private void Start()
     {
         freeSpinController = GetComponent<UltimateFireLinkRueRoyaleFreeSpinController>();
-        FreeSpinAnimator = FreeSpinParent.GetComponent<Animator>();
         startFreeSpins.onClick.AddListener(OnClickFreeSpinStart);
-        endFreeSpins.onClick.AddListener(OnClickFreeSpinEnd);
     }
 
     public void StartFreeSpins()
@@ -75,49 +49,35 @@ public class UltimateFireLinkRueRoyaleFreeGameTransitionController : MonoBehavio
         canStartFreeSpin = false;
         yield return new WaitUntil(() => UltimateFireLinkRueRoyaleSlotMachine.Instance.isSlotAnimationCompleted);
         yield return new WaitForSeconds(1f);
-        int x = UltimateFireLinkRueRoyaleSlotMachine.Instance.freeSpinCount;
-        totalFreeSpin.text = $"<size=60>Total : <size=90><color=#a9ff00>{x}</color></size>  <color=#ff7711>Free Spins</color>  ";
         yield return new WaitUntil(() => UltimateFireLinkRueRoyaleUIManager.Instance.winAnimationCompleted);
         UltimateFireLinkRueRoyaleUIManager.Instance.UpdateButtons("FreeSpin");
 
-        freeSpinParent.SetActive(true);
-        freeSpin.SetActive(true);
-
-        freeSpinParent.transform.GetComponent<Animator>().SetBool("start", true);
-        logo.sprite = freeSpinLogo;
-        slotMachine.sprite = freeSlotMachine;
-        //slotMachineTopCover.sprite = freeslotMachineTopCover;
-        //slotMachineBottomCover.sprite = freeSlotMachineBottomCover;
-        yield return new WaitForSeconds(2.8f);
-        freeSpinParent.transform.GetComponent<Animator>().SetBool("start", false);
-
-        freeSpin.SetActive(false);
-
+        FreeSpinStart.transform.localScale = Vector3.zero;
+        FreeSpinParent.gameObject.SetActive(true);
+        FreeSpinStart.SetActive(true);
+        FreeSpinStart.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
+        jackpots.SetActive(false);
+        logo.SetActive(false);
+        freeSpinCount.SetActive(true);
         yield return new WaitForSeconds(1f);
 
-        RectTransform rect = freeSpinStartPopup.transform as RectTransform;
-        rect.anchoredPosition = new Vector3(-2000, 0, 0);
-        freeSpinPopupParent.SetActive(true);
-        freeSpinStartPopup.SetActive(true);
-        rect.DOAnchorPosX(0, 1f).SetEase(Ease.OutBack);
-        //freeSpinStartPopup.transform.DOMoveX(0, 1f).SetEase(Ease.OutBack);
-        yield return new WaitForSeconds(2f);
-        canStartFreeSpin = true;
-        startFreeSpinsTween?.Kill();
+        freeSpinsTween?.Kill();
 
-        startFreeSpinsTween = startFreeSpinsText.transform
+        freeSpinsTween = startFreeSpins.transform
             .DOScale(1.2f, 0.5f)
             .SetEase(Ease.InOutSine)
             .SetLoops(-1, LoopType.Yoyo);
+
+        canStartFreeSpin = true;
     }
 
     public void OnClickFreeSpinStart()
     {
         if (!canStartFreeSpin) return;
-        freeSpinPopupParent.SetActive(false);
-        freeSpinStartPopup.SetActive(false);
-        freeSpinParent.SetActive(false);
-
+        FreeSpinStart.SetActive(false);
+        FreeSpinParent.SetActive(false);
+        bg.transform.GetComponent<SpriteRenderer>().DOFade(0f, 0.5f);
+        freeSpinBg.transform.GetComponent<SpriteRenderer>().DOFade(1f, 0.5f);
         freeSpinController.StartFreeSpins();
 
         UltimateFireLinkRueRoyaleUIManager.Instance.PlayMusic("FreeSpinBG");
@@ -130,49 +90,27 @@ public class UltimateFireLinkRueRoyaleFreeGameTransitionController : MonoBehavio
 
     private IEnumerator EndFreeSpinTransition()
     {
-        canEndFreeSpin = false;
-        freeSpinParent.SetActive(true);
-        freeSpin.SetActive(true);
-
-        freeSpinParent.transform.GetComponent<Animator>().SetBool("end", true);
-        logo.sprite = normalLogo;
-        slotMachine.sprite = normalSlotMachine;
-        //slotMachineTopCover.sprite = normalslotMachineTopCover;
-        //slotMachineBottomCover.sprite = normalSlotMachineBottomCover;
-        yield return new WaitForSeconds(1.8f);
-        freeSpinParent.transform.GetComponent<Animator>().SetBool("end", false);
-        freeSpin.SetActive(false);
-
-        freeSpinWin.text = UltimateFireLinkRueRoyaleSlotMachine.Instance.freeSpinWinAmount.ToString("F2");
-        float finalAmount = UltimateFireLinkRueRoyaleSlotMachine.Instance.freeSpinWinAmount;
-        if (finalAmount > 0)
-        {
-            WinAnimation(finalAmount);
-        }
-        yield return new WaitUntil(() => UltimateFireLinkRueRoyaleUIManager.Instance.winAnimationCompleted);
-        RectTransform rect = freeSpinEndPopup.transform as RectTransform;
-        rect.anchoredPosition = new Vector3(-2000, 0, 0);
-        freeSpinPopupParent.SetActive(true);
-        freeSpinEndPopup.SetActive(true);
-        rect.DOAnchorPosX(0, 1f).SetEase(Ease.OutBack);
+        yield return new WaitUntil(() => UltimateFireLinkRueRoyaleSlotMachine.Instance.isSlotAnimationCompleted);
         yield return new WaitForSeconds(1f);
 
-        endFreeSpinsTween?.Kill();
+        freeSpinWin.text = UltimateFireLinkRueRoyaleSlotMachine.Instance.freeSpinWinAmount.ToString();
 
-        endFreeSpinsTween = endFreeSpinsText.transform
-            .DOScale(1.2f, 0.5f)
-            .SetEase(Ease.InOutSine)
-            .SetLoops(-1, LoopType.Yoyo);
+        FreeSpinStart.transform.localScale = Vector3.zero;
+        FreeSpinParent.gameObject.SetActive(true);
+        FreeSpinEnd.SetActive(true);
+        FreeSpinEnd.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
+        jackpots.SetActive(true);
+        logo.SetActive(true);
+        freeSpinCount.SetActive(false);
+        yield return new WaitForSeconds(2.5f);
 
-        canEndFreeSpin = true;
-    }
-
-    public void OnClickFreeSpinEnd()
-    {
-        if (!canEndFreeSpin) return;
-        freeSpinPopupParent.SetActive(false);
-        freeSpinEndPopup.SetActive(false);
-        freeSpinParent.SetActive(false);
+        FreeSpinEnd.transform.DOScale(0f, 0.5f).SetEase(Ease.OutBack).OnComplete(() =>
+        {
+            FreeSpinEnd.SetActive(false);
+            FreeSpinParent.SetActive(false);
+            bg.transform.GetComponent<SpriteRenderer>().DOFade(1f, 0.5f);
+            freeSpinBg.transform.GetComponent<SpriteRenderer>().DOFade(0f, 0.5f);
+        });
     }
 
     private void WinAnimation(float freegamewin)
@@ -185,47 +123,6 @@ public class UltimateFireLinkRueRoyaleFreeGameTransitionController : MonoBehavio
         }
     }
 
-    public void ReelSwap(Transform ReelA, Transform ReelB)
-    {
-        Debug.Log("tina is startting the reel swap routine");
-        StartCoroutine(ReelSwapRoutine(ReelA, ReelB));
-    }
-
-    private IEnumerator ReelSwapRoutine(Transform ReelA, Transform ReelB)
-    {
-        Vector3 aStart = ReelA.position;
-        Vector3 bStart = ReelB.position;
-
-        Tween tweenA = ReelA.DOMove(bStart, duration).SetEase(ease);
-        tweenA.OnUpdate(() =>
-        {
-            float t = tweenA.ElapsedPercentage();
-
-            float arc = Mathf.Sin(t * Mathf.PI) * hopHeight;
-
-            ReelA.position = new Vector3(
-                Mathf.Lerp(aStart.x, bStart.x, t),
-                Mathf.Lerp(aStart.y, bStart.y, t) + arc,
-                aStart.z
-            );
-        });
-
-        Tween tweenB = ReelB.DOMove(aStart, duration).SetEase(ease);
-        tweenB.OnUpdate(() =>
-        {
-            float t = tweenB.ElapsedPercentage();
-
-            float arc = -Mathf.Sin(t * Mathf.PI) * hopHeight;
-
-            ReelB.position = new Vector3(
-                Mathf.Lerp(bStart.x, aStart.x, t),
-                Mathf.Lerp(bStart.y, aStart.y, t) + arc,
-                bStart.z
-            );
-        });
-
-        yield return tweenA.WaitForCompletion();
-    }
 
     public void UpdateFreeSpinsCount(int freeSpins)
     {

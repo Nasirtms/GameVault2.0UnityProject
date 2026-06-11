@@ -21,7 +21,9 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
 
     [SerializeField] private GameObject freeSpinStart;
     [SerializeField] private GameObject freeSpinEnd;
-    [SerializeField] private GameObject goldRocksParticles; 
+    [SerializeField] private GameObject goldRocksParticles1; 
+    [SerializeField] private GameObject goldRocksParticles2; 
+    [SerializeField] private GameObject goldRocksParticles3; 
     [SerializeField] private TMP_Text freeSpinWinText;
     [SerializeField] private TMP_Text freeSpinCount;
     [SerializeField] private UnityEngine.UI.Button startFreeSpinButton;
@@ -124,8 +126,10 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
         startFreeSpinButtonTextTween?.Kill();
         startFreeSpinButtonText.transform.localScale = Vector3.one;
         string gameType = GoldGobblersSlotMachine.Instance.freeGameType;
-        goldRocksParticles.SetActive(true);
-        goldRocksParticles.transform.GetComponent<ParticleSystem>().Play();
+        goldRocksParticles1.transform.GetComponent<ParticleSystem>().Play();
+        goldRocksParticles2.transform.GetComponent<ParticleSystem>().Play();
+        goldRocksParticles3.transform.GetComponent<ParticleSystem>().Play();
+        yield return new WaitForSeconds(1f);
         ShowBackground();
 
         switch (gameType)
@@ -147,8 +151,10 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
         }
         GoldGobblersUIManager.Instance.PlayGobblerAnimations(gameType);
 
-        yield return new WaitForSeconds(2f);
-        goldRocksParticles.SetActive(false);
+        yield return new WaitForSeconds(1f);
+        goldRocksParticles1.transform.GetComponent<ParticleSystem>().Stop();
+        goldRocksParticles2.transform.GetComponent<ParticleSystem>().Stop();
+        goldRocksParticles3.transform.GetComponent<ParticleSystem>().Stop();
 
         jackpotTitle.SetActive(false);
         freeSpinTitle.SetActive(true);
@@ -187,8 +193,10 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
         endFreeSpinButtonTextTween?.Kill();
         startFreeSpinButtonText.transform.localScale = Vector3.one;
         string gameType = GoldGobblersSlotMachine.Instance.freeGameType;
-        goldRocksParticles.SetActive(true);
-        goldRocksParticles.transform.GetComponent<ParticleSystem>().Play();
+        goldRocksParticles1.transform.GetComponent<ParticleSystem>().Play();
+        goldRocksParticles2.transform.GetComponent<ParticleSystem>().Play();
+        goldRocksParticles3.transform.GetComponent<ParticleSystem>().Play();
+        yield return new WaitForSeconds(1f);
         HideBackground();
 
         if (GoldGobblersSlotMachine.Instance.hasRedFreeGameStarted)
@@ -198,8 +206,10 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
 
         GoldGobblersUIManager.Instance.PlayGobblerAnimations("idle");
 
-        yield return new WaitForSeconds(2f);
-        goldRocksParticles.SetActive(false);
+        yield return new WaitForSeconds(1f);
+        goldRocksParticles1.transform.GetComponent<ParticleSystem>().Stop();
+        goldRocksParticles2.transform.GetComponent<ParticleSystem>().Stop();
+        goldRocksParticles3.transform.GetComponent<ParticleSystem>().Stop();
 
         jackpotTitle.SetActive(true);
         freeSpinTitle.SetActive(false);
@@ -400,12 +410,15 @@ public class GoldGobblersFreeGameTransitionController : MonoBehaviour
     private IEnumerator RedFreeSpinTransition(string startBool, bool anim)
     {
         yield return new WaitForSeconds(1f);
-        goldRocksParticles.SetActive(true);
-        goldRocksParticles.transform.GetComponent<ParticleSystem>().Play();
+        goldRocksParticles1.transform.GetComponent<ParticleSystem>().Play();
+        goldRocksParticles2.transform.GetComponent<ParticleSystem>().Play();
+        goldRocksParticles3.transform.GetComponent<ParticleSystem>().Play();
         yield return new WaitForSeconds(1f);
         SwitchGameViewToFiveByFive(true);
         yield return new WaitForSeconds(1f);
-        goldRocksParticles.SetActive(false);
+        goldRocksParticles1.transform.GetComponent<ParticleSystem>().Stop();
+        goldRocksParticles2.transform.GetComponent<ParticleSystem>().Stop();
+        goldRocksParticles3.transform.GetComponent<ParticleSystem>().Stop();
         if (anim)
         {
             ShowGreenAndBlueLable(startBool);

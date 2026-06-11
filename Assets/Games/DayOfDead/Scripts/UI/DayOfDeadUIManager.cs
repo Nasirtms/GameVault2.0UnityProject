@@ -401,6 +401,7 @@ public class DayOfDeadUIManager : GameBetServices
                 stopButton.ShowButton(true);
                 autoButton.ShowButton(false);
                 autoStopButton.ShowButton(true);
+                autoStopButton.GetButtonComponent().interactable = false;
                 SetAutoInteractable(false);
                 break;
 

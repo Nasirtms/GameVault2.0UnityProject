@@ -131,7 +131,7 @@ public class GameManager_RPS : MonoBehaviour
     // GameManager.cs
     public void OnPlayerChoice(string res)
     {
-
+        uiManager.HideMessageImmediate();
         if (res.Equals("win"))
         {
             UnlockBet();

@@ -36,7 +36,6 @@ public class GoldRushGusAutoSpinController : MonoBehaviour
     {
         if (isAutoRunning || GoldRushGusSlotMachine.Instance.InSpin) return;
 
-
         firstAuto = true;
         isAutoRunning = true;
         isAutoSpinning = true;
@@ -89,8 +88,8 @@ public class GoldRushGusAutoSpinController : MonoBehaviour
             if (remainingSpins > 0)
                 remainingSpins--;
 
-            if (remainingSpins == 0)
-                isAutoSpinning = false;
+            //if (remainingSpins == 0)
+            //    isAutoSpinning = false;
 
             GoldRushGusUIManager.Instance.UpdateRemainingSpins(remainingSpins);
 

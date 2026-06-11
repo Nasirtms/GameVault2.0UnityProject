@@ -243,7 +243,6 @@ public class GoldGobblersPaylineController : MonoBehaviour
 
                 if (slot.slotType == GoldGobblersSlotType.RedGem || slot.slotType == GoldGobblersSlotType.BlueGem || slot.slotType == GoldGobblersSlotType.GreenGem)
                 {
-                    //slot.SetSpriteToPayline();
                     slot.PlayAnimation();
                     slot.PlayScatterParticleTrail();
                 }

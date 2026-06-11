@@ -6,13 +6,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using static SerializableClasses;
 
 public class FeedbackPanel : MonoBehaviour
 {
     public Transform popup;
     public Transform thankyouPopup;
-    public FeedbackStar[] stars; 
+    public FeedbackStar[] stars;
+    public FeedbackTextPreset[] textPresets;
     public TMP_InputField feedbackTextbox;
     public Button sendButton;
     public Button closeButton;
@@ -48,6 +48,12 @@ public class FeedbackPanel : MonoBehaviour
         {
             int x = i + 1;
             stars[i].button.onClick.AddListener(() => StarClicked(x));
+        }
+
+        for (int i = 0; i < textPresets.Length; i++)
+        {
+            int x = i;
+            textPresets[i].button.onClick.AddListener(() => TextPresetClicked(textPresets[x]));
         }
     }
 
@@ -110,6 +116,11 @@ public class FeedbackPanel : MonoBehaviour
     public void StarClicked(int number)
     {
         StarsGiven = number;
+    }
+
+    public void TextPresetClicked(FeedbackTextPreset preset)
+    {
+        feedbackTextbox.text = preset.GetText();
     }
 
     void SendFeedback()
