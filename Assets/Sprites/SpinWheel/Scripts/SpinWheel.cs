@@ -103,10 +103,14 @@ public class SpinWheel : MonoBehaviour
         // Call API
         bool apiSuccess = false;
         yield return StartCoroutine(CallSpinApi(success => apiSuccess = success));
-        //Debug.Log("forcedPrizeIndex  1: " + forcedPrizeIndex);
         StopCoroutine(spinLoop);
 
-        //Debug.Log("forcedPrizeIndex  2: " + forcedPrizeIndex);
+        if (!apiSuccess || forcedPrizeIndex < 0)
+        {
+            isSpinning = false;
+            yield break;
+        }
+
         float segmentAngle = 360f / prizeValues.Count;
         float targetSegmentAngle = (forcedPrizeIndex * segmentAngle) % 360f;
         float currentAngle = wheelTransform.localEulerAngles.z % 360f;
@@ -230,33 +234,56 @@ public class SpinWheel : MonoBehaviour
             {
                 Debug.LogError("Spin API failed: " + www.error);
                 CasinoUIManager.Instance.ShowErrorCanvas(1, "Network Error");
-                forcedPrizeIndex = 0;
+                forcedPrizeIndex = -1;
                 onComplete?.Invoke(false);
                 yield break;
             }
 
             try
             {
-                currentSpinResponse = JsonConvert.DeserializeObject<SpinResponse>(www.downloadHandler.text);
+                string responseText = www.downloadHandler.text;
+                currentSpinResponse = JsonConvert.DeserializeObject<SpinResponse>(responseText);
+
+                if (currentSpinResponse == null)
+                {
+                    CasinoUIManager.Instance.ShowErrorCanvas(1, "Response format error");
+                    forcedPrizeIndex = -1;
+                    onComplete?.Invoke(false);
+                    yield break;
+                }
+
+                if (!currentSpinResponse.success)
+                {
+                    var errorMessage = string.IsNullOrWhiteSpace(currentSpinResponse.message)
+                        ? "Spin is not available right now."
+                        : currentSpinResponse.message;
+                    CasinoUIManager.Instance.ShowErrorCanvas(1, errorMessage);
+                    forcedPrizeIndex = -1;
+                    onComplete?.Invoke(false);
+                    yield break;
+                }
+
                 Debug.Log($"API Spin Result: Prize = {currentSpinResponse.prize}, Type = {currentSpinResponse.prizeType}");
 
-                // 🔁 Map the prize to index in prizeValues
-                forcedPrizeIndex = prizeValues.IndexOf(currentSpinResponse.prize);
+                forcedPrizeIndex = FindPrizeIndex(currentSpinResponse.prize);
 
                 if (forcedPrizeIndex < 0)
                 {
-                    Debug.LogError("Prize from server not found in prizeValues list.");
+                    Debug.LogError($"Prize {currentSpinResponse.prize} from server not found in prizeValues list.");
                     CasinoUIManager.Instance.ShowErrorCanvas(1, "Invalid prize received.");
                     onComplete?.Invoke(false);
                     yield break;
                 }
 
-                DateTime nextUtc;
-                if (DateTime.TryParse(currentSpinResponse.nextSpinAvailable, null,
-                    System.Globalization.DateTimeStyles.AdjustToUniversal, out nextUtc))
+                if (!string.IsNullOrWhiteSpace(currentSpinResponse.nextSpinAvailable)
+                    && DateTime.TryParse(currentSpinResponse.nextSpinAvailable, null,
+                        System.Globalization.DateTimeStyles.AdjustToUniversal, out var nextUtc))
                 {
-                    PlayerPrefs.SetString("FreeSpinNextUtcTicks", nextUtc.Ticks.ToString());
-                    PlayerPrefs.Save();
+                    SpinWheelManager.SaveNextSpinTimeUtc(nextUtc);
+                }
+                else
+                {
+                    SpinWheelManager.ClearSavedNextSpinTime();
                 }
 
                 Invoke(nameof(UpdateGameCoin), 1f);
@@ -267,6 +294,7 @@ public class SpinWheel : MonoBehaviour
             {
                 Debug.LogError("Failed to parse Spin API response: " + e.Message);
                 CasinoUIManager.Instance.ShowErrorCanvas(1, "Response format error");
+                forcedPrizeIndex = -1;
                 onComplete?.Invoke(false);
             }
         }
@@ -274,6 +302,17 @@ public class SpinWheel : MonoBehaviour
     void UpdateGameCoin()
     {
         GameBetServices.Instance.UpdateCoins(currentSpinResponse.newBalance);
+    }
+
+    private int FindPrizeIndex(float prize)
+    {
+        const float epsilon = 0.001f;
+        for (int i = 0; i < prizeValues.Count; i++)
+        {
+            if (Mathf.Abs(prizeValues[i] - prize) < epsilon)
+                return i;
+        }
+        return -1;
     }
 
     private void DestroySpinWheel()
@@ -290,7 +329,7 @@ public class SpinWheel : MonoBehaviour
     {
         // Ensure prizeValues.Count == number of sections in spin wheel. 
         if (prizeValues != null && prizeValues.Count != 20)
-            Debug.LogWarning("SpinWheel: prizeValues should contain exactly 22 entries.");
+            Debug.LogWarning("SpinWheel: prizeValues should contain exactly 20 entries.");
     }
 #endif
 }
@@ -298,6 +337,8 @@ public class SpinWheel : MonoBehaviour
 [Serializable]
 public class SpinResponse
 {
+    public bool success = true;
+    public string message;
     public string id;
     public string userId;
     public float prize;

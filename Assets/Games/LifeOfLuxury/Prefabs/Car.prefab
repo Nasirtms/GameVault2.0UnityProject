@@ -40048,7 +40048,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5484677086269190410}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -49990,13 +49990,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5630310921853911599}
+  - component: {fileID: 7625220719091970509}
   m_Layer: 0
   m_Name: Car
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5630310921853911599
 Transform:
   m_ObjectHideFlags: 0
@@ -50017,6 +50018,18 @@ Transform:
   - {fileID: 7474182441448183664}
   m_Father: {fileID: 1246366178075202732}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!210 &7625220719091970509
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6874564612214022672}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 24
+  m_SortAtRoot: 0
 --- !u!1 &7376582317734902965
 GameObject:
   m_ObjectHideFlags: 0
@@ -54800,13 +54813,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2984059268043098844}
+  - component: {fileID: 6245996723345857896}
   m_Layer: 0
   m_Name: Car-Freespin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2984059268043098844
 Transform:
   m_ObjectHideFlags: 0
@@ -54826,6 +54840,18 @@ Transform:
   - {fileID: 1805632321343441403}
   m_Father: {fileID: 1246366178075202732}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!210 &6245996723345857896
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7707365763422542570}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 25
+  m_SortAtRoot: 0
 --- !u!1 &7736483379199618916
 GameObject:
   m_ObjectHideFlags: 0

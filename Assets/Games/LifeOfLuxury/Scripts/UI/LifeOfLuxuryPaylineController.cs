@@ -83,7 +83,7 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
                 ));
             }
         }
-        if (activePaylines.Count == 0 && !resultfreeGameReady)
+        if (activePaylines.Count == 0 && !resultfreeGameReady && !LifeOfLuxurySlotMachine.Instance.isFreeGame)
         {
             LifeOfLuxurySlotMachine.Instance.isSlotAnimationCompleted = true;
             return;
@@ -112,15 +112,10 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
 
     private IEnumerator PlayPaylines()
     {
-        if ((activePaylines == null || activePaylines.Count == 0) && !resultfreeGameReady)
+        if ((activePaylines == null || activePaylines.Count == 0) && !resultfreeGameReady && !LifeOfLuxurySlotMachine.Instance.isFreeGame)
         {
             LifeOfLuxurySlotMachine.Instance.isSlotAnimationCompleted = true;
             yield break;
-        }
-
-        if (activePaylines.Count == 0)
-        {
-            LifeOfLuxurySlotMachine.Instance.isSlotAnimationCompleted = true;
         }
 
         if (resultfreeGameReady)
@@ -131,9 +126,21 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
             }
             scatterAnimation = StartCoroutine(ScatterAnimation());
         }
+
+        if (activePaylines.Count == 0)
+        {
+            AnimateWildSlotsInFreeSpin();
+
+            yield return new WaitForSeconds(flickerDelay);
+
+            LifeOfLuxurySlotMachine.Instance.isSlotAnimationCompleted = true;
+            yield break;
+        }
+
         if (activePaylines.Count == 1)
         {
             yield return PlaySinglePayline(activePaylines[0]);
+            LifeOfLuxurySlotMachine.Instance.isSlotAnimationCompleted = true;
         }
         else
         {
@@ -143,19 +150,38 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
                 {
                     yield return PlaySinglePayline(entry);
                 }
+                LifeOfLuxurySlotMachine.Instance.isSlotAnimationCompleted = true;
             }
             else
             {
+                bool completedFirstCycle = false;
+
                 while (isShowing)
                 {
                     foreach (var entry in activePaylines)
                     {
                         yield return PlaySinglePayline(entry);
                     }
+
+                    if (!completedFirstCycle)
+                    {
+                        completedFirstCycle = true;
+                        LifeOfLuxurySlotMachine.Instance.isSlotAnimationCompleted = true;
+                    }
                 }
             }
+            //else
+            //{
+            //    while (isShowing)
+            //    {
+            //        foreach (var entry in activePaylines)
+            //        {
+            //            yield return PlaySinglePayline(entry);
+            //        }
+            //    }
+            //}
         }
-        LifeOfLuxurySlotMachine.Instance.isSlotAnimationCompleted = true;
+
     }
 
     private IEnumerator PlaySinglePayline(LifeOfLuxuryPaylineEntry entry)
@@ -173,6 +199,9 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
                 }
             }
         }
+
+        // Free spin wild animation, even if wild is not in winning payline
+        AnimateWildSlotsInFreeSpin();
 
         yield return new WaitForSeconds(flickerDelay);
 
@@ -194,7 +223,30 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
             }
         }
     }
+    private void AnimateWildSlotsInFreeSpin()
+    {
+        if (!LifeOfLuxurySlotMachine.Instance.isFreeGame)
+            return;
 
+        if (LifeOfLuxuryFreeSpinController.Instance != null &&
+            LifeOfLuxuryFreeSpinController.Instance.IsLastFreeSpin())
+            return;
+
+        for (int x = 0; x < LifeOfLuxurySlotMachine.Instance.reels.Count; x++)
+        {
+            for (int y = 0; y < 3; y++)
+            {
+                var slot = LifeOfLuxurySlotMachine.Instance.reels[x].slots[y + 1];
+                if (slot == null) continue;
+
+                if (LifeOfLuxurySlotMachine.Instance.isWildSlot(slot.slotType))
+                {
+                    Debug.Log("FreeSpin Wild Slot");
+                    slot.PlayAnimation();
+                }
+            }
+        }
+    }
     public IEnumerator ScatterAnimation()
     {
         for (int x = 0; x < LifeOfLuxurySlotMachine.Instance.reels.Count; x++)
@@ -219,7 +271,7 @@ public class LifeOfLuxuryPaylineController : MonoBehaviour
         }
         else if (LifeOfLuxurySlotMachine.Instance.freeSpinCount > 0 && LifeOfLuxurySlotMachine.Instance.isFreeGame)
         {
-            LifeOfLuxuryFreeGameTransitionController.Instance.UpdateFreeSpinsCount(IrishPotLuckSlotMachine.Instance.freeSpinCount);
+            LifeOfLuxuryFreeGameTransitionController.Instance.UpdateFreeSpinsCount(LifeOfLuxurySlotMachine.Instance.freeSpinCount);
         }
 
         yield return new WaitForSeconds(1f);

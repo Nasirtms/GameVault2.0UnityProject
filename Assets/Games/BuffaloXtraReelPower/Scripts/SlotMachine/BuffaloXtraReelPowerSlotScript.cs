@@ -43,13 +43,16 @@ public class BuffaloXtraReelPowerSlotScript : MonoBehaviour
 
     public void GetRandom(bool blur = false)
     {
-        var random = BuffaloXtraReelPowerSlotMachine.Instance.settings.slotResources[
-            UnityEngine.Random.Range(0, BuffaloXtraReelPowerSlotMachine.Instance.settings.slotResources.Count)
-        ];
+        var resources = BuffaloXtraReelPowerSlotMachine.Instance.settings.slotResources;
+        BuffaloXtraReelPowerSlotResource random;
+        do
+        {
+            random = resources[UnityEngine.Random.Range(0, resources.Count)];
+        }
+        while (random.slotType == BuffaloXtraReelPowerSlotType.WildX2 || random.slotType == BuffaloXtraReelPowerSlotType.WildX3);
 
         SetType(random, false);
     }
-
     public void SetType(BuffaloXtraReelPowerSlotResource newType, bool finalResult)
     {
         slots[currentResource.slotTypeIndex].SetActive(false);
@@ -66,18 +69,18 @@ public class BuffaloXtraReelPowerSlotScript : MonoBehaviour
     public void PlayAnimation()
     {
         SetSpriteToPayline();
-        //StopAnimation();
-        //slotAnimator = slots[currentResource.slotTypeIndex].GetComponentInParent<Animator>();
-        //slotAnimator.SetBool(slotAnimationBool, true);
+        StopAnimation();
+        slotAnimator = slots[currentResource.slotTypeIndex].GetComponentInParent<Animator>();
+        slotAnimator.SetBool(slotAnimationBool, true);
     }
 
     public void StopAnimation()
     {
         SetSpriteToDefault();
-        //if (slotAnimator != null)
-        //{
-        //    slotAnimator.SetBool(slotAnimationBool, false);
-        //}
+        if (slotAnimator != null)
+        {
+            slotAnimator.SetBool(slotAnimationBool, false);
+        }
     }
     #endregion
 

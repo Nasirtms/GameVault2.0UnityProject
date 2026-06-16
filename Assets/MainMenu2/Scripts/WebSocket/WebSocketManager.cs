@@ -79,7 +79,7 @@ public class WebSocketManager : MonoBehaviour
 
     async void OnDestroy()
     {
-        Instance = null;
+        //Instance = null;
 
         if (socket != null)
             await socket.Close();
@@ -102,6 +102,11 @@ public class WebSocketManager : MonoBehaviour
             var response = JsonUtility.FromJson<WebSocketMessages.HeartbeatMessage_Received>(json);
             SendPingResponsePong();
         }
+        if (base_response.type == "coin-poll")
+        {
+            var response = JsonUtility.FromJson<WebSocketMessages.CoinPollMessage_Received>(json);
+            UpdateCoinBalance(response);
+        }
     }
 
     void SendPingResponsePong()
@@ -112,5 +117,14 @@ public class WebSocketManager : MonoBehaviour
         };
 
         Send(hb_message);
+    }
+
+    void UpdateCoinBalance(WebSocketMessages.CoinPollMessage_Received response) {
+        if (response.success)
+        {
+            UserManager.Instance.Coins = response.coinBalance;
+            MainMenuUIManager.Instance?.SetUserData();
+            UserManager.OnCoinsUpdate?.Invoke(response.coinBalance);
+        }
     }
 }

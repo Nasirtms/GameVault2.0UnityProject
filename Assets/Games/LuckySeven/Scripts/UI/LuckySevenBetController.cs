@@ -15,7 +15,8 @@ public class LuckySevenBetController : MonoBehaviour
     private int currentIndex = 0;
 
     [Header("UI References")]
-    [SerializeField] private TMP_Text betText;
+    [SerializeField] private TMP_Text totalBetText;
+    [SerializeField] private TMP_Text lineBetText;
 
     #endregion
 
@@ -48,7 +49,9 @@ public class LuckySevenBetController : MonoBehaviour
     private void UpdateBetUI()
     {
         float bet = betValues[currentIndex];
-        betText.text = bet.ToString("0.00");
+        float lineBet = bet / 9f;
+        totalBetText.text = bet.ToString("0.00");
+        lineBetText.text = lineBet.ToString("0.00");
     }
     #endregion
 }

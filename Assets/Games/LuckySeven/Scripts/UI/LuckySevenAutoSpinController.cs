@@ -71,9 +71,6 @@ public class LuckySevenAutoSpinController : MonoBehaviour
 
             SlotSpinService.Instance.Spin(betAmount);
 
-            if (LuckySevenUIManager.Instance.CurrentButtonSet() != "Auto")
-                LuckySevenUIManager.Instance.UpdateButtons("Auto");
-
             yield return new WaitUntil(() => LuckySevenSlotMachine.Instance.isSpinAgain);
 
             if (cancelRequested)
@@ -94,7 +91,7 @@ public class LuckySevenAutoSpinController : MonoBehaviour
 
     private void StopAutoSpin()
     {
-        LuckySevenUIManager.Instance.UpdateButtons("Auto Stop");
+        LuckySevenUIManager.Instance.UpdateButtons("AutoStop");
         isAutoSpinning = false;
         isAutoRunning = false;
         cancelRequested = false;

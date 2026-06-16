@@ -43,10 +43,16 @@ public class RichLittlePiggiesSlotMachine : BaseSlotMachine
 
     // Win
     private float winAmount = 0f;
+    public int x;
+    public int y;
 
     // Coroutines
     private Coroutine spinCoroutine;
     private Coroutine stopCoroutine;
+
+    private bool isRed;
+    private bool isYellow;
+    private bool isBlue;
 
     #endregion
 
@@ -120,6 +126,9 @@ public class RichLittlePiggiesSlotMachine : BaseSlotMachine
         {
             currentSpinResult = normalSpin;
         }
+        isRed = false;
+        isYellow = false;
+        isBlue = false;
 
         scatterCount = currentSpinResult.scatterCount;
 
@@ -132,7 +141,6 @@ public class RichLittlePiggiesSlotMachine : BaseSlotMachine
                 {
                     isFreeGameReady = true;
                     freeSpinCount = currentSpinResult.freeSpinCount;
-                    freeGameType = currentSpinResult.cardName.ToLower();
                 }
             }
         }
@@ -166,8 +174,43 @@ public class RichLittlePiggiesSlotMachine : BaseSlotMachine
             {
                 symbols.Add(symbol);
                 var res = GetResourceById(symbol.id);
+                if(IsRed(res.Value.slotType)) isRed = true;
+                if(IsYellow(res.Value.slotType)) isYellow = true;
+                if(IsBlue(res.Value.slotType)) isBlue = true;
             }
             spinSymbolMatrix.Add(symbols);
+        }
+
+        if(!testmode)
+        {
+            if(isRed && isYellow && isBlue)
+            {
+                freeGameType = "red&yellow&blue";
+            }
+            else if(isRed && isYellow && !isBlue)
+            {
+                freeGameType = "red&yellow";
+            }
+            else if(isRed && isBlue && !isYellow)
+            {
+                freeGameType = "red&blue";
+            }
+            else if(isYellow && isBlue && !isRed)
+            {
+                freeGameType = "yellow&blue";
+            }
+            else if(isRed && !isYellow && !isBlue)
+            {
+                freeGameType = "red";
+            }
+            else if(isYellow && !isRed && !isBlue)
+            {
+                freeGameType = "yellow";
+            }
+            else if(isBlue && !isRed && !isYellow)
+            {
+                freeGameType = "blue";
+            }
         }
 
         RichLittlePiggiesUIManager.Instance.SetStopInteractable(true);
@@ -229,6 +272,7 @@ public class RichLittlePiggiesSlotMachine : BaseSlotMachine
         RichLittlePiggiesPaylineController.Instance.StopPaylines();
         RichLittlePiggiesPaylineController.Instance.ClearPaylineData();
         RichLittlePiggiesUIManager.Instance.PlaySpinMusic("Spin");
+        ChooseRandomReelIndexes();
 
         if (settings.spinSettings.startSpin == RichLittlePiggiesSpinMode.SpinAll)
         {
@@ -360,7 +404,7 @@ public class RichLittlePiggiesSlotMachine : BaseSlotMachine
                 {
                     reels[i].ApplyFinalResult(i);
                     RichLittlePiggiesUIManager.Instance.PlaySound("ReelStop");
-                    if (i == 1 || i == 2)
+                    if (i == x || i == y)
                     {
                         reels[i].StopSpin(true);
                     }
@@ -387,7 +431,7 @@ public class RichLittlePiggiesSlotMachine : BaseSlotMachine
 
                     reels[i].ApplyFinalResult(i);
                     RichLittlePiggiesUIManager.Instance.PlaySound("ReelStop");
-                    if (i == 1 || i == 2)
+                    if (i == x || i == y)
                     {
                         reels[i].StopSpin(true);
                     }
@@ -424,7 +468,7 @@ public class RichLittlePiggiesSlotMachine : BaseSlotMachine
         for (int i = 0; i < reels.Count; i++)
         {
             reels[i].ApplyFinalResult(i);
-            if (i == 1 || i == 2)
+            if (i == x || i == y)
             {
                 reels[i].StopSpin(true);
             }
@@ -640,5 +684,42 @@ public class RichLittlePiggiesSlotMachine : BaseSlotMachine
 
         return null;
     }
+
+    private void ChooseRandomReelIndexes()
+    {
+        x = Random.Range(1, 4); // 1, 2, or 3
+
+        do
+        {
+            y = Random.Range(1, 4);
+        }
+        while (y == x);
+    }
+
+    public bool IsRed(RichLittlePiggiesSlotType slotType)
+    {
+        if (slotType == RichLittlePiggiesSlotType.RedCoin)
+        {
+            return true;
+        }
+        else return false;
+    }
+    public bool IsYellow(RichLittlePiggiesSlotType slotType)
+    {
+        if (slotType == RichLittlePiggiesSlotType.YellowCoin)
+        {
+            return true;
+        }
+        else return false;
+    }
+    public bool IsBlue(RichLittlePiggiesSlotType slotType)
+    {
+        if (slotType == RichLittlePiggiesSlotType.BlueCoin)
+        {
+            return true;
+        }
+        else return false;
+    }
+
     #endregion
 }

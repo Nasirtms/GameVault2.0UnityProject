@@ -533,6 +533,15 @@ public class SlotSpinService : MonoBehaviour
                     IsFreeSpin = WolfMoonLinkSlotMachine.Instance.isFreeGame,
                 };
                 break;
+            case "secretsofchristmas":
+                requestData = new
+                {
+                    gameId = SceneManagement.currentGameID,
+                    requestId = currentRequestId,
+                    betAmount = betAmount,
+                    IsFreeSpin = SecretsOfChristmasSlotMachine.Instance.isFreeGame,
+                };
+                break;
             case "richlittlepiggies":
                 requestData = new
                 {
@@ -614,6 +623,7 @@ public class SlotSpinService : MonoBehaviour
             //Debug.Log("🔁 Result: " + www.result);
             if (www.responseCode == 401)
             {
+                Debug.Log("✅ Nasir_ Response 401 : " + www.downloadHandler.text);
                 // 1. Pass the coroutine function reference as a new argument
                 yield return ApiEndpoints.CheckApiResponse(
                     www,
@@ -631,6 +641,7 @@ public class SlotSpinService : MonoBehaviour
                 AddCurrentBetCoinIntoUserCoin();
                 currentSlotMachine.StopSpinGettingError();
                 CasinoUIManager.Instance.ShowErrorCanvas(1, "Network Error");
+                Debug.Log("✅ Nasir_ Response : " + www.downloadHandler.text);
                 yield break;
             }
 

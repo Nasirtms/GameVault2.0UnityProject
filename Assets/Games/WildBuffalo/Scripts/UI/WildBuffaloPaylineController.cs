@@ -72,7 +72,7 @@ public class WildBuffaloPaylineController : MonoBehaviour
     public List<WildBuffaloPaylineEntry> activePaylines = new List<WildBuffaloPaylineEntry>();
 
     [Header("Animation Settings")]
-    [SerializeField] private float flickerDelay = 1.5f;
+    [SerializeField] private float flickerDelay = 2f;
     private Coroutine animationLoop;
     private Coroutine scatterAnimation;
     public bool isShowing = false;
@@ -235,7 +235,6 @@ public class WildBuffaloPaylineController : MonoBehaviour
 
                 if (entry.payline.ToMatrix()[x, y] == 1 && x < entry.reelLimit)
                 {
-                    slot.SetSpriteToPayline();
                     slot.PlayAnimation();
                 }
             }
@@ -257,7 +256,6 @@ public class WildBuffaloPaylineController : MonoBehaviour
             {
                 if (slot != null)
                 {
-                    slot.SetSpriteToDefault();
                     slot.StopAnimation();
                 }
             }
@@ -275,7 +273,6 @@ public class WildBuffaloPaylineController : MonoBehaviour
 
                 if (WildBuffaloSlotMachine.Instance.freeSpinCount > 0 && slot.slotType == WildBuffaloSlotType.Bonus)
                 {
-                    slot.SetSpriteToPayline();
                     slot.PlayAnimation();
                 }
             }

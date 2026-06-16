@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -104,7 +105,7 @@ public class BuffaloXtraReelPowerUIManager : GameBetServices
         UpdateCoins();
         SetupInputButtons();
         UserManager.Instance.UpdateGameCoins += UpdateCoins;
-        //PlayMusic("BG");
+        PlayMusic("BG");
     }
 
     private void OnDestroy()
@@ -236,14 +237,14 @@ public class BuffaloXtraReelPowerUIManager : GameBetServices
     private void IncreaseBetAmount()
     {
         if (betController == null) return;
-        //PlaySound("Bet");
+        PlaySound("Button");
         betController.IncreaseChipValue();
     }
 
     private void DecreaseBetAmount()
     {
         if (betController == null) return;
-        //PlaySound("Bet");
+        PlaySound("Button");
         betController.DecreaseChipValue();
     }
 
@@ -251,7 +252,7 @@ public class BuffaloXtraReelPowerUIManager : GameBetServices
 
     private void ExitGame()
     {
-        //PlaySound("Button");
+        PlaySound("Button");
         if (UserManager.Instance != null)
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
@@ -263,7 +264,7 @@ public class BuffaloXtraReelPowerUIManager : GameBetServices
     private void OpenRulesPopup()
     {
         if (rulesPopupController == null) return;
-        //PlaySound("Button");
+        PlaySound("Button");
         rulesPopupController.OpenPopup();
     }
 
@@ -273,11 +274,15 @@ public class BuffaloXtraReelPowerUIManager : GameBetServices
 
     public void OnClickSpin()
     {
+        if (BuffaloXtraReelPowerFreeGameTransitionController.Instance.IsFreeSpinStartClicked())
+        {
+            PlaySound("Button");
+            BuffaloXtraReelPowerFreeGameTransitionController.Instance.StartFreeSpinsAfterButtonClick();
+            return;
+        }
+
         float betAmount = betController.GetCurrentBet();
-
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
-
-        //PlaySound("SpinButton");
 
         if (textAnimationCoroutine != null)
             StopCoroutine(textAnimationCoroutine);
@@ -291,9 +296,10 @@ public class BuffaloXtraReelPowerUIManager : GameBetServices
 
     private void OnClickStop()
     {
-        //PlaySound("Button");
+
         StopCurrentSFX();
-        //StopSpinMusic("Spin");
+        PlaySound("Stop");
+        StopSpinMusic("Spin");
 
         BuffaloXtraReelPowerSlotMachine.Instance.isStopBtnPressed = true;
         BuffaloXtraReelPowerSlotMachine.Instance.StopWithResult();
@@ -310,7 +316,7 @@ public class BuffaloXtraReelPowerUIManager : GameBetServices
 
         float betAmount = betController.GetCurrentBet();
 
-        //PlaySound("Button");
+        PlaySound("Button");
 
         if (textAnimationCoroutine != null)
             StopCoroutine(textAnimationCoroutine);
@@ -326,8 +332,8 @@ public class BuffaloXtraReelPowerUIManager : GameBetServices
     {
         if (autoSpinController == null) return;
 
-        //PlaySound("Button");
-        //StopSpinMusic("Spin");
+        PlaySound("Button");
+        StopSpinMusic("Spin");
 
         autoSpinController.CancelAutoSpin();
         autoButton.SetActive(true);
@@ -389,6 +395,16 @@ public class BuffaloXtraReelPowerUIManager : GameBetServices
                 interactable = false;
                 spinButton.SetActive(true);
                 autoButton.SetActive(true);
+                SetAutoInteractable(false);
+                break;
+
+            case "Free Spin Ready":
+                interactable = false;
+                spinButton.SetActive(true);
+                spinButton.SetInteractable(true);
+                stopButton.SetActive(false);
+                autoButton.SetActive(true);
+                autoStopButton.SetActive(false);
                 SetAutoInteractable(false);
                 break;
 

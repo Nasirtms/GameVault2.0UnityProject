@@ -1,0 +1,113 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+public class UltimateFireLinkRoute66FreeSpinController : MonoBehaviour
+{
+    #region Variables
+
+    [SerializeField] private TMP_Text freeSpinsText;
+
+    [SerializeField] private float delayBetweenSpins = 1.5f;
+    private int totalFreeSpins = 0;
+    private int freeSpinDone = 0;
+    private bool isFreeGame = false;
+    private bool firstSpin;
+    //private int paylinesToPlay;
+
+    #endregion
+
+    #region Public References
+
+    public void StartFreeSpins()
+    {
+        if (isFreeGame) return;
+        freeSpinsText.gameObject.SetActive(true);
+        UltimateFireLinkRoute66SlotMachine.Instance.isFreeGame = true;
+        isFreeGame = true;
+        firstSpin = true;
+        freeSpinDone = 0;
+
+        StartCoroutine(FreeSpinLoop());
+    }
+
+    public void ResetFreeSpins()
+    {
+        freeSpinDone = 0;
+        totalFreeSpins = 0;
+        UpdateSpinCount();
+    }
+
+    public void UpdateFreeSpins(int freeSpins)
+    {
+        totalFreeSpins += freeSpins;
+        UpdateSpinCount();
+    }
+
+    private void Start()
+    {
+        //paylinesToPlay = StarBurstSlotsPaylineController.Instance.activePaylines.Count;
+    }
+
+    #endregion
+
+    #region Free Spin
+
+
+    private IEnumerator FreeSpinLoop()
+    {
+        yield return new WaitForSeconds(2.5f); 
+
+        while (freeSpinDone < totalFreeSpins)
+        {
+            if (firstSpin)
+            {
+                firstSpin = false;
+            }
+            else
+            {
+                yield return new WaitForSeconds(delayBetweenSpins); 
+            }
+
+            float betAmount = UltimateFireLinkRoute66UIManager.Instance.CurrentBet();
+            //Debug.Log("spining the free spi")
+            SlotSpinService.Instance.Spin(betAmount);
+
+            yield return new WaitUntil(() => UltimateFireLinkRoute66SlotMachine.Instance.isSpinAgain);
+            if (freeSpinDone == 0)
+            {
+                UltimateFireLinkRoute66SlotMachine.Instance.firstFreeSpin = false;
+            }
+
+            if (UltimateFireLinkRoute66SlotMachine.Instance.GetWinAmount() > 0)
+            {
+                yield return new WaitUntil(() => UltimateFireLinkRoute66SlotMachine.Instance.isSlotAnimationCompleted);
+            }
+
+            freeSpinDone++;
+            UpdateSpinCount();
+        }
+
+        yield return new WaitForSeconds(1.5f);
+
+        EndFreeSpins();
+    }
+
+    private void EndFreeSpins()
+    {
+        freeSpinsText.gameObject.SetActive(false);
+        ResetFreeSpins();
+        isFreeGame = false;
+        UltimateFireLinkRoute66FreeGameTransitionController.Instance.EndFreeSpin();
+        UltimateFireLinkRoute66SlotMachine.Instance.isFreeGame = false;
+        UltimateFireLinkRoute66UIManager.Instance.UpdateButtons("FreeSpinEnd");
+    }
+    public void UpdateSpinCount()
+    {
+        if (freeSpinsText != null)
+            freeSpinsText.text = $"{freeSpinDone} OF {totalFreeSpins}";
+    }
+
+    #endregion
+}

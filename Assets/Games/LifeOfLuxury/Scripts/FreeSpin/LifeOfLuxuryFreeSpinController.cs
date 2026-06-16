@@ -81,6 +81,10 @@ public class LifeOfLuxuryFreeSpinController : MonoBehaviour
         if (freeSpinsText != null)
             freeSpinsText.text = ToSpriteSpinCount(freeSpinDone, totalFreeSpins);
     }
+    public bool IsLastFreeSpin()
+    {
+        return isFreeGame && freeSpinDone >= totalFreeSpins;
+    }
     private string ToSpriteDigits(int value)
     {
         string s = value.ToString();
@@ -135,6 +139,7 @@ public class LifeOfLuxuryFreeSpinController : MonoBehaviour
                     yield return new WaitUntil(() => LifeOfLuxurySlotMachine.Instance.isSlotAnimationCompleted);
                 }
             }
+            yield return new WaitUntil(() => LifeOfLuxurySlotMachine.Instance.isPopupEnd);
         }
 
         yield return new WaitForSeconds(1f);

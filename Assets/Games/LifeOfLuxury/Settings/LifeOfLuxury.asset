@@ -57,7 +57,43 @@ MonoBehaviour:
     baseGameAnimationBool: Wild
     freeGameAnimationBool: wild
     slotTypeIndex: 10
-  soundItems: []
+  soundItems:
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: b92003e6c0cea7748ad7008b54c10849, type: 3}
+    volume: 0.6
+    pitch: 1
+  - soundName: FreeSpinBG
+    audioClip: {fileID: 8300000, guid: 6122cd4f545dba447a859b982b01dd92, type: 3}
+    volume: 0.5
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 6962560414b9c0a43a22265350aeda00, type: 3}
+    volume: 0.4
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: 8ed28261c64c4874c906f6fe510ed098, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Maxbet
+    audioClip: {fileID: 8300000, guid: 8dfa0a933f37afd47b0534b80ff069eb, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: 1a380649574a2344daf9b0c51d511902, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Stop
+    audioClip: {fileID: 8300000, guid: 9f58f2edd8ff9db4b829aef825f5e238, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 81be44234ce6b11429e66aa958679747, type: 3}
+    volume: 0.6
+    pitch: 1
+  - soundName: FreeSpinPopup
+    audioClip: {fileID: 8300000, guid: 0ece79ae7c57a8644a6a41453f47be4a, type: 3}
+    volume: 0.5
+    pitch: 1
   spinSettings:
     startSpin: 0
     endSpin: 1

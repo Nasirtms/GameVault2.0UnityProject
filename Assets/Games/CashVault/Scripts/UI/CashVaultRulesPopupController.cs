@@ -12,7 +12,6 @@ public class CashVaultRulesPopupController : MonoBehaviour
     [SerializeField] private Button closeButton;
     [SerializeField] private Button leftButton;
     [SerializeField] private Button rightButton;
-    [SerializeField] private Image RulePanelBg;
 
     [Header("UI References")]
     [SerializeField] private List<GameObject> pages;
@@ -22,7 +21,6 @@ public class CashVaultRulesPopupController : MonoBehaviour
     private void Start()
     {
         rulesPopupPanel.SetActive(false);
-        RulePanelBg.gameObject.SetActive(false);
         closeButton.onClick.AddListener(ClosePopup);
         leftButton.onClick.AddListener(PreviousPage);
         rightButton.onClick.AddListener(NextPage);
@@ -30,7 +28,6 @@ public class CashVaultRulesPopupController : MonoBehaviour
 
     public void OpenPopup()
     {
-        RulePanelBg.gameObject.SetActive(true);
         rulesPopupPanel.SetActive(true);
         ShowPage(0);
     }
@@ -38,7 +35,6 @@ public class CashVaultRulesPopupController : MonoBehaviour
     public void ClosePopup()
     {
         CashVaultUIManager.Instance.PlaySound("Button");
-        RulePanelBg.gameObject.SetActive(false);
         rulesPopupPanel.SetActive(false);
     }
 

@@ -14,48 +14,79 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotResources:
   - slotType: 0
-    slotAnimationBool: 
+    slotAnimationBool: A
     slotTypeIndex: 0
   - slotType: 1
-    slotAnimationBool: 
+    slotAnimationBool: Q
     slotTypeIndex: 1
   - slotType: 2
-    slotAnimationBool: 
+    slotAnimationBool: K
     slotTypeIndex: 2
   - slotType: 3
-    slotAnimationBool: 
+    slotAnimationBool: J
     slotTypeIndex: 3
   - slotType: 4
-    slotAnimationBool: 
+    slotAnimationBool: nine
     slotTypeIndex: 4
   - slotType: 5
-    slotAnimationBool: 
+    slotAnimationBool: ten
     slotTypeIndex: 5
   - slotType: 6
-    slotAnimationBool: 
+    slotAnimationBool: bison
     slotTypeIndex: 6
   - slotType: 7
-    slotAnimationBool: 
+    slotAnimationBool: eagle
     slotTypeIndex: 7
   - slotType: 8
-    slotAnimationBool: 
+    slotAnimationBool: lion
     slotTypeIndex: 8
   - slotType: 9
-    slotAnimationBool: 
+    slotAnimationBool: wolf
     slotTypeIndex: 9
   - slotType: 10
-    slotAnimationBool: 
+    slotAnimationBool: deer
     slotTypeIndex: 10
   - slotType: 11
-    slotAnimationBool: 
+    slotAnimationBool: wild
     slotTypeIndex: 11
   - slotType: 12
-    slotAnimationBool: 
+    slotAnimationBool: wildx2
     slotTypeIndex: 12
   - slotType: 13
-    slotAnimationBool: 
+    slotAnimationBool: wildx3
     slotTypeIndex: 13
-  soundItems: []
+  - slotType: 14
+    slotAnimationBool: scatter
+    slotTypeIndex: 14
+  soundItems:
+  - soundName: BG
+    audioClip: {fileID: 8300000, guid: bfce7a872e5177040b4cab35698317ec, type: 3}
+    volume: 0.5
+    pitch: 1
+  - soundName: Button
+    audioClip: {fileID: 8300000, guid: ead91e138e2d5564cb86bfe7a57534e6, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Spin
+    audioClip: {fileID: 8300000, guid: 7c733b3bb23270b4eb0aef9e92425922, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Stop
+    audioClip: {fileID: 8300000, guid: c931c61080856ca4fa9df83f4dc51eb7, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: ReelStop
+    audioClip: {fileID: 8300000, guid: 1e20b221bb45a4d4491d371152344564, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: Win
+    audioClip: {fileID: 8300000, guid: f1fa2b46aa33df340914c952a2b9ee7a, type: 3}
+    volume: 1
+    pitch: 1
+  - soundName: FreeSpinStart
+    audioClip: {fileID: 8300000, guid: 059878ec5e4124c4a9eb21459f791479, type: 3}
+    volume: 1
+    pitch: 1
   spinSettings:
     startSpin: 0
     endSpin: 1

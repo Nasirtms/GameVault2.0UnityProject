@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 #region Slot Settings
 public enum BuffaloXtraReelPowerSlotType
 {
-    Ace, Queen, King, Jack, Nine, Ten, Bison, Eagle, Lion, Wolf, Deer, WildX2, WildX3, Scatter
+    Ace, Queen, King, Jack, Nine, Ten, Bison, Eagle, Lion, Wolf, Deer, Wild, WildX2, WildX3, Scatter
 }
 
 [System.Serializable]

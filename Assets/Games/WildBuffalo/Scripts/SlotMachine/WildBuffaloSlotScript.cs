@@ -65,19 +65,19 @@ public class WildBuffaloSlotScript : MonoBehaviour
     #region Slot Animation
     public void PlayAnimation()
     {
-        SetSpriteToPayline();
-        //StopAnimation();
-        //slotAnimator = slots[currentResource.slotTypeIndex].GetComponentInParent<Animator>();
-        //slotAnimator.SetBool(slotAnimationBool, true);
+        //SetSpriteToPayline();
+        StopAnimation();
+        slotAnimator = slots[currentResource.slotTypeIndex].GetComponentInParent<Animator>();
+        slotAnimator.SetBool(slotAnimationBool, true);
     }
 
     public void StopAnimation()
     {
-        SetSpriteToDefault();
-        //if (slotAnimator != null)
-        //{
-        //    slotAnimator.SetBool(slotAnimationBool, false);
-        //}
+        //SetSpriteToDefault();
+        if (slotAnimator != null)
+        {
+            slotAnimator.SetBool(slotAnimationBool, false);
+        }
     }
     #endregion
 

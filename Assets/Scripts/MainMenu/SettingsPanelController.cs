@@ -37,34 +37,34 @@ public class SettingsPanelController : MonoBehaviour
 #if UNITY_EDITOR
     private const string LogoutFlag = "ForceLogoutInProgress";
 
-    private void OnEnable()
-    {
-        EditorApplication.playModeStateChanged += OnPlayModeChange;
-    }
+    //private void OnEnable()
+    //{
+    //    EditorApplication.playModeStateChanged += OnPlayModeChange;
+    //}
 
-    private void OnDisable()
-    {
-        EditorApplication.playModeStateChanged -= OnPlayModeChange;
-    }
+    //private void OnDisable()
+    //{
+    //    EditorApplication.playModeStateChanged -= OnPlayModeChange;
+    //}
 
-    private void OnPlayModeChange(PlayModeStateChange state)
-    {
-        // Trigger logout ONLY when user presses STOP in Unity
-        if (state == PlayModeStateChange.ExitingPlayMode && !isLoggingOut)
-        {
-            Debug.Log("🛑 Unity Stop pressed — Logging out before exit...");
-            isLoggingOut = true;
+    //private void OnPlayModeChange(PlayModeStateChange state)
+    //{
+    //    // Trigger logout ONLY when user presses STOP in Unity
+    //    if (state == PlayModeStateChange.ExitingPlayMode && !isLoggingOut)
+    //    {
+    //        Debug.Log("🛑 Unity Stop pressed — Logging out before exit...");
+    //        isLoggingOut = true;
 
-            // Tell other editor scripts (like PlayFromFirstScene) not to run
-            EditorPrefs.SetBool(LogoutFlag, true);
+    //        // Tell other editor scripts (like PlayFromFirstScene) not to run
+    //        EditorPrefs.SetBool(LogoutFlag, true);
 
-            // Prevent play mode from ending until logout is complete
-            EditorApplication.isPlaying = true;
+    //        // Prevent play mode from ending until logout is complete
+    //        EditorApplication.isPlaying = true;
 
-            // Run your logout routine
-            StartCoroutine(LogoutAndExit());
-        }
-    }
+    //        // Run your logout routine
+    //        StartCoroutine(LogoutAndExit());
+    //    }
+    //}
 
     private IEnumerator LogoutAndExit()
     {
@@ -187,7 +187,6 @@ public class SettingsPanelController : MonoBehaviour
 
     }
 
-
     void LogoutSuccess()
     {
 
@@ -220,9 +219,6 @@ public class SettingsPanelController : MonoBehaviour
         SceneManager.LoadScene("Login");
         //Debug.Log("User logged out.");
     }
-
-
-
     private void LogoutPopup()
     {
         logoutPopup = Instantiate(logoutPopupPrefab, MainMenuUIManager.Instance.PopupParent);
@@ -235,7 +231,5 @@ public class SettingsPanelController : MonoBehaviour
 
         MainMenuUIManager.Instance.DoTweenAnim(MainMenuUIManager.TweenType.Panel, popup, 1f, 0.3f);
     }
-
-
 
 }

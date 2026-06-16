@@ -105,7 +105,7 @@ public class LifeOfLuxuryUIManager : GameBetServices
         UserManager.Instance.UpdateGameCoins += UpdateCoins;
 
         StartTitleLoop();
-        //PlayMusic("BG");
+        PlayMusic("BG");
     }
 
     private void OnDestroy()
@@ -254,7 +254,7 @@ public class LifeOfLuxuryUIManager : GameBetServices
 
     private void ExitGame()
     {
-        //PlaySound("Button");
+        PlaySound("Button");
         if (UserManager.Instance != null)
         {
             UserManager.Instance.StartUpdateCanAddCoin(true);
@@ -265,7 +265,7 @@ public class LifeOfLuxuryUIManager : GameBetServices
     private void OpenRulesPopup()
     {
         if (rulesPopupController == null) return;
-        //PlaySound("Button");
+        PlaySound("Button");
         rulesPopupController.OpenPopup();
     }
     #endregion
@@ -273,7 +273,8 @@ public class LifeOfLuxuryUIManager : GameBetServices
     #region Spin Buttons
     public void OnClickSpin()
     {
-        //PlaySound("SpinButton");
+        StopCurrentSFX();
+        PlaySound("Button");
         float betAmount = betController.GetCurrentBet();
         if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount)) return;
 
@@ -291,9 +292,9 @@ public class LifeOfLuxuryUIManager : GameBetServices
 
     private void OnClickStop()
     {
-        //PlaySound("Button");
         StopCurrentSFX();
-        //StopSpinMusic("Spin");
+        PlaySound("Stop");
+        StopSpinMusic("Spin");
         LifeOfLuxurySlotMachine.Instance.isStopBtnPressed = true;
         LifeOfLuxurySlotMachine.Instance.StopWithResult();
         if (LifeOfLuxuryAutoSpinController.isAutoSpinning)
@@ -304,8 +305,9 @@ public class LifeOfLuxuryUIManager : GameBetServices
 
     public void OnClickAuto()
     {
-        //PlaySound("Button");
         if (autoSpinController == null) return;
+        StopCurrentSFX();
+        PlaySound("Button");
         float betAmount = betController.GetCurrentBet();
         if (textAnimationCoroutine != null)
         {
@@ -324,8 +326,7 @@ public class LifeOfLuxuryUIManager : GameBetServices
     {
         if (autoSpinController == null) return;
 
-        //PlaySound("Button");
-        //StopSpinMusic("Spin");
+        PlaySound("Stop");
         autoSpinController.CancelAutoSpin();
 
         autoButton.SetActive(true);
@@ -543,7 +544,6 @@ public class LifeOfLuxuryUIManager : GameBetServices
         if (textAnimationCoroutine != null)
             StopCoroutine(textAnimationCoroutine);
 
-        //PlaySound("Win");
         textAnimationCoroutine = StartCoroutine(AnimateToValue(winAmount, 1f, this.winAmount));
     }
 

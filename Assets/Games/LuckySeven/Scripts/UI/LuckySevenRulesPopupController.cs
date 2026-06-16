@@ -11,9 +11,9 @@ public class LuckySevenRulesPopupController : MonoBehaviour
 
 
     [Header("Popup Controls")]
-    [SerializeField] private Button leftButton;
+    //[SerializeField] private Button leftButton;
     //[SerializeField] private Button rightButton;
-    //[SerializeField] private Button closeButton;
+    [SerializeField] private Button closeButton;
 
     [Header("UI References")]
     [SerializeField] private List<GameObject> pages;
@@ -27,8 +27,8 @@ public class LuckySevenRulesPopupController : MonoBehaviour
     {
         rulesPopupPanel.SetActive(false);
 
-        //closeButton.onClick.AddListener(ClosePopup);
-        leftButton.onClick.AddListener(PreviousPage);
+        closeButton.onClick.AddListener(ClosePopup);
+        //leftButton.onClick.AddListener(PreviousPage);
         //rightButton.onClick.AddListener(NextPage);
     }
 

@@ -7,7 +7,7 @@ using Sirenix.Utilities;
 #region Slot Settings
 public enum LuckySevenSlotType
 {
-    Empty, OrangeSeven, BlueSeven, GraySeven, BarSingle, BarDouble, BarTriple, Wild
+    Empty, OrangeSeven, BlueSeven, SilverSeven, SingleBlueBar, DoubleSilverBar, TripleOrangeBar, wildSymbol
 }
 
 

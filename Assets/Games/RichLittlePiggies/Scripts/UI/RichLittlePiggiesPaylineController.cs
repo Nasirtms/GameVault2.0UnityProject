@@ -246,7 +246,7 @@ public class RichLittlePiggiesPaylineController : MonoBehaviour
                 var slot = RichLittlePiggiesSlotMachine.Instance.reels[x].slots[y + 1];
                 if (slot == null) continue;
 
-                if (x == 1 || x == 2)
+                if (x == RichLittlePiggiesSlotMachine.Instance.x || x == RichLittlePiggiesSlotMachine.Instance.y)
                 {
                     slot.RevealSlots();
                 }

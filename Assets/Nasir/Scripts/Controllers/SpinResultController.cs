@@ -28,6 +28,10 @@ public class SpinResultController : MonoBehaviour
                 result = JsonConvert.DeserializeObject<ZombieParadiseSpinResult>(json);
                 break;
 
+            case "buffaloxtrareelpower":
+                result = JsonConvert.DeserializeObject<BuffaloXtraReelPowerSpinResult>(json);
+                break;
+
             case "goldgobblers":
                 result = JsonConvert.DeserializeObject<GoldGobblersSpinResult>(json);
                 break;

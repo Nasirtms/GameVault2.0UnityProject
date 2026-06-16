@@ -140,7 +140,7 @@ public class CashVaultSlotScript : MonoBehaviour
     public void PlayAnimation()
     {
         StopAnimation();
-        SetSpriteToPayline();
+        //SetSpriteToPayline();
         slotAnimator = slots[currentResource.slotTypeIndex].GetComponentInParent<Animator>();
         slotAnimator.enabled = true;
         slotAnimator.SetBool(slotAnimationBool, true);
@@ -148,7 +148,7 @@ public class CashVaultSlotScript : MonoBehaviour
 
     public void StopAnimation()
     {
-        SetSpriteToDefault();
+        //SetSpriteToDefault();
         if (slotAnimator != null)
         {
             slotAnimator.SetBool(slotAnimationBool, false);

@@ -352,12 +352,15 @@ public class LoginManager : MonoBehaviour
                 }
 
                 loginResponse = JsonConvert.DeserializeObject<SerializableClasses.LoginResponseWrapper>(responseText);
-                DateTime nextUtc;
-                if (DateTime.TryParse(loginResponse.nextSpinTime, null,
-                    System.Globalization.DateTimeStyles.AdjustToUniversal, out nextUtc))
+                if (!string.IsNullOrWhiteSpace(loginResponse.nextSpinTime)
+                    && DateTime.TryParse(loginResponse.nextSpinTime, null,
+                        System.Globalization.DateTimeStyles.AdjustToUniversal, out var nextUtc))
                 {
-                    PlayerPrefs.SetString("FreeSpinNextUtcTicks", nextUtc.Ticks.ToString());
-                    PlayerPrefs.Save();
+                    SpinWheelManager.SaveNextSpinTimeUtc(nextUtc);
+                }
+                else
+                {
+                    SpinWheelManager.ClearSavedNextSpinTime();
                 }
                 if (loginResponse?.user == null || string.IsNullOrEmpty(loginResponse.user.id))
                 {

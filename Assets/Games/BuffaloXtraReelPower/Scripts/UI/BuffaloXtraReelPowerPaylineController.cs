@@ -69,7 +69,6 @@ public class BuffaloXtraReelPowerPaylineController : MonoBehaviour
     private void StartPaylineDisplay(List<BuffaloXtraReelPowerPaylineResult> results)
     {
         StopPaylineDisplay();
-
         activePaylines.Clear();
         //overlay.SetActive(true);
 
@@ -85,7 +84,6 @@ public class BuffaloXtraReelPowerPaylineController : MonoBehaviour
         }
 
         isShowing = true;
-
         animationLoop = StartCoroutine(PlayPaylines());
     }
 
@@ -136,7 +134,10 @@ public class BuffaloXtraReelPowerPaylineController : MonoBehaviour
         {
             if (activePaylines.Count == 1)
             {
-                yield return PlaySinglePayline(activePaylines[0]);
+                while (isShowing)
+                {
+                    yield return PlaySinglePayline(activePaylines[0]);
+                }
 
                 BuffaloXtraReelPowerSlotMachine.Instance.isSlotAnimationCompleted = true;
             }
@@ -151,14 +152,13 @@ public class BuffaloXtraReelPowerPaylineController : MonoBehaviour
 
                     BuffaloXtraReelPowerSlotMachine.Instance.isSlotAnimationCompleted = true;
 
-                    //if ((ZombieParadiseSlotMachine.Instance.isSlotAnimationCompleted && ZombieParadiseAutoSpinController.isAutoSpinning) || ZombieParadiseSlotMachine.Instance.isFreeGame)
-                    //{
-                    //    break;
-                    //}
+                    if ((BuffaloXtraReelPowerSlotMachine.Instance.isSlotAnimationCompleted && BuffaloXtraReelPowerAutoSpinController.isAutoSpinning) || BuffaloXtraReelPowerSlotMachine.Instance.isFreeGame)
+                    {
+                        break;
+                    }
                 }
             }
         }
-
     }
 
     private IEnumerator PlaySinglePayline(BuffaloXtraReelPowerPaylineResult entry)
@@ -177,7 +177,6 @@ public class BuffaloXtraReelPowerPaylineController : MonoBehaviour
 
                 if (entry.slots[x] == y)
                 {
-                    //slot.SetSpriteToPayline();
                     slot.PlayAnimation();
                 }
             }
@@ -185,21 +184,21 @@ public class BuffaloXtraReelPowerPaylineController : MonoBehaviour
 
         yield return new WaitForSeconds(waitTime);
 
-        if (activePaylines.Count > 1)
-        {
-            // Clear borders & text for cycling mode
+        //if (activePaylines.Count > 1)
+        //{
             foreach (var reel in BuffaloXtraReelPowerSlotMachine.Instance.reels)
             {
                 foreach (var slot in reel.slots)
                 {
                     if (slot != null)
                     {
-                        //slot.SetSpriteToDefault();
                         slot.StopAnimation();
                     }
                 }
             }
-        }
+        //}
+
+        yield return new WaitForSeconds(0.35f);
     }
 
     private IEnumerator ScatterAnimation()
@@ -223,12 +222,12 @@ public class BuffaloXtraReelPowerPaylineController : MonoBehaviour
         {
             BuffaloXtraReelPowerSlotMachine.Instance.firstFreeSpin = true;
             BuffaloXtraReelPowerUIManager.Instance.UpdateButtons("Transition Start");
-            //BuffaloXtraReelPowerFreeGameTransitionController.Instance.StartFreeSpinTransition();
-            //BuffaloXtraReelPowerFreeGameTransitionController.Instance.UpdateFreeSpinsCount(BuffaloXtraReelPowerSlotMachine.Instance.freeSpinCount);
+            BuffaloXtraReelPowerFreeGameTransitionController.Instance.StartFreeSpinTransition();
+            BuffaloXtraReelPowerFreeGameTransitionController.Instance.UpdateFreeSpinsCount(BuffaloXtraReelPowerSlotMachine.Instance.freeSpinCount);
         }
         else if (BuffaloXtraReelPowerSlotMachine.Instance.freeSpinCount > 0)
         {
-            //BuffaloXtraReelPowerFreeGameTransitionController.Instance.UpdateFreeSpinsCount(BuffaloXtraReelPowerSlotMachine.Instance.freeSpinCount);
+            BuffaloXtraReelPowerFreeGameTransitionController.Instance.UpdateFreeSpinsCount(BuffaloXtraReelPowerSlotMachine.Instance.freeSpinCount);
         }
 
         yield return new WaitForSeconds(2f);

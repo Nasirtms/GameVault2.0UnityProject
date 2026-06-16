@@ -1,17 +1,16 @@
 ﻿using System.Collections;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using UnityEngine.Video;
 
 public class VideoEndSceneLoader : MonoBehaviour
 {
     public BuildConfig _buildConfig;
-
     [Header("Settings")]
     public VideoPlayer videoPlayer;
     public string sceneToLoad = "SceneLoader";
-
+    public Button skipButton;
 
     // IMPORTANT: Use the PUBLIC URL (without the token) for caching to work
     public string videoUrl = "https://kumwxahsdnwyhbqabrwj.supabase.co/storage/v1/object/public/GameSplashVideo/intro.mp4";
@@ -24,6 +23,10 @@ public class VideoEndSceneLoader : MonoBehaviour
 
     private bool videoDoneMethodCalled = false;
 
+    [Header("Video Fallback")]
+    [SerializeField] private float videoPrepareTimeout = 5f;
+    private Coroutine fallbackRoutine;
+
     public OnScreenKeyboardManager onScreenKeyboardManagerPrefab;
     public WebGLClipboard webGlClipboardPrefab;
 
@@ -32,6 +35,8 @@ public class VideoEndSceneLoader : MonoBehaviour
 #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
             Debug.unityLogger.logEnabled = false;
 #endif
+
+        skipButton.onClick.AddListener(SkipVideo);
     }
 
     private void Start()
@@ -57,7 +62,9 @@ public class VideoEndSceneLoader : MonoBehaviour
             // Subscribe to events
             videoPlayer.prepareCompleted += OnVideoPrepared;
             videoPlayer.loopPointReached += OnVideoFinished;
+            videoPlayer.errorReceived += OnVideoError;
 
+            fallbackRoutine = StartCoroutine(VideoFallbackTimer());
             // Start caching/preparing
             videoPlayer.Prepare();
         }
@@ -69,15 +76,37 @@ public class VideoEndSceneLoader : MonoBehaviour
         Instantiate(onScreenKeyboardManagerPrefab);
         Instantiate(webGlClipboardPrefab);
 
-//        // Only executes when running as a WebGL build
-//#if UNITY_WEBGL && !UNITY_EDITOR
-//        WebGLInput.mobileKeyboardSupport = false;
-//#endif
+        //        // Only executes when running as a WebGL build
+        //#if UNITY_WEBGL && !UNITY_EDITOR
+        //        WebGLInput.mobileKeyboardSupport = false;
+        //#endif
     }
+    private IEnumerator VideoFallbackTimer()
+    {
+        yield return new WaitForSeconds(videoPrepareTimeout);
 
+        if (!videoDoneMethodCalled)
+        {
+            Debug.LogWarning("Video failed to prepare in time. Falling back to Login scene.");
+            OnVideoFinished(null);
+        }
+    }
+    private void OnVideoError(VideoPlayer vp, string message)
+    {
+        Debug.LogWarning("Video failed to load: " + message);
+        OnVideoFinished(vp);
+    }
     private void OnVideoPrepared(VideoPlayer vp)
     {
         Debug.Log("✅ Video Prepared from cache. Forcing Muted Autoplay...");
+
+        if (fallbackRoutine != null)
+        {
+            StopCoroutine(fallbackRoutine);
+            fallbackRoutine = null;
+        }
+
+        //skipButton.gameObject.SetActive(true);
 
         // 1. Mute the video player immediately. 
         // This bypasses the 'AudioContext' block you are seeing.
@@ -112,6 +141,12 @@ public class VideoEndSceneLoader : MonoBehaviour
 
         //videoDoneMethodCalled = true;
 
+        if (fallbackRoutine != null)
+        {
+            StopCoroutine(fallbackRoutine);
+            fallbackRoutine = null;
+        }
+
         videoPlayer.prepareCompleted -= OnVideoPrepared;
         videoPlayer.loopPointReached -= OnVideoFinished;
 
@@ -122,7 +157,7 @@ public class VideoEndSceneLoader : MonoBehaviour
         //LoadingBridge.IsAddressableScene = false;
         //LoadingBridge.pauseProfileApiCall = true;
         //SceneManager.LoadScene(sceneToLoad);
-        SceneManager.LoadScene("Login");
+        SceneManager.LoadSceneAsync("Login");
     }
 
     void SetBaseUrl(string url)
@@ -136,5 +171,11 @@ public class VideoEndSceneLoader : MonoBehaviour
 
         ApiEndpoints.UpdataBaseUrl(url);
 
+    }
+
+    void SkipVideo()
+    {
+        Debug.Log("Skip Video Clicked");
+        OnVideoFinished(null);
     }
 }

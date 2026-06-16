@@ -10,13 +10,18 @@ public class BuffaloXtraReelPowerFreeGameTransitionController : MonoBehaviour
 
     public static BuffaloXtraReelPowerFreeGameTransitionController Instance;
 
-    [SerializeField] private SpriteRenderer freeSpinBackground;
+    [SerializeField] private SpriteRenderer baseGameBG;
+    [SerializeField] private SpriteRenderer freeSpinBG;
+    [SerializeField] private SpriteRenderer baseGameBG1;
+    [SerializeField] private SpriteRenderer freeSpinBG1;
     [SerializeField] private GameObject freeSpinWinFrame;
     [SerializeField] private GameObject freeSpinStartFrame;
     [SerializeField] private GameObject freeSpinCountObject;
     //[SerializeField] private GameObject freeSpinTitle;
     public TMP_Text freeSpinWinText;
     private Coroutine glowCoroutine;
+
+    private bool isFreeSpinStartClick;
 
     private BuffaloXtraReelPowerFreeSpinController freeSpinController;
 
@@ -53,7 +58,20 @@ public class BuffaloXtraReelPowerFreeGameTransitionController : MonoBehaviour
     {
         StartCoroutine(EndFreeSpin());
     }
+    public bool IsFreeSpinStartClicked()
+    { 
+        return isFreeSpinStartClick;
+    }
+    public void StartFreeSpinsAfterButtonClick()
+    {
+        if (!isFreeSpinStartClick) return;
 
+        isFreeSpinStartClick = false;
+
+        BuffaloXtraReelPowerUIManager.Instance.UpdateButtons("Free Spin");
+
+        freeSpinController.StartFreeSpins();
+    }
     public void UpdateFreeSpinsCount(int freeSpins)
     {
         freeSpinController.UpdateFreeSpins(freeSpins);
@@ -70,13 +88,13 @@ public class BuffaloXtraReelPowerFreeGameTransitionController : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
 
-        //ZombieParadiseUIManager.Instance.PlaySound("GameTransition");
-        PopupAnimation(freeSpinStartFrame, 1f, 0.5f, true);
+        BuffaloXtraReelPowerUIManager.Instance.PlaySound("FreeSpinStart");
+        PopupAnimation(freeSpinStartFrame, 1f, 1f, true);
 
         yield return new WaitForSeconds(2.5f);
 
         StopCoroutine(glowCoroutine);
-        PopupAnimation(freeSpinStartFrame, 1f, 0.5f, false);
+        PopupAnimation(freeSpinStartFrame, 1f, 1f, false);
 
         yield return new WaitForSeconds(1f);
 
@@ -89,11 +107,14 @@ public class BuffaloXtraReelPowerFreeGameTransitionController : MonoBehaviour
         freeSpinController.InitialFreeSpinText();
 
         yield return new WaitForSeconds(1.5f);
+        isFreeSpinStartClick = true;
+        // Show spin button and allow user to click it
+        BuffaloXtraReelPowerUIManager.Instance.UpdateButtons("Free Spin Ready");
 
-        BuffaloXtraReelPowerUIManager.Instance.UpdateButtons("Free Spin");
-        //ZombieParadiseUIManager.Instance.PlayMusic("FreeSpin");
+        //BuffaloXtraReelPowerUIManager.Instance.UpdateButtons("Free Spin");
+        ////ZombieParadiseUIManager.Instance.PlayMusic("FreeSpin");
 
-        freeSpinController.StartFreeSpins();
+        //freeSpinController.StartFreeSpins();
     }
 
     private IEnumerator EndFreeSpin()
@@ -115,7 +136,7 @@ public class BuffaloXtraReelPowerFreeGameTransitionController : MonoBehaviour
         //BuffaloXtraReelPowerUIManager.Instance.UpdateButtons("Transition End");
         //ZombieParadiseUIManager.Instance.PlaySound("FreeSpinWin");
 
-        PopupAnimation(freeSpinWinFrame, 1f, 0.5f, true);
+        PopupAnimation(freeSpinWinFrame, 1f, 1f, true);
 
         yield return new WaitForSeconds(1f);
 
@@ -149,12 +170,23 @@ public class BuffaloXtraReelPowerFreeGameTransitionController : MonoBehaviour
 
     private void PopupAnimation(GameObject obj, float scale, float duration, bool state)
     {
-        obj.transform.parent.gameObject.SetActive(state);
+        obj.transform.DOKill();
 
-        obj.transform.localScale = Vector3.one * 0.5f;
+        if (state)
+        {
+            obj.transform.parent.gameObject.SetActive(true);
+            obj.transform.localScale = Vector3.one * 0.5f;
 
-        obj.transform.DOScale(scale, duration * 1.2f)
-            .SetEase(Ease.OutBack);
+            obj.transform.DOScale(scale, duration).SetEase(Ease.OutBack);
+        }
+        else
+        {
+            obj.transform.DOScale(0f, duration).SetEase(Ease.InBack)
+            .OnComplete(() =>
+                {
+                    obj.transform.parent.gameObject.SetActive(false);
+                });
+        }
     }
     #endregion
 
@@ -162,13 +194,59 @@ public class BuffaloXtraReelPowerFreeGameTransitionController : MonoBehaviour
 
     private void ShowBackground()
     {
-        freeSpinBackground.DOFade(1f, 2f);
+        // Kill old tweens to avoid fade conflicts
+        baseGameBG.DOKill();
+        freeSpinBG.DOKill();
+        baseGameBG1.DOKill();
+        freeSpinBG1.DOKill();
+
+        // Make sure free spin objects are active
+        freeSpinBG.gameObject.SetActive(true);
+        freeSpinBG.gameObject.SetActive(true);
+        baseGameBG.gameObject.SetActive(true);
+        baseGameBG1.gameObject.SetActive(true);
+
+        Sequence seq = DOTween.Sequence();
+
+        seq.Join(baseGameBG.DOFade(0f, 1f).SetEase(Ease.InOutSine));
+        seq.Join(baseGameBG1.DOFade(0f, 1f).SetEase(Ease.InOutSine));
+
+        seq.Join(freeSpinBG.DOFade(1f, 1f).SetEase(Ease.InOutSine));
+        seq.Join(freeSpinBG1.DOFade(1f, 1f).SetEase(Ease.InOutSine));
+
+        seq.OnComplete(() =>
+        {
+            baseGameBG.gameObject.SetActive(false);
+            baseGameBG1.gameObject.SetActive(false);
+        });
     }
 
     private void HideBackground()
     {
-        freeSpinBackground.DOFade(0f, 2f);
-    }
+        // Kill old tweens to avoid fade conflicts
+        baseGameBG.DOKill();
+        freeSpinBG.DOKill();
+        baseGameBG1.DOKill();
+        freeSpinBG1.DOKill();
 
+        // Make sure normal objects are active before fading in
+        baseGameBG.gameObject.SetActive(true);
+        baseGameBG1.gameObject.SetActive(true);
+        freeSpinBG.gameObject.SetActive(true);
+        freeSpinBG1.gameObject.SetActive(true);
+
+        Sequence seq = DOTween.Sequence();
+
+        seq.Join(baseGameBG.DOFade(1f, 1f).SetEase(Ease.InOutSine));
+        seq.Join(baseGameBG1.DOFade(1f, 1f).SetEase(Ease.InOutSine));
+
+        seq.Join(freeSpinBG.DOFade(0f, 1f).SetEase(Ease.InOutSine));
+        seq.Join(freeSpinBG1.DOFade(0f, 1f).SetEase(Ease.InOutSine));
+        seq.OnComplete(() =>
+        {
+            freeSpinBG.gameObject.SetActive(false);
+            freeSpinBG1.gameObject.SetActive(false);
+        });
+    }
     #endregion
 }

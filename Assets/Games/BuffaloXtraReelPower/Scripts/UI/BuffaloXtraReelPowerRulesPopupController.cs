@@ -48,7 +48,7 @@ public class BuffaloXtraReelPowerRulesPopupController : MonoBehaviour
 
     public void ClosePopup()
     {
-        //BuffaloXtraReelPowerUIManager.Instance.PlaySound("Button");
+        BuffaloXtraReelPowerUIManager.Instance.PlaySound("Button");
         rulesPopupPanel.SetActive(false);
     }
     private void ShowPage(int index)
@@ -65,13 +65,13 @@ public class BuffaloXtraReelPowerRulesPopupController : MonoBehaviour
 
     private void PreviousPage()
     {
-        //BuffaloXtraReelPowerUIManager.Instance.PlaySound("Button");
+        BuffaloXtraReelPowerUIManager.Instance.PlaySound("Button");
         ShowPage(currentPageIndex - 1);
     }
 
     private void NextPage()
     {
-        //BuffaloXtraReelPowerUIManager.Instance.PlaySound("Button");
+        BuffaloXtraReelPowerUIManager.Instance.PlaySound("Button");
         ShowPage(currentPageIndex + 1);
     }
     private void UpdatePageIndicators()

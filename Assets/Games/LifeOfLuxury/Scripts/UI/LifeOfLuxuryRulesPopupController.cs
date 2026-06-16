@@ -99,6 +99,7 @@ public class LifeOfLuxuryRulesPopupController : MonoBehaviour, IBeginDragHandler
 
     public void ClosePopup()
     {
+        LifeOfLuxuryUIManager.Instance.PlaySound("Button");
         rulesPopupPanel.SetActive(false);
     }
 

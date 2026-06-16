@@ -17,7 +17,9 @@ public enum SceneAccessType
 public enum BuildMode
 {
     Local,
-    Production
+    LocalTestServer,
+    Production,
+    Custom
 }
 
 [CreateAssetMenu(fileName = "BuildConfig", menuName = "Build/Build Config")]

@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -37,6 +39,7 @@ public class LifeOfLuxurySlotMachine : BaseSlotMachine
     // Win
     private float winAmount = 0f;
 
+    [SerializeField] private TMP_Text multiplierText;
     // Coroutines
     private Coroutine spinCoroutine;
     private Coroutine stopCoroutine;
@@ -96,14 +99,12 @@ public class LifeOfLuxurySlotMachine : BaseSlotMachine
     #endregion
 
     #region Spin Result Receive
+
     [Header("Fake FreeSpin")]
     public bool isFakeFreeGame;
     public int fakeFreeSpinCount;
     public int fakeLineMuiltiplier;
-    public void SetSpinResult(SpinResult spinResult)
-    {
-        currentSpinResult = spinResult;
-    }
+
     public int scatterCount;
     private void OnSpinResultReceived(BaseSpinResult result)
     {
@@ -193,8 +194,8 @@ public class LifeOfLuxurySlotMachine : BaseSlotMachine
         isStopBtnPressed = false;
         isSlotAnimationCompleted = false;
         LifeOfLuxuryUIManager.Instance.winAnimationCompleted = true;
-        LifeOfLuxuryUIManager.Instance.StopCurrentSFX();
-        //IrishPotLuckUIManager.Instance.PlaySound("Spin");
+        //LifeOfLuxuryUIManager.Instance.StopCurrentSFX();
+        LifeOfLuxuryUIManager.Instance.PlaySpinMusic("Spin");
         ClearPaylines();
         LifeOfLuxuryPaylineController.Instance.StopPaylines();
         LifeOfLuxuryPaylineController.Instance.ClearPaylineData();
@@ -269,7 +270,7 @@ public class LifeOfLuxurySlotMachine : BaseSlotMachine
             {
                 LifeOfLuxuryUIManager.Instance.UpdateButtons("Stop");
             }
-            //IrishPotLuckUIManager.Instance.StopSpinMusic("Spin");
+            LifeOfLuxuryUIManager.Instance.StopSpinMusic("Spin");
             LifeOfLuxuryUIManager.Instance.StopCurrentSFX();
             isSpinAgain = true;
             yield break;
@@ -322,7 +323,7 @@ public class LifeOfLuxurySlotMachine : BaseSlotMachine
                     reels[i].StopSpin();
                 }
             }
-            //IrishPotLuckUIManager.Instance.PlaySound("ReelStop"); 
+            LifeOfLuxuryUIManager.Instance.PlaySound("ReelStop");
         }
         else // SpinOneByOne mode
         {
@@ -339,7 +340,7 @@ public class LifeOfLuxurySlotMachine : BaseSlotMachine
                     reels[i].ApplyFinalResult(i);
                     reels[i].StopSpin();
                 }
-                //IrishPotLuckUIManager.Instance.PlaySound("ReelStop");
+                LifeOfLuxuryUIManager.Instance.PlaySound("ReelStop");
             }
         }
 
@@ -347,12 +348,11 @@ public class LifeOfLuxurySlotMachine : BaseSlotMachine
             StopButtonPressed();
 
         LifeOfLuxuryUIManager.Instance.SetStopInteractable(false);
+        LifeOfLuxuryUIManager.Instance.StopSpinMusic("Spin");
+        LifeOfLuxuryUIManager.Instance.StopCurrentSFX();
         yield return StartCoroutine(WaitForAllReelsToStop());
 
         ForceAllReelsToFinalPosition();
-
-        //IrishPotLuckUIManager.Instance.StopSpinMusic("Spin");
-        LifeOfLuxuryUIManager.Instance.StopCurrentSFX();
         ProcessSpinResult();
     }
 
@@ -403,7 +403,7 @@ public class LifeOfLuxurySlotMachine : BaseSlotMachine
             }
         }
 
-        if (hasPaylines || isFreeGameReady)
+        if (hasPaylines || isFreeGameReady || isFreeGame)
         {
             ShowPaylines();
         }
@@ -411,7 +411,11 @@ public class LifeOfLuxurySlotMachine : BaseSlotMachine
         {
             SetSlotAnimationCompleted();
         }
-
+        if (winAmount > 0f)
+        {
+            LifeOfLuxuryUIManager.Instance.StopCurrentSFX();
+            LifeOfLuxuryUIManager.Instance.PlaySound("Win");
+        }
         InSpin = false;
         isSpinAgain = true;
 
@@ -445,8 +449,111 @@ public class LifeOfLuxurySlotMachine : BaseSlotMachine
     private void ShowPaylines()
     {
         LifeOfLuxuryPaylineController.Instance.StartPayline(isFreeGameReady);
-    }
 
+        ShowFreeSpinMultiplierPopup();
+    }
+    private void ShowFreeSpinMultiplierPopup()
+    {
+        if (multiplierText == null)
+            return;
+
+        if (!isFreeGame)
+            return;
+
+        if (LifeOfLuxuryFreeSpinController.Instance != null &&
+            LifeOfLuxuryFreeSpinController.Instance.IsLastFreeSpin())
+            return;
+
+        if (freeSpinLineMultiplier <= 0)
+            return;
+
+        if (!HasWildInReels())
+            return;
+
+        multiplierText.text = ToSpriteDigits(freeSpinLineMultiplier);
+        LifeOfLuxuryUIManager.Instance.StopCurrentSFX();
+        LifeOfLuxuryUIManager.Instance.PlaySound("Win");
+        PopupAnimation(multiplierText.gameObject, 1.1f, 0.75f, true);
+    }
+    private bool HasWildInReels()
+    {
+        if (reels == null)
+            return false;
+
+        for (int x = 0; x < reels.Count; x++)
+        {
+            if (reels[x] == null || reels[x].slots == null)
+                continue;
+
+            for (int y = 0; y < 3; y++)
+            {
+                var slot = reels[x].slots[y + 1];
+                if (slot == null)
+                    continue;
+
+                if (isWildSlot(slot.slotType))
+                    return true;
+            }
+        }
+
+        return false;
+    }
+    public string ToSpriteDigits(int multiplier)
+    {
+        string value = multiplier.ToString(CultureInfo.InvariantCulture) + "X";
+
+        StringBuilder sb = new StringBuilder(value.Length * 10);
+
+        for (int i = 0; i < value.Length; i++)
+        {
+            char ch = value[i];
+
+            if (ch >= '0' && ch <= '9')
+            {
+                sb.Append($"<sprite index={ch - '0'}>");
+            }
+            else if (ch == 'X')
+            {
+                sb.Append("<sprite index=10>");
+            }
+        }
+
+        return sb.ToString();
+    }
+    public bool isPopupEnd = true;
+    private void PopupAnimation(GameObject obj, float scale, float duration, bool state)
+    {
+        RectTransform rt = obj.GetComponent<RectTransform>();
+        GameObject parent = rt.parent.gameObject;
+        isPopupEnd = false;
+        parent.SetActive(state);
+
+        Vector3 originalScale = rt.localScale;
+
+        rt.DOKill();
+        rt.localScale = Vector3.zero;
+
+        Sequence seq = DOTween.Sequence();
+
+        seq.Append(
+            rt.DOScale(scale, duration)
+              .SetEase(Ease.OutBack)
+        );
+
+        seq.AppendInterval(0.2f);
+
+        seq.Append(
+            rt.DOScale(originalScale, duration * 0.8f)
+              .SetEase(Ease.InBack)
+        );
+
+        seq.OnComplete(() =>
+        {
+            parent.SetActive(false);
+            rt.localScale = originalScale;
+            isPopupEnd = true;
+        });
+    }
     #endregion
 
     #region Helper Functions
@@ -578,6 +685,15 @@ public class LifeOfLuxurySlotMachine : BaseSlotMachine
         {
             return currentSpinResult.totalWin;
         }
+    }
+    public bool isWildSlot(LifeOfLuxurySlotType slotType)
+    {
+        if (slotType == LifeOfLuxurySlotType.Wild)
+        {
+            return true;
+        }
+
+        return false;
     }
     #endregion
 }

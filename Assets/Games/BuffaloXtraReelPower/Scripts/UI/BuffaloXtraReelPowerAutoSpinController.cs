@@ -66,8 +66,6 @@ public class BuffaloXtraReelPowerAutoSpinController : MonoBehaviour
     {
         while (!cancelRequested)
         {
-            BuffaloXtraReelPowerUIManager.Instance.winAnimationCompleted = true;
-
             if (!firstAuto)
                 yield return new WaitForSeconds(delayBetweenSpins);
             else
@@ -82,21 +80,20 @@ public class BuffaloXtraReelPowerAutoSpinController : MonoBehaviour
             if (BuffaloXtraReelPowerSlotMachine.Instance.isFreeGameReady)
                 break;
 
-            float balance = UserManager.Instance.Coins;
-
+            BuffaloXtraReelPowerUIManager.Instance.winAnimationCompleted = true;
             if (!GameBetServices.Instance.TrySpinWithCurrentBet(betAmount))
                 break;
-
-            SlotSpinService.Instance.Spin(betAmount);
-
-            if (BuffaloXtraReelPowerUIManager.Instance.CurrentButtonSet() != "Auto")
-                BuffaloXtraReelPowerUIManager.Instance.UpdateButtons("Auto");
 
             if (BuffaloXtraReelPowerUIManager.Instance.textAnimationCoroutine != null)
                 StopCoroutine(BuffaloXtraReelPowerUIManager.Instance.textAnimationCoroutine);
 
             if (BuffaloXtraReelPowerUIManager.Instance.winCoroutine != null)
                 StopCoroutine(BuffaloXtraReelPowerUIManager.Instance.winCoroutine);
+
+            SlotSpinService.Instance.Spin(betAmount);
+
+            if (BuffaloXtraReelPowerUIManager.Instance.CurrentButtonSet() != "Auto")
+                BuffaloXtraReelPowerUIManager.Instance.UpdateButtons("Auto");
 
             yield return new WaitUntil(() => BuffaloXtraReelPowerSlotMachine.Instance.isSpinAgain);
 

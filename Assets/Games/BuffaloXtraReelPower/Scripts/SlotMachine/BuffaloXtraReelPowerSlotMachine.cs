@@ -97,11 +97,6 @@ public class BuffaloXtraReelPowerSlotMachine : BaseSlotMachine
     public bool isFakeFreeGame;
     public int fakeFreeSpinCount;
 
-    //public void SetSpinResult(SpinResult spinResult)
-    //{
-    //    currentSpinResult = spinResult;
-    //}
-
     public int scatterCount;
 
     private void OnSpinResultReceived(BaseSpinResult result)
@@ -185,10 +180,10 @@ public class BuffaloXtraReelPowerSlotMachine : BaseSlotMachine
 
         BuffaloXtraReelPowerUIManager.Instance.winAnimationCompleted = true;
         BuffaloXtraReelPowerUIManager.Instance.StopCurrentSFX();
-
+        BuffaloXtraReelPowerUIManager.Instance.PlaySpinMusic("Spin");
         ClearPaylines();
-        //BuffaloXtraReelPowerPaylineController.Instance.StopPaylines();
-        //BuffaloXtraReelPowerPaylineController.Instance.ClearPaylineData();
+        BuffaloXtraReelPowerPaylineController.Instance.StopPaylines();
+        BuffaloXtraReelPowerPaylineController.Instance.ClearPaylineData();
         BuffaloXtraReelPowerUIManager.Instance.SetStopInteractable(false);
 
         if (settings.spinSettings.startSpin == BuffaloXtraReelPowerSpinMode.SpinAll)
@@ -261,6 +256,7 @@ public class BuffaloXtraReelPowerSlotMachine : BaseSlotMachine
                 BuffaloXtraReelPowerUIManager.Instance.UpdateButtons("Stop");
             }
 
+            BuffaloXtraReelPowerUIManager.Instance.StopSpinMusic("Spin");
             BuffaloXtraReelPowerUIManager.Instance.StopCurrentSFX();
             isSpinAgain = true;
             yield break;
@@ -318,6 +314,7 @@ public class BuffaloXtraReelPowerSlotMachine : BaseSlotMachine
                     reels[i].StopSpin();
                 }
             }
+            BuffaloXtraReelPowerUIManager.Instance.PlaySound("ReelStop");
         }
         else
         {
@@ -333,6 +330,7 @@ public class BuffaloXtraReelPowerSlotMachine : BaseSlotMachine
                     reels[i].ApplyFinalResult(i);
                     reels[i].StopSpin();
                 }
+                BuffaloXtraReelPowerUIManager.Instance.PlaySound("ReelStop");
             }
         }
 
@@ -340,12 +338,11 @@ public class BuffaloXtraReelPowerSlotMachine : BaseSlotMachine
             StopButtonPressed();
 
         BuffaloXtraReelPowerUIManager.Instance.SetStopInteractable(false);
-
+        BuffaloXtraReelPowerUIManager.Instance.StopSpinMusic("Spin");
+        BuffaloXtraReelPowerUIManager.Instance.StopCurrentSFX();
         yield return StartCoroutine(WaitForAllReelsToStop());
 
         ForceAllReelsToFinalPosition();
-
-        BuffaloXtraReelPowerUIManager.Instance.StopCurrentSFX();
         ProcessSpinResult();
     }
 
@@ -400,7 +397,10 @@ public class BuffaloXtraReelPowerSlotMachine : BaseSlotMachine
         {
             SetSlotAnimationCompleted();
         }
-
+        if (winAmount > 0f)
+        {
+            BuffaloXtraReelPowerUIManager.Instance.PlaySound("Win");
+        }
         InSpin = false;
         isSpinAgain = true;
 

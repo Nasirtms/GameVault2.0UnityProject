@@ -13,6 +13,7 @@ public class CoinUpdateManager : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float pollingInterval = 3f;
+    [SerializeField] private float pollingIntervalTimer = 0;
     [SerializeField] private int serverPort = 3001;
     [SerializeField] private bool enableServerInEditor = true;
     [SerializeField] private string localUrl = "http://localhost:3001";
@@ -45,39 +46,49 @@ public class CoinUpdateManager : MonoBehaviour
 
     private void Start()
     {
-        startTime = DateTime.UtcNow;
-        currentUserGameId = GetCurrentUserGameId();
+        //startTime = DateTime.UtcNow;
+        //currentUserGameId = GetCurrentUserGameId();
         
-        if (!string.IsNullOrEmpty(currentUserGameId))
-        {
-            StartCoroutine(InitializeWithQueueClear());
-        }
-        else
-        {
-            StartNormalOperation();
-        }
+        //if (!string.IsNullOrEmpty(currentUserGameId))
+        //{
+        //    StartCoroutine(InitializeWithQueueClear());
+        //}
+        //else
+        //{
+        //    StartNormalOperation();
+        //}
     }
 
     private void Update()
     {
-#if UNITY_WEBGL || (!UNITY_EDITOR && !UNITY_STANDALONE)
-        if (isInitialQueueCleared && Time.time - lastPollTime >= pollingInterval)
+
+#if UNITY_WEBGL// || (!UNITY_EDITOR && !UNITY_STANDALONE)
+
+        pollingIntervalTimer += Time.deltaTime;
+        if (pollingIntervalTimer >= pollingInterval)
         {
-            lastPollTime = Time.time;
-            StartCoroutine(PollForUpdates());
+            pollingIntervalTimer = 0;
+            PollForUpdatesMethod();
         }
 #endif
+        //#if UNITY_WEBGL || (!UNITY_EDITOR && !UNITY_STANDALONE)
+        //        if (isInitialQueueCleared && Time.time - lastPollTime >= pollingInterval)
+        //        {
+        //            lastPollTime = Time.time;
+        //            StartCoroutine(PollForUpdates());
+        //        }
+        //#endif
     }
 
     private void OnDestroy()
     {
-#if UNITY_STANDALONE || UNITY_EDITOR
-        StopServer();
-#endif
-        if (clearQueueCoroutine != null)
-        {
-            StopCoroutine(clearQueueCoroutine);
-        }
+//#if UNITY_STANDALONE || UNITY_EDITOR
+//        StopServer();
+//#endif
+//        if (clearQueueCoroutine != null)
+//        {
+//            StopCoroutine(clearQueueCoroutine);
+//        }
         if (instance == this)
         {
             instance = null;
@@ -86,9 +97,9 @@ public class CoinUpdateManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-#if UNITY_STANDALONE || UNITY_EDITOR
-        StopServer();
-#endif
+//#if UNITY_STANDALONE || UNITY_EDITOR
+//        StopServer();
+//#endif
     }
 
     private string GetCurrentUserGameId()
@@ -245,6 +256,11 @@ public class CoinUpdateManager : MonoBehaviour
         lastPollTime = Time.time;
     }
 
+    private void PollForUpdatesMethod()
+    {
+        WebSocketManager.Instance?.Send(new WebSocketMessages.CoinPollMessage_Sent());
+    }
+
     private IEnumerator PollForUpdates()
     {
         if (isProcessingUpdate || !isInitialQueueCleared) yield break;
@@ -262,22 +278,24 @@ public class CoinUpdateManager : MonoBehaviour
 #endif
 
         string pollUrl = $"{baseUrl}/api/coin-update/poll?userId={UnityWebRequest.EscapeURL(currentUserGameId)}";
-        
-        using (UnityWebRequest request = UnityWebRequest.Get(pollUrl))
-        {
-            yield return request.SendWebRequest();
+
+        WebSocketManager.Instance?.Send(new WebSocketMessages.CoinPollMessage_Sent());
+
+        //using (UnityWebRequest request = UnityWebRequest.Get(pollUrl))
+        //{
+        //    yield return request.SendWebRequest();
             
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                string response = request.downloadHandler.text;
-                if (!string.IsNullOrEmpty(response) && response != "null" && response != "[]" && response != "{}")
-                {
-                    isProcessingUpdate = true;
-                    ProcessPollingResponse(response);
-                    isProcessingUpdate = false;
-                }
-            }
-        }
+        //    if (request.result == UnityWebRequest.Result.Success)
+        //    {
+        //        string response = request.downloadHandler.text;
+        //        if (!string.IsNullOrEmpty(response) && response != "null" && response != "[]" && response != "{}")
+        //        {
+        //            isProcessingUpdate = true;
+        //            ProcessPollingResponse(response);
+        //            isProcessingUpdate = false;
+        //        }
+        //    }
+        //}
     }
 
     private void ProcessPollingResponse(string jsonResponse)
@@ -495,13 +513,13 @@ public class UnityMainThreadDispatcher : MonoBehaviour
         return instance;
     }
 
-    private void Update()
-    {
-        while (actionQueue.Count > 0)
-        {
-            actionQueue.Dequeue()?.Invoke();
-        }
-    }
+    //private void Update()
+    //{
+    //    while (actionQueue.Count > 0)
+    //    {
+    //        actionQueue.Dequeue()?.Invoke();
+    //    }
+    //}
 
     public void Enqueue(Action action)
     {

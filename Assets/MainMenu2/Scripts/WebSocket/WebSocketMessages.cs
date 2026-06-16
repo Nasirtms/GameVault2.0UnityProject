@@ -40,10 +40,11 @@ public class WebSocketMessages
     [Serializable]
     public class CoinPollMessage_Sent : Request_Base
     {
-        public string userId;
+        //public string userId;
 
         public CoinPollMessage_Sent()
         {
+            //userId = UserManager.Instance.UserId;
             type = "coin-poll";
         }
     }
@@ -51,6 +52,6 @@ public class WebSocketMessages
     [Serializable]
     public class CoinPollMessage_Received : Response_Base
     {
-
+        public float coinBalance;
     }
 }

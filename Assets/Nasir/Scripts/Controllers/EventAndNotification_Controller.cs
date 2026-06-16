@@ -103,7 +103,12 @@ public class EventAndNotification_Controller : MonoBehaviour
                         popupNotification.name = "notification";
                         ActivePopup = popupNotification;
                     }
-                    var closeBtn = popupNotification.transform.GetChild(0).GetChild(1).GetComponent<Button>();
+                    if (popupNotification == null)
+                    {
+                        yield return null;
+                    }
+
+                    var closeBtn = popupNotification.transform.GetChild(0).GetChild(2).GetComponent<Button>();
                     closeBtn.onClick.AddListener(() => HidePopup(popupNotification));
 
                     if (notificationSprite != null)

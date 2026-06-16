@@ -512,7 +512,7 @@ public class WolfMoonLinkSlotMachine : BaseSlotMachine
 
     public float GetWinAmount()
     {
-        float winAmount = forcedWin ? forcedPrize : currentSpinResult.totalWin;
+        winAmount = forcedWin ? forcedPrize : currentSpinResult.totalWin;
         return winAmount;
     }
 

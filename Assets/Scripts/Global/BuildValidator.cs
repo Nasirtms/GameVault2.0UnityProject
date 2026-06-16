@@ -41,6 +41,12 @@ class BuildValidator : IPreprocessBuildWithReport
             config.gameType = SceneAccessType.Dev;
             config.isPlaySplashVideo = false;
         }
+        else if (config.buildMode == BuildMode.LocalTestServer)
+        {
+            config.urlType = UrlType.LocalTestServer;
+            config.gameType = SceneAccessType.Publish;
+            config.isPlaySplashVideo = true;
+        }
         else if (config.buildMode == BuildMode.Production)
         {
             config.urlType = UrlType.Production;

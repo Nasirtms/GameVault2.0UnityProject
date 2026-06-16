@@ -26,7 +26,7 @@ public class InvadersPlanetMoolahPaylineController : MonoBehaviour
 
     public bool isShowing = false;
 
-    [SerializeField] private GameObject overlay;
+    //[SerializeField] private GameObject overlay;
 
     [Header("Results")]
     [ShowInInspector][ReadOnly] private List<InvadersPlanetMoolahPaylineResult> spinResult = new List<InvadersPlanetMoolahPaylineResult>();
@@ -88,18 +88,14 @@ public class InvadersPlanetMoolahPaylineController : MonoBehaviour
 
             if (paylineData != null)
             {
-                activePaylines.Add(new InvadersPlanetMoolahPaylineEntry(
-                    paylineData,
-                    result.reelLimit,
-                    result.winText
-                ));
+                activePaylines.Add(new InvadersPlanetMoolahPaylineEntry(paylineData,result.reelLimit,result.winText));
             }
         }
 
         if (activePaylines.Count == 0 && !resultfreeGameReady)
         {
             InvadersPlanetMoolahSlotMachine.Instance.isSlotAnimationCompleted = true;
-            overlay.SetActive(false);
+            //overlay.SetActive(false);
             return;
         }
 
@@ -124,7 +120,7 @@ public class InvadersPlanetMoolahPaylineController : MonoBehaviour
         }
 
         ResetAllSlotsToDefault();
-        overlay.SetActive(false);
+        //overlay.SetActive(false);
     }
 
     private IEnumerator PlayPaylines()
@@ -140,7 +136,7 @@ public class InvadersPlanetMoolahPaylineController : MonoBehaviour
             InvadersPlanetMoolahSlotMachine.Instance.isSlotAnimationCompleted = true;
         }
 
-        overlay.SetActive(true);
+        //overlay.SetActive(true);
 
         if (resultfreeGameReady)
         {
@@ -192,7 +188,6 @@ public class InvadersPlanetMoolahPaylineController : MonoBehaviour
 
                 if (entry.payline.ToMatrix()[x, y] == 1 && x < entry.reelLimit)
                 {
-                    slot.SetSpriteToPayline();
                     slot.PlayAnimation();
                 }
             }
@@ -214,7 +209,6 @@ public class InvadersPlanetMoolahPaylineController : MonoBehaviour
             {
                 if (slot != null)
                 {
-                    slot.SetSpriteToDefault();
                     slot.StopAnimation();
                 }
             }

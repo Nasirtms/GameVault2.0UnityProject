@@ -129,30 +129,6 @@ public class LifeOfLuxurySlotScript : MonoBehaviour
         }
     }
 
-    //public void PlayAnimation()
-    //{
-    //    StopAnimation();
-
-    //    GameObject activeVisual = GetActiveSlotVisual();
-    //    if (activeVisual == null)
-    //        return;
-
-    //    slotAnimator = activeVisual.GetComponentInParent<Animator>();
-
-    //    if (slotAnimator != null && !string.IsNullOrEmpty(slotAnimationBool))
-    //    {
-    //        slotAnimator.SetBool(slotAnimationBool, true);
-    //    }
-    //    //slotAnimator = slots[currentResource.slotTypeIndex].GetComponentInParent<Animator>();
-    //    //slotAnimator.SetBool(slotAnimationBool, true);
-    //}
-    //public void StopAnimation()
-    //{
-    //    if (slotAnimator != null)
-    //    {
-    //        slotAnimator.SetBool(slotAnimationBool, false);
-    //    }
-    //}
     private GameObject GetActiveSlotVisual()
     {
         if (currentResource.slotTypeIndex < 0 || currentResource.slotTypeIndex >= slots.Length)

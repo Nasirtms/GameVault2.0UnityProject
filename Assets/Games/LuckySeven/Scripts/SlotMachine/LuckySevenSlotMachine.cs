@@ -28,7 +28,7 @@ public class LuckySevenSlotMachine : BaseSlotMachine
 
     // Win
     private float winAmount = 0f;
-    public SpriteRenderer winImage;
+    //public SpriteRenderer winImage;
     public float winFadeDuration = 0.4f;
     private Tween winImageTween;
 
@@ -150,7 +150,7 @@ public class LuckySevenSlotMachine : BaseSlotMachine
 
     private IEnumerator StartSpin()
     {
-        StopWinImageAnimation();
+        //StopWinImageAnimation();
         LuckySevenUIManager.Instance.UpdateWinAmount(0f, false);
         LuckySevenUIManager.Instance.winAnimationCompleted = true;
         winAmount = 0f;
@@ -161,8 +161,8 @@ public class LuckySevenSlotMachine : BaseSlotMachine
         isStopBtnPressed = false;
         isSlotAnimationCompleted = false;
 
-        winAnimator.SetBool("Play", false);
-        winAnimator.enabled = false;
+        //winAnimator.SetBool("Play", false);
+        //winAnimator.enabled = false;
 
         LuckySevenUIManager.Instance.PlaySpinMusic("Spin");
         ClearPaylines();
@@ -341,14 +341,14 @@ public class LuckySevenSlotMachine : BaseSlotMachine
 
         if (winAmount > 0f)
         {
-            PlayWinImageAnimation();
+            //PlayWinImageAnimation();
 
             float betAmount = LuckySevenUIManager.Instance.CurrentBet();
             GameBetServices.Instance.PlayWinAnimation(betAmount, winAmount, currentSpinResult.newBalance);
         }
         else
         {
-            StopWinImageAnimation();
+            //StopWinImageAnimation();
         }
 
         if ((currentSpinResult.paylineWins != null && currentSpinResult.paylineWins.Count > 0))
@@ -381,35 +381,35 @@ public class LuckySevenSlotMachine : BaseSlotMachine
     {
         GameBetServices.Instance.UpdateCoins(currentSpinResult.newBalance);
     }
-    private void PlayWinImageAnimation()
-    {
-        winImage.gameObject.SetActive(true);
-        if (winImage == null) return;
+    //private void PlayWinImageAnimation()
+    //{
+    //    winImage.gameObject.SetActive(true);
+    //    if (winImage == null) return;
 
-        winImageTween?.Kill();
+    //    winImageTween?.Kill();
 
-        Color c = winImage.color;
-        c.a = 0f;
-        winImage.color = c;
+    //    Color c = winImage.color;
+    //    c.a = 0f;
+    //    winImage.color = c;
 
-        winImageTween = winImage
-            .DOFade(1f, winFadeDuration)
-            .SetLoops(-1, LoopType.Yoyo)
-            .SetEase(Ease.InOutSine);
-    }
+    //    winImageTween = winImage
+    //        .DOFade(1f, winFadeDuration)
+    //        .SetLoops(-1, LoopType.Yoyo)
+    //        .SetEase(Ease.InOutSine);
+    //}
 
-    private void StopWinImageAnimation()
-    {
-        winImage.gameObject.SetActive(false);
-        winImageTween?.Kill();
-        winImageTween = null;
+    //private void StopWinImageAnimation()
+    //{
+    //    winImage.gameObject.SetActive(false);
+    //    winImageTween?.Kill();
+    //    winImageTween = null;
 
-        if (winImage == null) return;
+    //    if (winImage == null) return;
 
-        Color c = winImage.color;
-        c.a = 0f;
-        winImage.color = c;
-    }
+    //    Color c = winImage.color;
+    //    c.a = 0f;
+    //    winImage.color = c;
+    //}
     #endregion
 
     #region Helper Functions
@@ -514,8 +514,8 @@ public class LuckySevenSlotMachine : BaseSlotMachine
     private void ShowPaylines()
     {
         LuckySevenPaylineController.Instance.StartPaylineLoop();
-        winAnimator.enabled = true;
-        winAnimator.SetBool("Play", true);  
+        //winAnimator.enabled = true;
+        //winAnimator.SetBool("Play", true);  
     }
 
     public override void ClearPaylines()

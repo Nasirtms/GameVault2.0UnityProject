@@ -558,10 +558,7 @@ public class InvadersPlanetMoolahSlotMachine : BaseSlotMachine
         isSlotAnimationCompleted = true;
     }
 
-    public override void ClearPaylines()
-    {
-
-    }
+    public override void ClearPaylines(){}
 
     public override void StopSpinGettingError()
     {

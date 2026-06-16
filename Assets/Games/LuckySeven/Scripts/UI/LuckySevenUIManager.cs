@@ -306,29 +306,24 @@ public class LuckySevenUIManager : GameBetServices
         StopSpinMusic("Spin");
         LuckySevenSlotMachine.Instance.isStopBtnPressed = true;
         LuckySevenSlotMachine.Instance.StopWithResult();
-        if (LuckySevenAutoSpinController.isAutoSpinning)
-        {
-            SetStopInteractable(false);
-        }
     }
 
     public void OnClickAuto()
     {
         if (autoSpinController == null) return;
-        StopCurrentSFX();
+        if (LuckySevenAutoSpinController.isAutoSpinning) return;
 
         float betAmount = betController.GetCurrentBet();
 
         if (textAnimationCoroutine != null)
         {
             StopCoroutine(textAnimationCoroutine);
-            //StopWinText("WinText");
         }
         if (winCoroutine != null)
         {
             StopCoroutine(winCoroutine);
         }
-
+        UpdateButtons("Auto");
         autoSpinController.StartAutoSpin(betAmount);
     }
     private void OnClickAutoStop()
@@ -336,12 +331,7 @@ public class LuckySevenUIManager : GameBetServices
         if (autoSpinController == null) return;
 
         PlaySound("Button");
-        //StopSpinMusic("Spin");
         autoSpinController.CancelAutoSpin();
-
-        autoStopButton.gameObject.SetActive(false);
-        autoButton.gameObject.SetActive(true);
-        SetAutoInteractable(false);
     }
     #endregion
 
@@ -384,7 +374,7 @@ public class LuckySevenUIManager : GameBetServices
                 stopButton.interactable = false;
                 break;
 
-            case "Auto Stop":
+            case "AutoStop":
                 interactable = true;
                 spinButton.gameObject.SetActive(true);
                 stopButton.gameObject.SetActive(false);

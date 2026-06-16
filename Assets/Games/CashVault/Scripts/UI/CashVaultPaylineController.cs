@@ -112,7 +112,7 @@ public class CashVaultPaylineController : MonoBehaviour
             {
                 if (slot != null)
                 {
-                    slot.SetSpriteToDefault();
+                    //slot.SetSpriteToDefault();
                     slot.StopAnimation();
                 }
             }
@@ -192,7 +192,7 @@ public class CashVaultPaylineController : MonoBehaviour
 
                 if (entry.slots[x] == y)
                 {
-                    slot.SetSpriteToPayline();
+                    //slot.SetSpriteToPayline();
                     slot.PlayAnimation();
                     slot.PlayBorderAnimation();
                 }
@@ -214,7 +214,7 @@ public class CashVaultPaylineController : MonoBehaviour
             {
                 if (slot != null)
                 {
-                    slot.SetSpriteToDefault();
+                    //slot.SetSpriteToDefault();
                     slot.StopAnimation();
                     slot.StopBorderAnimation();
                 }

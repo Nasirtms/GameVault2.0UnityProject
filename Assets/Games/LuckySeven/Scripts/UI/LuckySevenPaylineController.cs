@@ -20,12 +20,19 @@ public class LuckySevenPaylineController : MonoBehaviour
     [SerializeField] private float holdDuration = 2f;
     private Coroutine animationLoop;
     private bool isShowing = false;
-    public Image lineImage;
     private List<LuckySevenPaylineResult> spinResults = new List<LuckySevenPaylineResult>();
 
     private readonly Dictionary<int, int[]> paylinePatterns = new()
     {
-        { 1, new[] { 1, 1, 1 } },
+        { 1, new[] { 0, 0, 0 } },
+        { 2, new[] { 1, 1, 1 } },
+        { 3, new[] { 2, 2, 2 } },
+        { 4, new[] { 0, 1, 2 } },
+        { 5, new[] { 2, 1, 0 } },
+        { 6, new[] { 0, 1, 0 } },
+        { 7, new[] { 0, 2, 0 } },
+        { 8, new[] { 1, 0, 1 } },
+        { 9, new[] { 1, 2, 1 } },
     };
 
     #endregion
@@ -100,12 +107,11 @@ public class LuckySevenPaylineController : MonoBehaviour
                 var visual = entry.PaylineData;
                 if (visual == null) continue;
                 //Show(visual);
-                lineImage.gameObject.SetActive(true);
                 PlayAnimationsForPayline(entry.symbol, visual.paylineIndex, entry);
 
-                //yield return new WaitForSeconds(holdDuration);
+                yield return new WaitForSeconds(holdDuration);
 
-                //StopAnimationsOnCurrentLine();
+                StopAnimationsOnCurrentLine();
                 //Hide(visual);
 
                 yield return new WaitForSeconds(fadeDuration);
@@ -139,7 +145,6 @@ public class LuckySevenPaylineController : MonoBehaviour
     private void StopAnimationsOnCurrentLine()
     {
         if (animatedSlots.Count == 0) return;
-        lineImage.gameObject.SetActive(false);  
         foreach (var s in animatedSlots)
         {
             if (s != null) s.StopAnimation();

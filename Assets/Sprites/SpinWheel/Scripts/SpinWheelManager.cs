@@ -129,16 +129,40 @@ public class SpinWheelManager : MonoBehaviour
         if (long.TryParse(PlayerPrefs.GetString(NextAvailableTicksKey, "0"), out savedTicks) && savedTicks > 0)
         {
             nextAvailableUtc = new DateTime(savedTicks, DateTimeKind.Utc);
-            var now = DateTime.Now;
-            if (now < nextAvailableUtc)
+            var nowUtc = DateTime.UtcNow;
+            if (nowUtc < nextAvailableUtc)
             {
                 canFreeSpin = false;
-                ArmReenableAfter((float)(nextAvailableUtc - now).TotalSeconds);
+                ArmReenableAfter((float)(nextAvailableUtc - nowUtc).TotalSeconds);
             }
-
-            //Debug.Log($"Current Time: {now} | Next Spin Time: {nextAvailableUtc}");
+            else
+            {
+                ClearSavedNextSpinTime();
+            }
         }
         UpdateCooldownUI();
+    }
+
+    public static void ClearSavedNextSpinTime()
+    {
+        PlayerPrefs.DeleteKey(NextAvailableTicksKey);
+        PlayerPrefs.Save();
+    }
+
+    public static void SaveNextSpinTimeUtc(DateTime nextSpinUtc)
+    {
+        nextSpinUtc = nextSpinUtc.Kind == DateTimeKind.Utc
+            ? nextSpinUtc
+            : DateTime.SpecifyKind(nextSpinUtc.ToUniversalTime(), DateTimeKind.Utc);
+
+        if (nextSpinUtc <= DateTime.UtcNow)
+        {
+            ClearSavedNextSpinTime();
+            return;
+        }
+
+        PlayerPrefs.SetString(NextAvailableTicksKey, nextSpinUtc.Ticks.ToString());
+        PlayerPrefs.Save();
     }
 
     //private void BeginCooldown()
@@ -162,7 +186,7 @@ public class SpinWheelManager : MonoBehaviour
         {
             UpdateCooldownUI();
             yield return new WaitForSeconds(1f);
-            remaining = (float)(nextAvailableUtc - DateTime.Now).TotalSeconds;
+            remaining = (float)(nextAvailableUtc - DateTime.UtcNow).TotalSeconds;
         }
 
         //yield return new WaitForSeconds(1f);
@@ -187,9 +211,26 @@ public class SpinWheelManager : MonoBehaviour
             {
                 cooldownText.gameObject.transform.parent.gameObject.SetActive(true);
                 SpinWheelButtonAnimator.Instance.SetActiveState(false);
-                TimeSpan remain = nextAvailableUtc - DateTime.Now;
+                TimeSpan remain = nextAvailableUtc - DateTime.UtcNow;
                 if (remain.TotalSeconds < 0) remain = TimeSpan.Zero;
-                cooldownText.text = string.Format("{0:D2}:{1:D2}:{2:D2}", (int)remain.TotalHours, remain.Minutes, remain.Seconds);
+                var totalSeconds = (int)Math.Ceiling(remain.TotalSeconds);
+                if (totalSeconds >= 3600)
+                {
+                    // 60+ minutes → hours (e.g. 60 min = 01:00:00, 180 min = 03:00:00)
+                    cooldownText.text = string.Format(
+                        "{0:D2}:{1:D2}:{2:D2}",
+                        totalSeconds / 3600,
+                        (totalSeconds % 3600) / 60,
+                        totalSeconds % 60);
+                }
+                else
+                {
+                    // Under 60 minutes → minutes only (e.g. 5 min = 05:00)
+                    cooldownText.text = string.Format(
+                        "{0:D2}:{1:D2}",
+                        totalSeconds / 60,
+                        totalSeconds % 60);
+                }
                 if (SpinBtn) SpinBtn.interactable = false;
             }
             //Debug.Log("Can Free Spin: " + canFreeSpin);

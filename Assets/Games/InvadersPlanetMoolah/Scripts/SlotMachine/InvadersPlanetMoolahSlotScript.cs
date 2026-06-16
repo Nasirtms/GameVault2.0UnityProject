@@ -25,6 +25,11 @@ public class InvadersPlanetMoolahSlotScript : MonoBehaviour
     private Animator slotAnimator;
     private string slotAnimationBool;
 
+    [Header("Border Animation")]
+    [SerializeField] private GameObject borderObject;
+    private Animator borderAnimator;
+    private string borderAnimationBool = "Play";
+
     #endregion
 
     #region Unity Methods
@@ -46,8 +51,7 @@ public class InvadersPlanetMoolahSlotScript : MonoBehaviour
     public void GetRandom(bool blur = false)
     {
         var random = InvadersPlanetMoolahSlotMachine.Instance.settings.slotResources[
-            UnityEngine.Random.Range(0, InvadersPlanetMoolahSlotMachine.Instance.settings.slotResources.Count)
-        ];
+            UnityEngine.Random.Range(0, InvadersPlanetMoolahSlotMachine.Instance.settings.slotResources.Count)];
 
         SetType(random, false);
     }
@@ -69,23 +73,60 @@ public class InvadersPlanetMoolahSlotScript : MonoBehaviour
 
     public void PlayAnimation()
     {
-        SetSpriteToPayline();
+        //SetSpriteToPayline();
 
-        // StopAnimation();
-        // slotAnimator = slots[currentResource.slotTypeIndex].GetComponentInParent<Animator>();
-        // slotAnimator.SetBool(slotAnimationBool, true);
+        StopAnimation();
+        slotAnimator = slots[currentResource.slotTypeIndex].GetComponentInParent<Animator>();
+        slotAnimator.SetBool(slotAnimationBool, true);
+
+        PlayBorderAnimation();
     }
 
     public void StopAnimation()
     {
-        SetSpriteToDefault();
+        //SetSpriteToDefault();
 
-        // if (slotAnimator != null)
-        // {
-        //     slotAnimator.SetBool(slotAnimationBool, false);
-        // }
+        if (slotAnimator != null)
+        {
+            slotAnimator.SetBool(slotAnimationBool, false);
+        }
+        StopBorderAnimation();
+    }
+    public void PlayBorderAnimation()
+    {
+        if (borderObject != null)
+        {
+            borderObject.SetActive(true);
+        }
+
+        if (borderAnimator == null && borderObject != null)
+        {
+            borderAnimator = borderObject.GetComponent<Animator>();
+        }
+
+        if (borderAnimator != null)
+        {
+            borderAnimator.enabled = true;
+
+            if (!string.IsNullOrEmpty(borderAnimationBool))
+            {
+                borderAnimator.SetBool(borderAnimationBool, true);
+            }
+        }
     }
 
+    public void StopBorderAnimation()
+    {
+        if (borderAnimator != null && !string.IsNullOrEmpty(borderAnimationBool))
+        {
+            borderAnimator.SetBool(borderAnimationBool, false);
+            borderAnimator.enabled = false;
+        }
+        if (borderObject != null)
+        {
+            borderObject.SetActive(false);
+        }
+    }
     #endregion
 
     #region Slot Layering
